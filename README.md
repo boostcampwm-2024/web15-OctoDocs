@@ -1,3 +1,3 @@
 # OctoDocs
 
-![Sprint 11](https://github.com/user-attachments/assets/8d05d502-99bb-420e-bca6-ae8c37016588)
+![main-image](https://github.com/user-attachments/assets/127bc3c6-8919-413e-94ad-28d3a2fe8887)
