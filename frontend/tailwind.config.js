@@ -9,6 +9,7 @@ export default {
       pretendard: ["Pretendard"],
     },
     colors: {
+      ...colors,
       divider: colors.neutral["200"],
     },
     extend: {},
