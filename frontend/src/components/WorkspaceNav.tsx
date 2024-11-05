@@ -12,7 +12,7 @@ export default function WorkspaceNav({
       <div className="h-5 w-5 rounded-md">
         <img src={imageUrl} />
       </div>
-      <h1 className="font-bold">{workspaceTitle}</h1>
+      <h1 className="text-lg font-bold">{workspaceTitle}</h1>
     </div>
   );
 }
