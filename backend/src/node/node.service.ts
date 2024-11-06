@@ -56,6 +56,9 @@ export class NodeService {
         throw new NotFoundException(`Node with ID ${id} not found`);
       }
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException(
         `Failed to delete node with ID ${id}`,
       );
