@@ -8,7 +8,7 @@ interface NoteListProps {
 
 export default function NoteList({ className }: NoteListProps) {
   return (
-    <div className={cn("flex flex-col gap-1.5 text-sm font-normal", className)}>
+    <div className={cn("flex flex-col gap-1.5 text-sm font-medium", className)}>
       {noteTitles.map((title) => (
         <div>{title}</div>
       ))}
