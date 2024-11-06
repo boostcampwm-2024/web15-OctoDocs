@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { NodeService } from './node.service';
 import { Node } from './node.entity';
+import { CreateNodeDto, UpdateNodeDto } from './node.dto';
 
 @Controller('node')
 export class NodeController {
@@ -18,11 +19,9 @@ export class NodeController {
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
   async createNode(
-    @Body('title') title: string,
-    @Body('x') x: number,
-    @Body('y') y: number,
+    @Body() body: CreateNodeDto,
   ): Promise<{ message: string; node: Node }> {
-    const node = await this.nodeService.createNode(x, y, title);
+    const node = await this.nodeService.createNode(body);
     return {
       message: 'Node and reladed Page successfully created',
       node,
@@ -42,11 +41,9 @@ export class NodeController {
   @HttpCode(HttpStatus.OK)
   async updateNode(
     @Param('id') id: number,
-    @Body('x') x: number,
-    @Body('y') y: number,
-    @Body('title') title: string,
+    @Body() body: UpdateNodeDto,
   ): Promise<{ message: string; node: Node }> {
-    const node = await this.nodeService.updateNode(id, x, y, title);
+    const node = await this.nodeService.updateNode(id, body);
     return {
       message: 'Node and related Page successfully updated',
       node,

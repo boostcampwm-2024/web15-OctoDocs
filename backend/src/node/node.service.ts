@@ -6,6 +6,7 @@ import {
 import { NodeRepository } from './node.repository';
 import { PageService } from 'src/page/page.service';
 import { Node } from './node.entity';
+import { CreateNodeDto, UpdateNodeDto } from './node.dto';
 
 @Injectable()
 export class NodeService {
@@ -14,8 +15,9 @@ export class NodeService {
     private readonly pageService: PageService,
   ) {}
 
-  async createNode(x: number, y: number, title: string): Promise<Node> {
+  async createNode(dto: CreateNodeDto): Promise<Node> {
     try {
+      const { title, x, y } = dto;
       const node = this.nodeRepository.create({ x, y });
 
       const savedNode = await this.nodeRepository.save(node);
@@ -34,7 +36,7 @@ export class NodeService {
     pageId: number,
   ): Promise<Node> {
     try {
-      const node = this.nodeRepository.create({ x, y });
+      const node = this.nodeRepository.create({ title, x, y });
       const existingPage = await this.pageService.findPageById(pageId);
       node.page = existingPage;
       return await this.nodeRepository.save(node);
@@ -60,13 +62,9 @@ export class NodeService {
     }
   }
 
-  async updateNode(
-    id: number,
-    x: number,
-    y: number,
-    title: string,
-  ): Promise<Node> {
+  async updateNode(id: number, dto: UpdateNodeDto): Promise<Node> {
     const node = await this.findNodeById(id);
+    const { x, y, title } = dto;
     node.x = x;
     node.y = y;
     node.title = title;

@@ -6,6 +6,7 @@ import {
 import { PageRepository } from './page.repository';
 import { NodeService } from 'src/node/node.service';
 import { Page } from './page.entity';
+import { CreatePageDto, UpdatePageDto } from './page.dto';
 
 @Injectable()
 export class PageService {
@@ -14,13 +15,9 @@ export class PageService {
     private readonly nodeService: NodeService,
   ) {}
 
-  async createPage(
-    title: string,
-    content: JSON,
-    x: number,
-    y: number,
-  ): Promise<Page> {
+  async createPage(dto: CreatePageDto): Promise<Page> {
     try {
+      const { title, content, x, y } = dto;
       const page = this.pageRepository.create({ title, content });
       const savedPage = await this.pageRepository.save(page);
       const newNode = await this.nodeService.createLinkedNode(
@@ -62,8 +59,9 @@ export class PageService {
     }
   }
 
-  async updatePage(id: number, title: string, content: JSON): Promise<Page> {
+  async updatePage(id: number, dto: UpdatePageDto): Promise<Page> {
     const page = await this.findPageById(id);
+    const { title, content } = dto;
     page.title = title;
     page.content = content;
 

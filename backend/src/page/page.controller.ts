@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { PageService } from './page.service';
 import { Page } from './page.entity';
+import { CreatePageDto, UpdatePageDto } from './page.dto';
 
 @Controller('page')
 export class PageController {
@@ -18,12 +19,9 @@ export class PageController {
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
   async createPage(
-    @Body('title') title: string,
-    @Body('content') content: JSON,
-    @Body('x') x: number,
-    @Body('y') y: number,
+    @Body() body: CreatePageDto,
   ): Promise<{ message: string; page: Page }> {
-    const page = await this.pageService.createPage(title, content, x, y);
+    const page = await this.pageService.createPage(body);
     return {
       message: 'Page and related Node successfully created',
       page,
@@ -43,10 +41,9 @@ export class PageController {
   @HttpCode(HttpStatus.OK)
   async updatePage(
     @Param('id') id: number,
-    @Body('title') title: string,
-    @Body('content') content: JSON,
+    @Body() body: UpdatePageDto,
   ): Promise<{ message: string; page: Page }> {
-    const page = await this.pageService.updatePage(id, title, content);
+    const page = await this.pageService.updatePage(id, body);
     return {
       message: 'Page and related Node successfully updated',
       page,
