@@ -1,0 +1,55 @@
+name: Create Directory on Remote Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-directory:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Node.js 설치
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "23"
+      # 패키지 설치 및 React 빌드
+      - name: Install dependencies and build
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      # aws cli를 통해 ncloud object storage 업로드
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.NCLOUD_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.NCLOUD_SECRET_ACCESS_KEY }}
+
+      - name: Upload files to S3
+        run: |
+          aws --endpoint-url=http://octodocs.s3-website.kr.object.ncloudstorage.com s3 cp ./frontend/dist s3://octodocs --recursive
+
+      # 패키지 설치 및 Nest.js 빌드
+      - name: Install dependencies and build
+        run: |
+          cd backend
+          npm install
+          npm run build
+
+      # 배포용 쉘 스크립트 파일 전송
+      - name: Copy deploy.sh to remote server
+        uses: appleboy/scp-action@v0.1.1
+        with:
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          source: ./deploy.sh
+          target: /home/root/deploy.sh
