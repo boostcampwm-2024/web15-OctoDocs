@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   EditorRoot,
   EditorCommand,
@@ -7,14 +8,18 @@ import {
   type JSONContent,
   EditorCommandList,
   EditorBubble,
-  EditorBubbleItem,
 } from "novel";
 import { ImageResizer, handleCommandNavigation } from "novel/extensions";
-import { defaultExtensions } from "./extensions";
-
-import { slashCommand } from "./slash-commands";
 
 import "./prosemirror.css";
+import { slashCommand, suggestionItems } from "./slash-commands";
+import { defaultExtensions } from "./extensions";
+import { Separator } from "./ui/separator";
+import { NodeSelector } from "./selectors/node-selector";
+import { LinkSelector } from "./selectors/link-selector";
+import { MathSelector } from "./selectors/math-selector";
+import { TextButtons } from "./selectors/text-buttons";
+import { ColorSelector } from "./selectors/color-selector";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -23,11 +28,18 @@ interface EditorProp {
   onChange?: (value: JSONContent) => void;
 }
 const Editor = ({ initialValue }: EditorProp) => {
+  // const [saveStatus, setSaveStatus] = useState("Saved");
+  // const [charsCount, setCharsCount] = useState();
+
+  const [openNode, setOpenNode] = useState(false);
+  const [openColor, setOpenColor] = useState(false);
+  const [openLink, setOpenLink] = useState(false);
+  // const [openAI, setOpenAI] = useState(false);
   return (
     <EditorRoot>
       <EditorContent
         initialContent={initialValue}
-        className="w-[520px] rounded-xl border bg-white p-2"
+        className="border-muted bg-background relative h-[720px] w-[520px] overflow-auto bg-white sm:rounded-lg sm:border sm:shadow-lg"
         {...(initialValue && { initialContent: initialValue })}
         extensions={extensions}
         editorProps={{
@@ -45,26 +57,24 @@ const Editor = ({ initialValue }: EditorProp) => {
             No results
           </EditorCommandEmpty>
           <EditorCommandList>
-            <EditorCommandItem
-              value={"Text"}
-              onCommand={(val) => console.log(val)}
-              className={`hover:bg-accent aria-selected:bg-accent flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm`}
-            >
-              <div>
-                <p className="font-medium">Text</p>
-                <p className="text-muted-foreground text-xs">텍스트</p>
-              </div>
-            </EditorCommandItem>
-            <EditorCommandItem
-              value={"Text"}
-              onCommand={(val) => console.log(val)}
-              className={`hover:bg-accent aria-selected:bg-accent flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm`}
-            >
-              <div>
-                <p className="font-medium">Image</p>
-                <p className="text-muted-foreground text-xs">이미지</p>
-              </div>
-            </EditorCommandItem>
+            {suggestionItems.map((item) => (
+              <EditorCommandItem
+                value={item.title}
+                onCommand={(val) => item.command?.(val)}
+                className="hover:bg-accent aria-selected:bg-accent flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:cursor-pointer"
+                key={item.title}
+              >
+                <div className="border-muted bg-background flex h-10 w-10 items-center justify-center rounded-md border">
+                  {item.icon}
+                </div>
+                <div>
+                  <p className="font-medium">{item.title}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {item.description}
+                  </p>
+                </div>
+              </EditorCommandItem>
+            ))}
           </EditorCommandList>
         </EditorCommand>
         <EditorBubble
@@ -73,7 +83,17 @@ const Editor = ({ initialValue }: EditorProp) => {
           }}
           className="border-muted bg-background flex w-fit max-w-[90vw] overflow-hidden rounded-md border shadow-xl"
         >
-          <EditorBubbleItem>안녕</EditorBubbleItem>
+          {" "}
+          <Separator orientation="vertical" />
+          <NodeSelector open={openNode} onOpenChange={setOpenNode} />
+          <Separator orientation="vertical" />
+          <LinkSelector open={openLink} onOpenChange={setOpenLink} />
+          <Separator orientation="vertical" />
+          <MathSelector />
+          <Separator orientation="vertical" />
+          <TextButtons />
+          <Separator orientation="vertical" />
+          <ColorSelector open={openColor} onOpenChange={setOpenColor} />
         </EditorBubble>
       </EditorContent>
     </EditorRoot>
