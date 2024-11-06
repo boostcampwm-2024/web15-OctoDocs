@@ -20,8 +20,10 @@ export class PageController {
   async createPage(
     @Body('title') title: string,
     @Body('content') content: JSON,
+    @Body('x') x: number,
+    @Body('y') y: number,
   ): Promise<{ message: string; page: Page }> {
-    const page = await this.pageService.createPage(title, content);
+    const page = await this.pageService.createPage(title, content, x, y);
     return {
       message: 'Page and related Node successfully created',
       page,

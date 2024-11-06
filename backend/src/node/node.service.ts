@@ -14,27 +14,34 @@ export class NodeService {
     private readonly pageService: PageService,
   ) {}
 
-  async createNode(
-    x: number,
-    y: number,
-    title: string,
-    pageId?: number,
-  ): Promise<Node> {
+  async createNode(x: number, y: number, title: string): Promise<Node> {
     try {
       const node = this.nodeRepository.create({ x, y });
 
-      if (pageId) {
-        const existingPage = await this.pageService.findPageById(pageId);
-        node.page = existingPage;
-        return await this.nodeRepository.save(node);
-      } else {
-        const savedNode = await this.nodeRepository.save(node);
-        const newPage = await this.pageService.createPage(title, null, node.id);
-        savedNode.page = newPage;
-        return await this.nodeRepository.save(savedNode);
-      }
+      const savedNode = await this.nodeRepository.save(node);
+      const newPage = await this.pageService.createLinkedPage(title, node.id);
+      savedNode.page = newPage;
+      return await this.nodeRepository.save(savedNode);
     } catch (error) {
       throw new InternalServerErrorException(`Failed to create node`);
+    }
+  }
+
+  async createLinkedNode(
+    x: number,
+    y: number,
+    title: string,
+    pageId: number,
+  ): Promise<Node> {
+    try {
+      const node = this.nodeRepository.create({ x, y });
+      const existingPage = await this.pageService.findPageById(pageId);
+      node.page = existingPage;
+      return await this.nodeRepository.save(node);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Failed to create node linked to page with ID ${pageId}`,
+      );
     }
   }
 
@@ -42,7 +49,10 @@ export class NodeService {
     await this.findNodeById(id);
 
     try {
-      await this.nodeRepository.delete(id);
+      const deleteResult = await this.nodeRepository.delete(id);
+      if (!deleteResult.affected) {
+        throw new NotFoundException(`Node with ID ${id} not found`);
+      }
     } catch (error) {
       throw new InternalServerErrorException(
         `Failed to delete node with ID ${id}`,
@@ -57,7 +67,6 @@ export class NodeService {
     title: string,
   ): Promise<Node> {
     const node = await this.findNodeById(id);
-
     node.x = x;
     node.y = y;
     node.title = title;

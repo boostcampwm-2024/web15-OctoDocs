@@ -18,9 +18,9 @@ export class NodeController {
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
   async createNode(
+    @Body('title') title: string,
     @Body('x') x: number,
     @Body('y') y: number,
-    @Body('title') title: string,
   ): Promise<{ message: string; node: Node }> {
     const node = await this.nodeService.createNode(x, y, title);
     return {
