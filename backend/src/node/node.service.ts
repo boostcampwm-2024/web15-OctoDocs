@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { NodeRepository } from './node.repository';
-import { PageService } from 'src/page/page.service';
+import { PageService } from '../page/page.service';
 import { Node } from './node.entity';
 import { CreateNodeDto, UpdateNodeDto } from './node.dto';
 

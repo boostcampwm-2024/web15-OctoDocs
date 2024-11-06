@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PageRepository } from './page.repository';
-import { NodeService } from 'src/node/node.service';
+import { NodeService } from '../node/node.service';
 import { Page } from './page.entity';
 import { CreatePageDto, UpdatePageDto } from './page.dto';
 
@@ -53,6 +53,9 @@ export class PageService {
         throw new NotFoundException(`Page with ID ${id} not found`);
       }
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       throw new InternalServerErrorException(
         `Failed to delete page with ID ${id}`,
       );
