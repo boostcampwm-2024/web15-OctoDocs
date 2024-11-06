@@ -27,7 +27,7 @@ const Editor = ({ initialValue }: EditorProp) => {
     <EditorRoot>
       <EditorContent
         initialContent={initialValue}
-        className="border-muted bg-background relative min-h-[500px] w-[520px] sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:shadow-lg"
+        className="border-muted bg-background relative h-[720px] w-[520px] overflow-auto bg-white sm:rounded-lg sm:border sm:shadow-lg"
         {...(initialValue && { initialContent: initialValue })}
         extensions={extensions}
         editorProps={{
