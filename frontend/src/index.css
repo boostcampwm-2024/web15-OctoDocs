@@ -5,7 +5,7 @@
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  font-weight: 600;
+  font-weight: 700;
   src:
     local("Pretendard Bold"),
     url("./assets/fonts/Pretendard-Bold.subset.woff2") format("woff2");
@@ -14,7 +14,7 @@
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
   src:
     local("Pretendard SemiBold"),
     url("./assets/fonts/Pretendard-SemiBold.subset.woff2") format("woff2");
@@ -23,10 +23,17 @@
 @font-face {
   font-family: "Pretendard";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   src:
     local("Pretendard Medium"),
     url("./assets/fonts/Pretendard-Medium.subset.woff2") format("woff2");
+}
+
+@layer base {
+  html {
+    font-family: "Pretendard", sans-serif;
+    letter-spacing: -0.025em;
+  }
 }
 
 @layer base {
