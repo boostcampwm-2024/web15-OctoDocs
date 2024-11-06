@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Delete,
+  Patch,
   Param,
   Body,
   HttpCode,
@@ -29,7 +30,26 @@ export class NodeController {
   }
 
   @Delete('/:id')
-  async deleteNode(@Param('id') id: number): Promise<void> {
-    return await this.nodeService.deleteNode(id);
+  @HttpCode(HttpStatus.OK)
+  async deleteNode(@Param('id') id: number): Promise<{ message: string }> {
+    await this.nodeService.deleteNode(id);
+    return {
+      message: `Node with ID ${id} successfully deleted`,
+    };
+  }
+
+  @Patch('/:id')
+  @HttpCode(HttpStatus.OK)
+  async updateNode(
+    @Param('id') id: number,
+    @Body('x') x: number,
+    @Body('y') y: number,
+    @Body('title') title: string,
+  ): Promise<{ message: string; node: Node }> {
+    const node = await this.nodeService.updateNode(id, x, y, title);
+    return {
+      message: 'Node and related Page successfully updated',
+      node,
+    };
   }
 }
