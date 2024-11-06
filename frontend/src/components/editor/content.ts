@@ -40,8 +40,13 @@ export const defaultEditorContent = {
           type: "listItem",
           content: [
             {
-              type: "text",
-              text: "🧑🏻‍💻 코드 리뷰 & 머지",
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "🧑🏻‍💻 코드 리뷰 & 머지",
+                },
+              ],
             },
           ],
         },
@@ -49,8 +54,13 @@ export const defaultEditorContent = {
           type: "listItem",
           content: [
             {
-              type: "text",
-              text: "📝 문서화",
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "📝 문서화",
+                },
+              ],
             },
           ],
         },
@@ -58,8 +68,13 @@ export const defaultEditorContent = {
           type: "listItem",
           content: [
             {
-              type: "text",
-              text: "📢 모더레이터 (각종 회의 및 스크럼)",
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "📢 모더레이터 (각종 회의 및 스크럼)",
+                },
+              ],
             },
           ],
         },
