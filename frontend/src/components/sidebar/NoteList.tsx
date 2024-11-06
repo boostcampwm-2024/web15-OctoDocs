@@ -1,8 +1,14 @@
+import { cn } from "@/lib/utils";
+
 const noteTitles = ["🌳 그라운드 룰", "🚩 커밋 컨벤션", "🗂️ 데일리 스크럼 "];
 
-export default function NoteList() {
+interface NoteListProps {
+  className?: string;
+}
+
+export default function NoteList({ className }: NoteListProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-1.5 text-sm font-normal", className)}>
       {noteTitles.map((title) => (
         <div>{title}</div>
       ))}
