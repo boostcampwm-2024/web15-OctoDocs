@@ -1,21 +1,34 @@
 import {
+  AIHighlight,
+  CharacterCount,
+  CodeBlockLowlight,
+  Color,
+  CustomKeymap,
+  GlobalDragHandle,
+  HighlightExtension,
+  HorizontalRule,
+  MarkdownExtension,
+  Placeholder,
+  StarterKit,
+  TaskItem,
+  TaskList,
+  TextStyle,
   TiptapImage,
   TiptapLink,
+  TiptapUnderline,
+  Twitter,
   UpdatedImage,
-  TaskList,
-  TaskItem,
-  HorizontalRule,
-  StarterKit,
-  Placeholder,
-  AIHighlight,
-  CodeBlockLowlight,
+  Youtube,
   Mathematics,
 } from "novel/extensions";
 import { UploadImagesPlugin } from "novel/plugins";
-import { cx } from "class-variance-authority";
-import { all, createLowlight } from "lowlight";
 
+import { cx } from "class-variance-authority";
+import { common, createLowlight } from "lowlight";
+
+//TODO I am using cx here to get tailwind autocomplete working, idk if someone else can write a regex to just capture the class key in objects
 const aiHighlight = AIHighlight;
+//You can overwrite the placeholder with your own configuration
 const placeholder = Placeholder;
 const tiptapLink = TiptapLink.configure({
   HTMLAttributes: {
@@ -24,7 +37,6 @@ const tiptapLink = TiptapLink.configure({
     ),
   },
 });
-const lowlight = createLowlight(all);
 
 const tiptapImage = TiptapImage.extend({
   addProseMirrorPlugins() {
@@ -89,19 +101,14 @@ const starterKit = StarterKit.configure({
   codeBlock: {
     HTMLAttributes: {
       class: cx(
-        "rounded-md bg-muted text-muted-foreground border p-5 font-mono font-medium bg-slate-200",
+        "rounded-md bg-muted text-muted-foreground border p-5 font-mono font-medium",
       ),
     },
   },
   code: {
     HTMLAttributes: {
-      class: cx("rounded-md bg-muted px-1.5 py-1 font-mono font-medium"),
+      class: cx("rounded-md bg-muted  px-1.5 py-1 font-mono font-medium"),
       spellcheck: "false",
-    },
-  },
-  paragraph: {
-    HTMLAttributes: {
-      class: cx(""),
     },
   },
   horizontalRule: false,
@@ -115,7 +122,21 @@ const starterKit = StarterKit.configure({
 const codeBlockLowlight = CodeBlockLowlight.configure({
   // configure lowlight: common /  all / use highlightJS in case there is a need to specify certain language grammars only
   // common: covers 37 language grammars which should be good enough in most cases
-  lowlight,
+  lowlight: createLowlight(common),
+});
+
+const youtube = Youtube.configure({
+  HTMLAttributes: {
+    class: cx("rounded-lg border border-muted"),
+  },
+  inline: false,
+});
+
+const twitter = Twitter.configure({
+  HTMLAttributes: {
+    class: cx("not-prose"),
+  },
+  inline: false,
 });
 
 const mathematics = Mathematics.configure({
@@ -126,6 +147,9 @@ const mathematics = Mathematics.configure({
     throwOnError: false,
   },
 });
+
+const characterCount = CharacterCount.configure();
+
 export const defaultExtensions = [
   starterKit,
   placeholder,
@@ -137,5 +161,15 @@ export const defaultExtensions = [
   horizontalRule,
   aiHighlight,
   codeBlockLowlight,
+  youtube,
+  twitter,
   mathematics,
+  characterCount,
+  TiptapUnderline,
+  MarkdownExtension,
+  HighlightExtension,
+  TextStyle,
+  Color,
+  CustomKeymap,
+  GlobalDragHandle,
 ];
