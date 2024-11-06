@@ -7,4 +7,8 @@ export class PageRepository extends Repository<Page> {
   constructor(private dataSource: DataSource) {
     super(Page, dataSource.createEntityManager());
   }
+
+  async findAll(): Promise<Page[]> {
+    return await this.find();
+  }
 }
