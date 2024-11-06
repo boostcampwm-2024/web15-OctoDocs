@@ -1,21 +1,34 @@
-import { Controller, Post, Delete, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Delete,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { PageService } from './page.service';
+import { Page } from './page.entity';
 
 @Controller('page')
 export class PageController {
   constructor(private readonly pageService: PageService) {}
 
   @Post('/')
-  createPage(
+  @HttpCode(HttpStatus.CREATED)
+  async createPage(
     @Body('title') title: string,
     @Body('content') content: JSON,
-    @Body('nodeId') nodeId: number,
-  ): Promise<void> {
-    return this.pageService.createPage(title, content, nodeId);
+  ): Promise<{ message: string; page: Page }> {
+    const page = await this.pageService.createPage(title, content);
+    return {
+      message: 'Page and related Node successfully created',
+      page,
+    };
   }
 
   @Delete('/:id')
-  deletePage(@Param('id') id: number): Promise<void> {
-    return this.pageService.deletePage(id);
+  async deletePage(@Param('id') id: number): Promise<void> {
+    return await this.pageService.deletePage(id);
   }
 }
