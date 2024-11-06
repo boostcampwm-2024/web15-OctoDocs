@@ -35,7 +35,7 @@ jobs:
 
       - name: Upload files to S3
         run: |
-          aws s3 cp ./frontend/dist s3://octodocs/ --recursive
+          aws --endpoint-url=http://octodocs.s3-website.kr.object.ncloudstorage.com s3 cp ./frontend/dist s3://octodocs --recursive
 
       # 패키지 설치 및 Nest.js 빌드
       - name: Install dependencies and build
