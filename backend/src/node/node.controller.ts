@@ -5,7 +5,7 @@ import { NodeService } from './node.service';
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
 
-  @Delete(':id')
+  @Delete('/:id')
   deleteNode(@Param('id') id: number): Promise<void> {
     return this.nodeService.deleteNode(id);
   }

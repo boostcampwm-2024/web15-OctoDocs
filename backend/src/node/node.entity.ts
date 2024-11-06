@@ -21,6 +21,9 @@ export class Node {
   @Column('float')
   y: number;
 
+  @Column()
+  title: string;
+
   @OneToOne(() => Page, (page) => page.node, { cascade: true })
   @JoinColumn()
   page: Page;
