@@ -1,5 +1,5 @@
 ## 🐙 프로젝트 소개
-![project-intro](https://github.com/user-attachments/assets/260b7a00-6e97-43ba-b040-cfb572c9dbad)
+![project-intro](https://github.com/user-attachments/assets/0df1909c-436d-4516-a639-78c4088e9871)
 
 
 ## 🧸 팀원 소개
