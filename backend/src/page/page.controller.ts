@@ -51,4 +51,10 @@ export class PageController {
   async getPages() {
     return await this.pageService.getPages();
   }
+
+  @Get('/:id')
+  @HttpCode(HttpStatus.OK)
+  async getPage(@Param('id') id: number) {
+    return await this.pageService.getPage(id);
+  }
 }
