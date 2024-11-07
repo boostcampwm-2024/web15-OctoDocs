@@ -8,9 +8,23 @@ export type Page = {
   content: JSONContent;
 };
 
+export type CreatePageRequest = {
+  title: string;
+  content: JSONContent;
+  x: number;
+  y: number;
+};
+
 export type PageRequest = {
   title: string;
   content: JSONContent;
+};
+
+export const getPage = async (id: number) => {
+  const url = `/page/${id}`;
+
+  const res = await Get<Page>(url);
+  return res.data;
 };
 
 export const getPages = async () => {
@@ -20,10 +34,10 @@ export const getPages = async () => {
   return res.data;
 };
 
-export const createPage = async (id: number, pageData: PageRequest) => {
-  const url = `/page/${id}`;
+export const createPage = async (pageData: CreatePageRequest) => {
+  const url = `/page`;
 
-  const res = await Post<null, PageRequest>(url, pageData);
+  const res = await Post<null, CreatePageRequest>(url, pageData);
   return res.data;
 };
 
