@@ -90,4 +90,8 @@ export class PageService {
   async getPages() {
     return await this.pageRepository.findAll();
   }
+
+  async getPage(id: number) {
+    return await this.pageRepository.findOneBy({ id });
+  }
 }
