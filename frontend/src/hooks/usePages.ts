@@ -1,4 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  skipToken,
+} from "@tanstack/react-query";
+
 import {
   getPages,
   createPage,
@@ -6,6 +12,15 @@ import {
   updatePage,
   type PageRequest,
 } from "@/api/page";
+
+export const usePage = (currentPage: number | null) => {
+  const { data, isError } = useQuery({
+    queryKey: ["page", currentPage],
+    queryFn: currentPage ? () => getPage(currentPage) : skipToken,
+  });
+
+  return { data, isError };
+};
 
 export const usePages = () => {
   const { data, isError } = useQuery({
