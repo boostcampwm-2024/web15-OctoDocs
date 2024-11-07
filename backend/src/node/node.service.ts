@@ -29,12 +29,12 @@ export class NodeService {
     }
   }
 
-  async createLinkedNode(x: number, y: number, pageId: number): Promise<void> {
+  async createLinkedNode(x: number, y: number, pageId: number): Promise<Node> {
     try {
       const node = this.nodeRepository.create({ x, y });
       const existingPage = await this.pageService.findPageById(pageId);
       node.page = existingPage;
-      await this.nodeRepository.save(node);
+      return await this.nodeRepository.save(node);
     } catch (error) {
       throw new InternalServerErrorException(
         `Failed to create node linked to page with ID ${pageId}`,
@@ -62,11 +62,11 @@ export class NodeService {
 
   async updateNode(id: number, dto: UpdateNodeDto): Promise<Node> {
     const node = await this.findNodeById(id);
-    const existingPage = await this.pageService.findPageById(node.page.id);
+    const linkedPage = await this.pageService.findPageById(node.page.id);
     const { x, y, title } = dto;
     node.x = x;
     node.y = y;
-    existingPage.title = title;
+    linkedPage.title = title;
 
     try {
       return await this.nodeRepository.save(node);
