@@ -1,12 +1,29 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  skipToken,
+} from "@tanstack/react-query";
+
 import {
   getPages,
   createPage,
   deletePage,
   updatePage,
   type PageRequest,
+  getPage,
+  CreatePageRequest,
 } from "@/api/page";
 import { JSONContent } from "novel";
+
+export const usePage = (currentPage: number | null) => {
+  const { data, isError } = useQuery({
+    queryKey: ["page", currentPage],
+    queryFn: currentPage ? () => getPage(currentPage) : skipToken,
+  });
+
+  return { data, isError };
+};
 
 export const usePages = () => {
   const { data, isError } = useQuery({
@@ -21,8 +38,8 @@ export const useCreatePage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, pageData }: { id: number; pageData: PageRequest }) =>
-      createPage(id, pageData),
+    mutationFn: ({ title, content, x, y }: CreatePageRequest) =>
+      createPage({ title, content, x, y }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pages"] });
     },
@@ -40,9 +57,14 @@ export const useDeletePage = () => {
   });
 };
 
-export const useUpdatePage = () => {
+export const useUpdatePage = (pageId: number) => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, pageData }: { id: number; pageData: JSONContent }) =>
       updatePage(id, pageData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["page", pageId] });
+    },
   });
 };

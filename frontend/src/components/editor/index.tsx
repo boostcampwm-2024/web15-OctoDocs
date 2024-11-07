@@ -23,6 +23,7 @@ import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
 
 import { useDebouncedCallback } from "use-debounce";
+import { useUpdatePage } from "@/hooks/usePages";
 
 import { useUpdatePage } from "@/hooks/usePages";
 
@@ -34,10 +35,12 @@ interface EditorProp {
   onChange?: (value: JSONContent) => void;
 }
 
+// TODO: 나중에 title input 추가해야함
 const Editor = ({ pageId, initialValue }: EditorProp) => {
   const [initialContent, setInitialContent] = useState<null | JSONContent>(
     initialValue === undefined ? null : initialValue,
   );
+  const updateMutation = useUpdatePage(pageId);
 
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
@@ -59,7 +62,6 @@ const Editor = ({ pageId, initialValue }: EditorProp) => {
         setSaveStatus("Saved");
       }
     },
-
     500,
   );
 

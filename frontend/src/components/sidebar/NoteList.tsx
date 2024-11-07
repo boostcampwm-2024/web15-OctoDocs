@@ -1,33 +1,53 @@
-import { cn } from "@/lib/utils";
-import usePageStore from "@/store/usePageStore";
+import { Trash2 } from "lucide-react";
 
-const noteList = [
-  { id: 0, icon: "🌳", title: "그라운드 룰" },
-  { id: 1, icon: "🚩", title: "커밋 컨벤션" },
-  { id: 2, icon: "🗂️", title: "데일리 스크럼" },
-];
+import RemoveNoteModal from "./RemoveNoteModal";
+
+import { useNoteList } from "@/hooks/useNoteList";
+import { cn } from "@/lib/utils";
 
 interface NoteListProps {
   className?: string;
 }
 
 export default function NoteList({ className }: NoteListProps) {
-  const { setCurrentPage } = usePageStore();
+  const {
+    data,
+    isModalOpen,
+    handleNoteClick,
+    openModal,
+    onConfirm,
+    onCloseModal,
+  } = useNoteList();
 
-  const handleNoteClick = (id: number) => {
-    setCurrentPage(id);
-  };
+  if (!data) {
+    return <div>로딩중</div>;
+  }
 
   return (
     <div className={cn("flex flex-col gap-0.5 text-sm font-medium", className)}>
-      {noteList.map(({ id, icon, title }) => (
+      <RemoveNoteModal
+        isOpen={isModalOpen}
+        onConfirm={onConfirm}
+        onCloseModal={onCloseModal}
+      />
+      {data.map(({ id, title }) => (
         <button
           onClick={() => handleNoteClick(id)}
           key={id}
-          className="flex flex-row gap-1 rounded-sm px-2 py-1 hover:bg-neutral-100"
+          className="group flex flex-row justify-between rounded-sm px-2 py-1 hover:bg-neutral-100"
         >
-          <div>{icon}</div>
-          <div>{title}</div>
+          <div className="flex flex-row gap-1">
+            <div>{title}</div>
+          </div>
+          <span
+            className="hidden text-neutral-400 transition-colors hover:text-red-500 group-hover:block"
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal(id);
+            }}
+          >
+            <Trash2 width={20} height={20} />
+          </span>
         </button>
       ))}
     </div>
