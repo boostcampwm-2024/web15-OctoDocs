@@ -22,7 +22,9 @@ export class Page {
   // @Column()
   // createdAt: Date;
 
-  @OneToOne(() => Node, (node) => node.page)
+  @OneToOne(() => Node, (node) => node.page,{
+    onDelete: "CASCADE"
+  })
   @JoinColumn()
   node: Node;
 }
