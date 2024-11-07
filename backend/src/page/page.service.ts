@@ -2,6 +2,8 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { PageRepository } from './page.repository';
 import { NodeService } from '../node/node.service';
@@ -12,6 +14,7 @@ import { CreatePageDto, UpdatePageDto } from './page.dto';
 export class PageService {
   constructor(
     private pageRepository: PageRepository,
+    @Inject(forwardRef(() => NodeService))
     private readonly nodeService: NodeService,
   ) {}
 
