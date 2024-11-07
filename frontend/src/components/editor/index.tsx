@@ -23,6 +23,7 @@ import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
 
 import { useDebouncedCallback } from "use-debounce";
+import { useUpdatePage } from "@/hooks/usePages";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -32,10 +33,12 @@ interface EditorProp {
   onChange?: (value: JSONContent) => void;
 }
 
+// TODO: 나중에 title input 추가해야함
 const Editor = ({ pageId, initialValue }: EditorProp) => {
   const [initialContent, setInitialContent] = useState<null | JSONContent>(
     initialValue === undefined ? null : initialValue,
   );
+  const updateMutation = useUpdatePage(pageId);
 
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
@@ -56,6 +59,13 @@ const Editor = ({ pageId, initialValue }: EditorProp) => {
       if (pageId === undefined) return;
 
       const json = editor.getJSON();
+      updateMutation.mutate({
+        id: pageId,
+        pageData: {
+          title: "제목 없음",
+          content: json,
+        },
+      });
       window.localStorage.setItem(
         "html-content",
         highlightCodeblocks(editor.getHTML()),
