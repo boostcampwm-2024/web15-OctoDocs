@@ -25,8 +25,6 @@ import { ColorSelector } from "./selectors/color-selector";
 import { useDebouncedCallback } from "use-debounce";
 import { useUpdatePage } from "@/hooks/usePages";
 
-import { useUpdatePage } from "@/hooks/usePages";
-
 const extensions = [...defaultExtensions, slashCommand];
 
 interface EditorProp {
@@ -40,23 +38,26 @@ const Editor = ({ pageId, initialValue }: EditorProp) => {
   const [initialContent, setInitialContent] = useState<null | JSONContent>(
     initialValue === undefined ? null : initialValue,
   );
-  const updateMutation = useUpdatePage(pageId);
+
+  const updatePageMutation = useUpdatePage(pageId);
 
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
   const [saveStatus, setSaveStatus] = useState("Saved");
 
-  const updatePageMutation = useUpdatePage();
-
   const debouncedUpdates = useDebouncedCallback(
     async (editor: EditorInstance) => {
       if (pageId === undefined) return;
 
       const json = editor.getJSON();
+
       const response = await updatePageMutation.mutateAsync({
         id: pageId,
-        pageData: json,
+        pageData: {
+          title: "제목 없음",
+          content: json,
+        },
       });
       if (response) {
         setSaveStatus("Saved");

@@ -14,7 +14,6 @@ import {
   getPage,
   CreatePageRequest,
 } from "@/api/page";
-import { JSONContent } from "novel";
 
 export const usePage = (currentPage: number | null) => {
   const { data, isError } = useQuery({
@@ -61,7 +60,7 @@ export const useUpdatePage = (pageId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, pageData }: { id: number; pageData: JSONContent }) =>
+    mutationFn: ({ id, pageData }: { id: number; pageData: PageRequest }) =>
       updatePage(id, pageData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["page", pageId] });

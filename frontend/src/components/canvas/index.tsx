@@ -13,46 +13,13 @@ import {
   ConnectionMode,
   type OnConnect,
   type Node,
-  type Edge,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
 
 import { useEffect } from "react";
 import { usePages } from "@/hooks/usePages";
-import { type NoteNodeType, NoteNode } from "./NoteNode";
-
-// 테스트용 초기값
-const initialNodes: NoteNodeType[] = [
-  {
-    id: "1",
-    position: { x: 100, y: 100 },
-    type: "note",
-    data: {
-      id: 0,
-      title: "Node 1",
-    },
-  },
-  {
-    id: "2",
-    position: { x: 400, y: 200 },
-    type: "note",
-    data: {
-      id: 1,
-      title: "Node 2",
-    },
-  },
-];
-
-const initialEdges: Edge[] = [
-  {
-    id: "e1-2",
-    source: "1",
-    target: "2",
-    sourceHandle: "top",
-    targetHandle: "left",
-  },
-];
+import { NoteNode } from "./NoteNode";
 
 const proOptions = { hideAttribution: true };
 
@@ -61,11 +28,10 @@ interface CanvasProps {
 }
 
 export default function Canvas({ className }: CanvasProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const { data } = usePages();
-  const pages = data?.data;
+  const { data: pages } = usePages();
 
   useEffect(() => {
     if (!pages) {
@@ -75,7 +41,8 @@ export default function Canvas({ className }: CanvasProps) {
     const newNodes = pages.map((page, index) => ({
       id: page.id.toString(),
       position: { x: 100 * index, y: 100 },
-      data: { label: page.title, id: page.id },
+      data: { title: page.title, id: page.id },
+      type: "note",
     }));
     setNodes(newNodes);
   }, [pages, setNodes]);

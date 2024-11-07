@@ -48,9 +48,9 @@ export const deletePage = async (id: number) => {
   return res.data;
 };
 
-export const updatePage = async (id: number, pageData: JSONContent) => {
+export const updatePage = async (id: number, pageData: PageRequest) => {
   const url = `/page/${id}`;
 
-  const res = await Patch<null, JSONContent>(url, pageData);
+  const res = await Patch<null, PageRequest>(url, pageData);
   return res.data;
 };
