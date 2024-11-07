@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   EditorRoot,
   EditorCommand,
@@ -8,6 +8,7 @@ import {
   type JSONContent,
   EditorCommandList,
   EditorBubble,
+  type EditorInstance,
 } from "novel";
 import { ImageResizer, handleCommandNavigation } from "novel/extensions";
 
@@ -21,26 +22,66 @@ import { MathSelector } from "./selectors/math-selector";
 import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
 
+import { useDebouncedCallback } from "use-debounce";
+
 const extensions = [...defaultExtensions, slashCommand];
 
 interface EditorProp {
+  pageId: number;
   initialValue?: JSONContent;
   onChange?: (value: JSONContent) => void;
 }
-const Editor = ({ initialValue }: EditorProp) => {
-  // const [saveStatus, setSaveStatus] = useState("Saved");
-  // const [charsCount, setCharsCount] = useState();
+
+const Editor = ({ pageId, initialValue }: EditorProp) => {
+  const [initialContent, setInitialContent] = useState<null | JSONContent>(
+    initialValue === undefined ? null : initialValue,
+  );
 
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
-  // const [openAI, setOpenAI] = useState(false);
+
+  const highlightCodeblocks = (content: string) => {
+    const doc = new DOMParser().parseFromString(content, "text/html");
+    doc.querySelectorAll("pre code").forEach((el) => {
+      // @ts-expect-error - highlightElement is not in the types
+      // https://highlightjs.readthedocs.io/en/latest/api.html?highlight=highlightElement#highlightelement
+      hljs.highlightElement(el);
+    });
+    return new XMLSerializer().serializeToString(doc);
+  };
+
+  const debouncedUpdates = useDebouncedCallback(
+    async (editor: EditorInstance) => {
+      if (pageId === undefined) return;
+
+      const json = editor.getJSON();
+      window.localStorage.setItem(
+        "html-content",
+        highlightCodeblocks(editor.getHTML()),
+      );
+      window.localStorage.setItem(pageId.toString(), JSON.stringify(json));
+      window.localStorage.setItem(
+        "markdown",
+        editor.storage.markdown.getMarkdown(),
+      );
+    },
+
+    500,
+  );
+
+  useEffect(() => {
+    const content = window.localStorage.getItem(pageId.toString());
+    if (content) setInitialContent(JSON.parse(content));
+  }, [pageId]);
+
+  console.log(initialContent);
+
   return (
     <EditorRoot>
       <EditorContent
-        initialContent={initialValue}
-        className="border-muted bg-background relative h-[720px] w-[520px] overflow-auto bg-white sm:rounded-lg sm:border sm:shadow-lg"
-        {...(initialValue && { initialContent: initialValue })}
+        initialContent={initialContent === null ? undefined : initialContent}
+        className="relative h-[720px] w-[520px] overflow-auto border-muted bg-background bg-white sm:rounded-lg sm:border sm:shadow-lg"
         extensions={extensions}
         editorProps={{
           handleDOMEvents: {
@@ -51,9 +92,12 @@ const Editor = ({ initialValue }: EditorProp) => {
           },
         }}
         slotAfter={<ImageResizer />}
+        onUpdate={({ editor }) => {
+          debouncedUpdates(editor);
+        }}
       >
-        <EditorCommand className="border-muted bg-background z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border px-1 py-2 shadow-md transition-all">
-          <EditorCommandEmpty className="text-muted-foreground px-2">
+        <EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
+          <EditorCommandEmpty className="px-2 text-muted-foreground">
             No results
           </EditorCommandEmpty>
           <EditorCommandList>
@@ -61,15 +105,15 @@ const Editor = ({ initialValue }: EditorProp) => {
               <EditorCommandItem
                 value={item.title}
                 onCommand={(val) => item.command?.(val)}
-                className="hover:bg-accent aria-selected:bg-accent flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:cursor-pointer"
+                className="flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:cursor-pointer hover:bg-accent aria-selected:bg-accent"
                 key={item.title}
               >
-                <div className="border-muted bg-background flex h-10 w-10 items-center justify-center rounded-md border">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted bg-background">
                   {item.icon}
                 </div>
                 <div>
                   <p className="font-medium">{item.title}</p>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-xs text-muted-foreground">
                     {item.description}
                   </p>
                 </div>
@@ -81,7 +125,7 @@ const Editor = ({ initialValue }: EditorProp) => {
           tippyOptions={{
             placement: "top",
           }}
-          className="border-muted bg-background flex w-fit max-w-[90vw] overflow-hidden rounded-md border shadow-xl"
+          className="flex w-fit max-w-[90vw] overflow-hidden rounded-md border border-muted bg-background shadow-xl"
         >
           {" "}
           <Separator orientation="vertical" />
