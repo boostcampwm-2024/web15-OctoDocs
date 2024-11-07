@@ -7,6 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node-related directories
 node_modules
 dist
 dist-ssr
@@ -14,7 +15,8 @@ dist-ssr
 
 # Editor directories and files
 .vscode/*
-!.vscode/extensions.json
+.vscode/settings.json  # Ignore settings.json specifically
+!.vscode/extensions.json  # Keep extensions.json in version control
 .idea
 .DS_Store
 *.suo
@@ -22,5 +24,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
 
