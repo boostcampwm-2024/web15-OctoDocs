@@ -88,7 +88,7 @@ export class PageService {
   }
 
   async getPages() {
-    return await this.pageRepository.findAll();
+    return await this.pageRepository.findPageList();
   }
 
   async getPage(id: number) {
