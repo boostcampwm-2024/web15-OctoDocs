@@ -40,13 +40,8 @@ export const useDeletePage = () => {
 };
 
 export const useUpdatePage = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({ id, pageData }: { id: number; pageData: PageRequest }) =>
       updatePage(id, pageData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pages"] });
-    },
   });
 };
