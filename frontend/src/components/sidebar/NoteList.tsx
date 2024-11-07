@@ -34,7 +34,7 @@ export default function NoteList({ className }: NoteListProps) {
         <button
           onClick={() => handleNoteClick(id)}
           key={id}
-          className="group flex flex-row justify-between rounded-sm px-2 py-1 hover:bg-neutral-100"
+          className="group flex flex-row justify-between rounded-sm px-3 py-1 hover:bg-neutral-100"
         >
           <div className="flex flex-row gap-1">
             <div>{title}</div>

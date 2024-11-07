@@ -24,7 +24,7 @@ export default function Tools() {
             content: [
               {
                 type: "paragraph",
-                content: [{ type: "text", text: "This is page 1" }],
+                content: [{ type: "text", text: "" }],
               },
             ],
           },
@@ -35,9 +35,9 @@ export default function Tools() {
       }}
     >
       <div>
-        <PencilLine width={20} height={20} widths={1} />
+        <PencilLine width={20} height={20} widths={1} color="#7f796d" />
       </div>
-      <div>새 페이지 작성</div>
+      <div className="text-neutral-600">새 페이지 작성</div>
     </button>
   );
 }
