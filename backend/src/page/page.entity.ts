@@ -22,7 +22,7 @@ export class Page {
   // @Column()
   // createdAt: Date;
 
-  @OneToOne(() => Node, (node) => node.page, { cascade: true })
+  @OneToOne(() => Node, (node) => node.page)
   @JoinColumn()
   node: Node;
 }
