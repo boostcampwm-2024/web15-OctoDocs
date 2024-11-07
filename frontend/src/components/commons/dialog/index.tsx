@@ -9,6 +9,14 @@ function DialogTitle({ children }: DialogTitleProps) {
   return <h2 className="text-lg font-semibold">{children}</h2>;
 }
 
+interface DialogDescriptionProps {
+  children: React.ReactNode;
+}
+
+function DialogDescription({ children }: DialogDescriptionProps) {
+  return <div className="text-neutral-500">{children}</div>;
+}
+
 interface DialogCloseButtonProps {
   onCloseModal: () => void;
 }
@@ -16,7 +24,7 @@ interface DialogCloseButtonProps {
 function DialogCloseButton({ onCloseModal }: DialogCloseButtonProps) {
   return (
     <button
-      className="absolute right-4 top-4 text-neutral-400 transition-colors hover:text-neutral-700"
+      className="absolute right-3 top-3 text-neutral-400 transition-colors hover:text-neutral-700"
       onClick={onCloseModal}
     >
       <X width={16} height={16} />
@@ -49,7 +57,7 @@ function DialogMain({ isOpen, onCloseModal, children }: DialogMainProps) {
 
   return (
     <dialog
-      className="rounded-xl"
+      className="w-80 rounded-xl"
       open={isOpen}
       ref={dialogRef}
       onClick={() => {
@@ -58,7 +66,7 @@ function DialogMain({ isOpen, onCloseModal, children }: DialogMainProps) {
       }}
     >
       <div
-        className="flex flex-col gap-4 px-12 py-10"
+        className="flex flex-col gap-2 p-8"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -69,5 +77,6 @@ function DialogMain({ isOpen, onCloseModal, children }: DialogMainProps) {
 
 export const Dialog = Object.assign(DialogMain, {
   Title: DialogTitle,
+  Description: DialogDescription,
   CloseButton: DialogCloseButton,
 });
