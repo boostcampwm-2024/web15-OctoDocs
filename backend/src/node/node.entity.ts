@@ -21,7 +21,10 @@ export class Node {
   @Column('float')
   y: number;
 
-  @OneToOne(() => Page, (page) => page.node, { cascade: true })
+  @OneToOne(() => Page, (page) => page.node, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   page: Page;
 
