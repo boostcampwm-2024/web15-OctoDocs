@@ -1,5 +1,5 @@
 ## 🐙 프로젝트 소개
-![Sprint 17 (4)](https://github.com/user-attachments/assets/ed19af13-fa11-4f35-9f79-79a04429689d)
+![intro-design](https://github.com/user-attachments/assets/9b413765-668c-4ef2-9da5-06ff61b28563)
 
 
 
