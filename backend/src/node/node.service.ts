@@ -15,7 +15,7 @@ export class NodeService {
     private readonly pageService: PageService,
   ) {}
 
-  async createNode(dto: CreateNodeDto): Promise<void> {
+  async createNode(dto: CreateNodeDto): Promise<Node> {
     try {
       const { title, x, y } = dto;
       const node = this.nodeRepository.create({ x, y });
@@ -23,7 +23,7 @@ export class NodeService {
       const savedNode = await this.nodeRepository.save(node);
       const newPage = await this.pageService.createLinkedPage(title, node.id);
       savedNode.page = newPage;
-      await this.nodeRepository.save(savedNode);
+      return await this.nodeRepository.save(savedNode);
     } catch (error) {
       throw new InternalServerErrorException(`Failed to create node`);
     }

@@ -15,7 +15,7 @@ export class PageService {
     private readonly nodeService: NodeService,
   ) {}
 
-  async createPage(dto: CreatePageDto): Promise<void> {
+  async createPage(dto: CreatePageDto): Promise<Page> {
     try {
       const { title, content, x, y } = dto;
       const page = this.pageRepository.create({ title, content });
@@ -26,7 +26,7 @@ export class PageService {
         savedPage.id,
       );
       savedPage.node = newNode;
-      await this.pageRepository.save(savedPage);
+      return await this.pageRepository.save(savedPage);
     } catch (error) {
       throw new InternalServerErrorException(`Failed to create page`);
     }
@@ -34,7 +34,7 @@ export class PageService {
 
   async createLinkedPage(title: string, nodeId: number): Promise<Page> {
     try {
-      const page = this.pageRepository.create({ title, content: null });
+      const page = this.pageRepository.create({ title, content: {} });
       const existingNode = await this.nodeService.findNodeById(nodeId);
       page.node = existingNode;
       return await this.pageRepository.save(page);
