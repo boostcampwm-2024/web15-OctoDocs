@@ -24,6 +24,8 @@ import { ColorSelector } from "./selectors/color-selector";
 
 import { useDebouncedCallback } from "use-debounce";
 
+import { useUpdatePage } from "@/hooks/usePages";
+
 const extensions = [...defaultExtensions, slashCommand];
 
 interface EditorProp {
@@ -41,30 +43,14 @@ const Editor = ({ pageId, initialValue }: EditorProp) => {
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
 
-  const highlightCodeblocks = (content: string) => {
-    const doc = new DOMParser().parseFromString(content, "text/html");
-    doc.querySelectorAll("pre code").forEach((el) => {
-      // @ts-expect-error - highlightElement is not in the types
-      // https://highlightjs.readthedocs.io/en/latest/api.html?highlight=highlightElement#highlightelement
-      hljs.highlightElement(el);
-    });
-    return new XMLSerializer().serializeToString(doc);
-  };
+  const updatePageMutation = useUpdatePage();
 
   const debouncedUpdates = useDebouncedCallback(
     async (editor: EditorInstance) => {
       if (pageId === undefined) return;
 
       const json = editor.getJSON();
-      window.localStorage.setItem(
-        "html-content",
-        highlightCodeblocks(editor.getHTML()),
-      );
-      window.localStorage.setItem(pageId.toString(), JSON.stringify(json));
-      window.localStorage.setItem(
-        "markdown",
-        editor.storage.markdown.getMarkdown(),
-      );
+      updatePageMutation.mutate({ id: pageId, pageData: json });
     },
 
     500,
@@ -74,8 +60,6 @@ const Editor = ({ pageId, initialValue }: EditorProp) => {
     const content = window.localStorage.getItem(pageId.toString());
     if (content) setInitialContent(JSON.parse(content));
   }, [pageId]);
-
-  console.log(initialContent);
 
   return (
     <EditorRoot>
