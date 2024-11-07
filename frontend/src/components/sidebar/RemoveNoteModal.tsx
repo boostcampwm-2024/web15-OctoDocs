@@ -23,7 +23,7 @@ export default function RemoveNoteModal({
         </div>
         <div className="flex w-full flex-row justify-between gap-2">
           <Button
-            className="w-full rounded-lg bg-[#fd5b56] text-neutral-200 hover:bg-red-500"
+            className="w-full rounded-lg bg-[#fd5b56] text-neutral-100 hover:bg-red-500"
             onClick={onConfirm}
           >
             삭제
