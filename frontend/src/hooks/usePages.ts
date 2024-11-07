@@ -11,6 +11,8 @@ import {
   deletePage,
   updatePage,
   type PageRequest,
+  getPage,
+  CreatePageRequest,
 } from "@/api/page";
 
 export const usePage = (currentPage: number | null) => {
@@ -35,8 +37,8 @@ export const useCreatePage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, pageData }: { id: number; pageData: PageRequest }) =>
-      createPage(id, pageData),
+    mutationFn: ({ title, content, x, y }: CreatePageRequest) =>
+      createPage({ title, content, x, y }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pages"] });
     },
@@ -55,13 +57,8 @@ export const useDeletePage = () => {
 };
 
 export const useUpdatePage = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({ id, pageData }: { id: number; pageData: PageRequest }) =>
       updatePage(id, pageData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pages"] });
-    },
   });
 };
