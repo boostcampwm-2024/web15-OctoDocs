@@ -75,8 +75,6 @@ const Editor = ({ pageId, initialValue }: EditorProp) => {
     if (content) setInitialContent(JSON.parse(content));
   }, [pageId]);
 
-  console.log(initialContent);
-
   return (
     <EditorRoot>
       <EditorContent
