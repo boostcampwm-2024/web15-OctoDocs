@@ -1,3 +1,5 @@
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23FF9782&title_bg=%23231F20&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false)](https://hits.seeyoufarm.com)
+
 ## 🐙 프로젝트 소개
 ![project-intro](https://github.com/user-attachments/assets/0df1909c-436d-4516-a639-78c4088e9871)
 
