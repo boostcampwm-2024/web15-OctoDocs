@@ -36,9 +36,7 @@ export default function NoteList({ className }: NoteListProps) {
           key={id}
           className="group flex flex-row justify-between rounded-sm px-3 py-1 hover:bg-neutral-100"
         >
-          <div className="flex flex-row gap-1">
-            <div>{title}</div>
-          </div>
+          <div className="w-full truncate text-start">{title}</div>
           <span
             className="hidden text-neutral-400 transition-colors hover:text-red-500 group-hover:block"
             onClick={(e) => {
