@@ -4,6 +4,7 @@ import RemoveNoteModal from "./RemoveNoteModal";
 
 import { useNoteList } from "@/hooks/useNoteList";
 import { cn } from "@/lib/utils";
+import Button from "../commons/button";
 
 interface NoteListProps {
   className?: string;
@@ -31,7 +32,7 @@ export default function NoteList({ className }: NoteListProps) {
         onCloseModal={onCloseModal}
       />
       {data.map(({ id, title }) => (
-        <button
+        <Button
           onClick={() => handleNoteClick(id)}
           key={id}
           className="group flex flex-row justify-between rounded-sm px-3 py-1 hover:bg-neutral-100"
@@ -48,7 +49,7 @@ export default function NoteList({ className }: NoteListProps) {
           >
             <Trash2 width={20} height={20} />
           </span>
-        </button>
+        </Button>
       ))}
     </div>
   );
