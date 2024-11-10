@@ -28,6 +28,7 @@ export const useNoteList = () => {
 
     deleteMutation.mutate({ id: noteIdToDelete });
     setIsModalOpen(false);
+    setCurrentPage(null);
   };
 
   const onCloseModal = () => {
