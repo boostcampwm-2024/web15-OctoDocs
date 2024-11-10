@@ -10,7 +10,10 @@ export default function Button({ className, onClick, children }: ButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={cn("rounded-md px-8 py-2 transition-colors", className)}
+      className={cn(
+        "select-none rounded-md px-8 py-2 transition-colors",
+        className,
+      )}
     >
       {children}
     </button>
