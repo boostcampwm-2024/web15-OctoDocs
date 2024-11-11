@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PageController } from './page.controller';
 import { PageService } from './page.service';
-import { CreatePageDto, UpdatePageDto } from './page.dto';
+import { CreatePageDto } from './dtos/createPage.dto';
+import { UpdatePageDto } from './dtos/updatePage.dto';
 import { PageResponseMessage } from './page.controller';
 import { PageNotFoundException } from '../exception/page.exception';
 import { Page } from './page.entity';

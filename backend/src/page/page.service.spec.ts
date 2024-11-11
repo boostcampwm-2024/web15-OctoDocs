@@ -4,7 +4,8 @@ import { PageRepository } from './page.repository';
 import { NodeRepository } from '../node/node.repository';
 import { Page } from './page.entity';
 import { Node } from '../node/node.entity';
-import { CreatePageDto, UpdatePageDto } from './page.dto';
+import { CreatePageDto } from './dtos/createPage.dto';
+import { UpdatePageDto } from './dtos/updatePage.dto';
 import { PageNotFoundException } from '../exception/page.exception';
 
 describe('PageService', () => {

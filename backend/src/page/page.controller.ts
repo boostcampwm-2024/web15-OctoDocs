@@ -11,7 +11,8 @@ import {
 } from '@nestjs/common';
 import { Page } from './page.entity';
 import { PageService } from './page.service';
-import { CreatePageDto, UpdatePageDto } from './page.dto';
+import { CreatePageDto } from './dtos/createPage.dto';
+import { UpdatePageDto } from './dtos/updatePage.dto';
 
 export enum PageResponseMessage {
   PAGE_CREATED = '페이지와 노드를 생성했습니다.',

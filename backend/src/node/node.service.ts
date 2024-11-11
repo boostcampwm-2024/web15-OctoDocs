@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { NodeRepository } from './node.repository';
 import { PageRepository } from '../page/page.repository';
 import { Node } from './node.entity';
-import { CreateNodeDto, UpdateNodeDto } from './node.dto';
+import { CreateNodeDto } from './dtos/createNode.dto';
+import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { NodeNotFoundException } from '../exception/node.exception';
 @Injectable()
 export class NodeService {
