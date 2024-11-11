@@ -5,7 +5,8 @@ import { PageRepository } from '../page/page.repository';
 import { NodeNotFoundException } from '../exception/node.exception';
 import { Node } from './node.entity';
 import { Page } from '../page/page.entity';
-import { CreateNodeDto, UpdateNodeDto } from './node.dto';
+import { CreateNodeDto } from './dtos/createNode.dto';
+import { UpdateNodeDto } from './dtos/updateNode.dto';
 
 describe('NodeService', () => {
   let service: NodeService;

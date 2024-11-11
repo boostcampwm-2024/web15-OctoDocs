@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NodeController } from './node.controller';
 import { NodeService } from './node.service';
 import { NodeResponseMessage } from './node.controller';
-import { CreateNodeDto, UpdateNodeDto } from './node.dto';
+import { CreateNodeDto } from './dtos/createNode.dto';
+import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { NodeNotFoundException } from '../exception/node.exception';
 
 describe('NodeController', () => {

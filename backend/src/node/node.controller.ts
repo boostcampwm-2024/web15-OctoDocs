@@ -11,7 +11,8 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { NodeService } from './node.service';
-import { CreateNodeDto, UpdateNodeDto } from './node.dto';
+import { CreateNodeDto } from './dtos/createNode.dto';
+import { UpdateNodeDto } from './dtos/updateNode.dto';
 
 export enum NodeResponseMessage {
   NODE_CREATED = '노드와 페이지를 생성했습니다.',
