@@ -28,14 +28,14 @@ jobs:
 
       # aws cli를 통해 ncloud object storage 업로드
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.NCLOUD_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.NCLOUD_SECRET_ACCESS_KEY }}
-
-      - name: Upload files to S3
+        env:
+          NCLOUD_ACCESS_KEY_ID: ${{ secrets.NCLOUD_ACCESS_KEY_ID }}
+          NCLOUD_SECRET_ACCESS_KEY: ${{ secrets.NCLOUD_SECRET_ACCESS_KEY }}
         run: |
-          aws --endpoint-url=http://octodocs.s3-website.kr.object.ncloudstorage.com s3 cp ./frontend/dist s3://octodocs --recursive
+          aws configure set aws_access_key_id $NCLOUD_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $NCLOUD_SECRET_ACCESS_KEY
+          aws configure set region ap-northeast-2
+          aws --endpoint-url=https://kr.object.ncloudstorage.com s3 cp ./frontend/dist s3://octodocs/ --recursive --debug
 
       # 패키지 설치 및 Nest.js 빌드
       - name: Install dependencies and build
