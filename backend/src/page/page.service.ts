@@ -48,8 +48,13 @@ export class PageService {
 
   async updatePage(id: number, dto: UpdatePageDto): Promise<Page> {
     // 갱신할 페이지를 조회한다.
-    const page = await this.findPageById(id);
+    // 페이지를 조회한다.
+    const page = await this.pageRepository.findOneBy({ id });
 
+    // 페이지가 없으면 NotFound 에러
+    if (!page) {
+      throw new PageNotFoundException();
+    }
     // 페이지 정보를 갱신한다.
     const { title, content } = dto;
     page.title = title;
@@ -69,7 +74,7 @@ export class PageService {
     return page;
   }
 
-  async findPages() {
+  async findPages(): Promise<Partial<Page>[]> {
     return await this.pageRepository.findPageList();
   }
 }
