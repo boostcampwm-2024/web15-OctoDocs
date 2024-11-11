@@ -48,13 +48,13 @@ export class PageController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getPages() {
-    return await this.pageService.getPages();
+  async findPages() {
+    return await this.pageService.findPages();
   }
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  async getPage(@Param('id') id: number) {
-    return await this.pageService.getPage(id);
+  async findPage(@Param('id') id: number) {
+    return await this.pageService.findPageById(id);
   }
 }
