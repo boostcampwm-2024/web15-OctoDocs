@@ -13,6 +13,13 @@ import {
 import { NodeService } from './node.service';
 import { CreateNodeDto, UpdateNodeDto } from './node.dto';
 
+export enum NodeResponseMessage {
+  NODE_CREATED = '노드와 페이지를 생성했습니다.',
+  NODE_UPDATED = '노드와 페이지를 갱신했습니다.',
+  NODE_DELETED = '노드와 페이지를 삭제했습니다.',
+  NODE_GET_COORDINAE = '노드의 현재 좌표를 가져왔습니다.',
+}
+
 @Controller('node')
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
@@ -22,7 +29,7 @@ export class NodeController {
   async createNode(@Body() body: CreateNodeDto): Promise<{ message: string }> {
     await this.nodeService.createNode(body);
     return {
-      message: 'Node and reladed Page successfully created',
+      message: NodeResponseMessage.NODE_CREATED,
     };
   }
 
@@ -31,7 +38,7 @@ export class NodeController {
   async deleteNode(@Param('id') id: number): Promise<{ message: string }> {
     await this.nodeService.deleteNode(id);
     return {
-      message: `Node with ID ${id} successfully deleted`,
+      message: NodeResponseMessage.NODE_DELETED,
     };
   }
 
@@ -43,13 +50,17 @@ export class NodeController {
   ): Promise<{ message: string }> {
     await this.nodeService.updateNode(id, body);
     return {
-      message: 'Node and related Page successfully updated',
+      message: NodeResponseMessage.NODE_UPDATED,
     };
   }
 
   @Get(':id/coordinates')
   @HttpCode(HttpStatus.OK)
   async getCoordinates(@Param('id', ParseIntPipe) id: number) {
-    return await this.nodeService.getCoordinates(id);
+    const coordinate = await this.nodeService.getCoordinates(id);
+    return {
+      message: NodeResponseMessage.NODE_GET_COORDINAE,
+      coordinate: coordinate,
+    };
   }
 }

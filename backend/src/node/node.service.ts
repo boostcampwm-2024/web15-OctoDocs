@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { NodeRepository } from './node.repository';
-import { PageRepository } from 'src/page/page.repository';
+import { PageRepository } from '../page/page.repository';
 import { Node } from './node.entity';
 import { CreateNodeDto, UpdateNodeDto } from './node.dto';
-import { NodeNotFoundException } from 'src/exception/node.exception';
+import { NodeNotFoundException } from '../exception/node.exception';
 @Injectable()
 export class NodeService {
   constructor(
