@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { NodeRepository } from 'src/node/node.repository';
+import { NodeRepository } from '../node/node.repository';
 import { PageRepository } from './page.repository';
 import { Page } from './page.entity';
 import { CreatePageDto, UpdatePageDto } from './page.dto';
-import { PageNotFoundException } from 'src/exception/page.exception';
+import { PageNotFoundException } from '../exception/page.exception';
 
 @Injectable()
 export class PageService {
