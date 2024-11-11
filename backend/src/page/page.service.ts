@@ -1,12 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { NodeRepository } from 'src/node/node.repository';
 import { PageRepository } from './page.repository';
 import { Page } from './page.entity';
 import { CreatePageDto, UpdatePageDto } from './page.dto';
+import { PageNotFoundException } from 'src/exception/page.exception';
 
 @Injectable()
 export class PageService {
@@ -16,85 +13,63 @@ export class PageService {
   ) {}
 
   async createPage(dto: CreatePageDto): Promise<Page> {
-    try {
-      const { title, content, x, y } = dto;
-      const page = this.pageRepository.create({ title, content });
-      const savedPage = await this.pageRepository.save(page);
+    const { title, content, x, y } = dto;
 
-      // const newNode = await this.nodeService.createLinkedNode(
-      //   x,
-      //   y,
-      //   savedPage.id,
-      // );
+    // 페이지부터 생성한다.
+    const page = await this.pageRepository.save({ title, content });
 
-      const node = this.nodeRepository.create({ id: savedPage.id, x, y });
+    // 노드를 생성한다.
+    const node = await this.nodeRepository.save({ id: page.id, x, y });
 
-      savedPage.node = node;
-      return await this.pageRepository.save(savedPage);
-    } catch (error) {
-      throw new InternalServerErrorException(`Failed to create page`);
-    }
+    // 노드와 페이지를 서로 연결하여 저장한다.
+    page.node = node;
+    return await this.pageRepository.save(page);
   }
 
   async createLinkedPage(title: string, nodeId: number): Promise<Page> {
-    try {
-      const page = this.pageRepository.create({ title, content: {} });
-      // const existingNode = await this.nodeService.findNodeById(nodeId);
+    // 노드를 조회한다.
+    const existingNode = await this.nodeRepository.findOneBy({ id: nodeId });
+    // 페이지를 생성한다.
+    const page = await this.pageRepository.save({ title, content: {} });
 
-      const existingNode = await this.nodeRepository.findOneBy({ id: nodeId });
-      page.node = existingNode;
-      return await this.pageRepository.save(page);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Failed to create page linked to node with ID ${nodeId}`,
-      );
-    }
+    page.node = existingNode;
+    return await this.pageRepository.save(page);
   }
 
   async deletePage(id: number): Promise<void> {
-    try {
-      const deleteResult = await this.pageRepository.delete(id);
-      if (!deleteResult.affected) {
-        throw new NotFoundException(`Page with ID ${id} not found`);
-      }
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(
-        `Failed to delete page with ID ${id}`,
-      );
+    // 페이지를 삭제한다.
+    const deleteResult = await this.pageRepository.delete(id);
+
+    // 만약 삭제된 페이지가 없으면 페이지를 찾지 못한 것
+    if (!deleteResult.affected) {
+      throw new PageNotFoundException();
     }
   }
 
   async updatePage(id: number, dto: UpdatePageDto): Promise<Page> {
+    // 갱신할 페이지를 조회한다.
     const page = await this.findPageById(id);
+
+    // 페이지 정보를 갱신한다.
     const { title, content } = dto;
     page.title = title;
     page.content = content;
 
-    try {
-      return await this.pageRepository.save(page);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Failed to update page with ID ${id}`,
-      );
-    }
+    return await this.pageRepository.save(page);
   }
 
   async findPageById(id: number): Promise<Page> {
+    // 페이지를 조회한다.
     const page = await this.pageRepository.findOneBy({ id });
+
+    // 페이지가 없으면 NotFound 에러
     if (!page) {
-      throw new NotFoundException(`Page with ID ${id} not found`);
+      throw new PageNotFoundException();
     }
     return page;
   }
 
-  async getPages() {
+  async findPages() {
     return await this.pageRepository.findPageList();
-  }
-
-  async getPage(id: number) {
-    return await this.pageRepository.findOneBy({ id });
   }
 }
