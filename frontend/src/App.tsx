@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import Sidebar from "./components/sidebar";
 import HoverTrigger from "./components/HoverTrigger";
-import EditorView from "./components/EditorView";
+import EditorView from "./components/editor/EditorView";
 import SideWrapper from "./components/layout/SideWrapper";
 import Canvas from "./components/canvas";
 

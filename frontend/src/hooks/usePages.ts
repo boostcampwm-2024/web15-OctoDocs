@@ -16,21 +16,12 @@ import {
 } from "@/api/page";
 
 export const usePage = (currentPage: number | null) => {
-  const { data, isError } = useQuery({
+  const { data, isError, isLoading } = useQuery({
     queryKey: ["page", currentPage],
     queryFn: currentPage ? () => getPage(currentPage) : skipToken,
   });
 
-  return { data, isError };
-};
-
-export const usePages = () => {
-  const { data, isError } = useQuery({
-    queryKey: ["pages"],
-    queryFn: getPages,
-  });
-
-  return { data, isError };
+  return { data, isError, isLoading };
 };
 
 export const useCreatePage = () => {
@@ -56,14 +47,51 @@ export const useDeletePage = () => {
   });
 };
 
-export const useUpdatePage = (pageId: number) => {
-  const queryClient = useQueryClient();
+export const usePages = () => {
+  const { data, isError } = useQuery({
+    queryKey: ["pages"],
+    queryFn: getPages,
+  });
 
+  return { data, isError };
+};
+
+export const useUpdatePage = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, pageData }: { id: number; pageData: PageRequest }) =>
       updatePage(id, pageData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["page", pageId] });
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
+    },
+  });
+};
+
+export const useUpdateTitle = () => {};
+
+export const useOptimisticUpdatePage = ({ id }: { id: number }) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ pageData }: { pageData: PageRequest }) =>
+      updatePage(id, pageData),
+    onMutate: async ({ pageData }: { pageData: PageRequest }) => {
+      await queryClient.cancelQueries({ queryKey: ["page", id] });
+
+      const snapshot = queryClient.getQueryData(["page", id]);
+
+      queryClient.setQueryData(["page", id], pageData);
+
+      return () => {
+        queryClient.setQueryData(["page", id], snapshot);
+      };
+    },
+    onError: (_err, _variables, rollback) => {
+      rollback?.();
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["page", id] });
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
     },
   });
 };
