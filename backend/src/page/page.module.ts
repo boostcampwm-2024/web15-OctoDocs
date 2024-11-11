@@ -10,6 +10,6 @@ import { NodeModule } from '../node/node.module';
   imports: [TypeOrmModule.forFeature([Page]), forwardRef(() => NodeModule)],
   controllers: [PageController],
   providers: [PageService, PageRepository],
-  exports: [PageService],
+  exports: [PageService, PageRepository],
 })
 export class PageModule {}

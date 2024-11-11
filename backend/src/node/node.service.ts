@@ -2,20 +2,16 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  Inject,
-  forwardRef,
 } from '@nestjs/common';
 import { NodeRepository } from './node.repository';
-import { PageService } from '../page/page.service';
+import { PageRepository } from 'src/page/page.repository';
 import { Node } from './node.entity';
 import { CreateNodeDto, UpdateNodeDto } from './node.dto';
-
 @Injectable()
 export class NodeService {
   constructor(
     private readonly nodeRepository: NodeRepository,
-    @Inject(forwardRef(() => PageService))
-    private readonly pageService: PageService,
+    private readonly pageRepository: PageRepository,
   ) {}
 
   async createNode(dto: CreateNodeDto): Promise<Node> {
@@ -24,7 +20,13 @@ export class NodeService {
       const node = this.nodeRepository.create({ x, y });
 
       const savedNode = await this.nodeRepository.save(node);
-      const newPage = await this.pageService.createLinkedPage(title, node.id);
+      // const newPage = await this.pageService.createLinkedPage(title, node.id);
+
+      const page = this.pageRepository.create({ title, content: {} });
+      const existingNode = await this.findNodeById(node.id);
+      page.node = existingNode;
+      const newPage = await this.pageRepository.save(page);
+
       savedNode.page = newPage;
       return await this.nodeRepository.save(savedNode);
     } catch (error) {
@@ -35,7 +37,9 @@ export class NodeService {
   async createLinkedNode(x: number, y: number, pageId: number): Promise<Node> {
     try {
       const node = this.nodeRepository.create({ x, y });
-      const existingPage = await this.pageService.findPageById(pageId);
+      // const existingPage = await this.pageService.findPageById(pageId);
+
+      const existingPage = await this.pageRepository.findOneBy({ id: pageId });
       node.page = existingPage;
       return await this.nodeRepository.save(node);
     } catch (error) {
@@ -65,7 +69,10 @@ export class NodeService {
 
   async updateNode(id: number, dto: UpdateNodeDto): Promise<Node> {
     const node = await this.findNodeById(id);
-    const linkedPage = await this.pageService.findPageById(node.page.id);
+    // const linkedPage = await this.pageService.findPageById(node.page.id);
+    const linkedPage = await this.pageRepository.findOneBy({
+      id: node.page.id,
+    });
     const { x, y, title } = dto;
     node.x = x;
     node.y = y;

@@ -2,11 +2,9 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  Inject,
-  forwardRef,
 } from '@nestjs/common';
+import { NodeRepository } from 'src/node/node.repository';
 import { PageRepository } from './page.repository';
-import { NodeService } from '../node/node.service';
 import { Page } from './page.entity';
 import { CreatePageDto, UpdatePageDto } from './page.dto';
 
@@ -14,8 +12,7 @@ import { CreatePageDto, UpdatePageDto } from './page.dto';
 export class PageService {
   constructor(
     private pageRepository: PageRepository,
-    @Inject(forwardRef(() => NodeService))
-    private readonly nodeService: NodeService,
+    private readonly nodeRepository: NodeRepository,
   ) {}
 
   async createPage(dto: CreatePageDto): Promise<Page> {
@@ -23,12 +20,16 @@ export class PageService {
       const { title, content, x, y } = dto;
       const page = this.pageRepository.create({ title, content });
       const savedPage = await this.pageRepository.save(page);
-      const newNode = await this.nodeService.createLinkedNode(
-        x,
-        y,
-        savedPage.id,
-      );
-      savedPage.node = newNode;
+
+      // const newNode = await this.nodeService.createLinkedNode(
+      //   x,
+      //   y,
+      //   savedPage.id,
+      // );
+
+      const node = this.nodeRepository.create({ id: savedPage.id, x, y });
+
+      savedPage.node = node;
       return await this.pageRepository.save(savedPage);
     } catch (error) {
       throw new InternalServerErrorException(`Failed to create page`);
@@ -38,7 +39,9 @@ export class PageService {
   async createLinkedPage(title: string, nodeId: number): Promise<Page> {
     try {
       const page = this.pageRepository.create({ title, content: {} });
-      const existingNode = await this.nodeService.findNodeById(nodeId);
+      // const existingNode = await this.nodeService.findNodeById(nodeId);
+
+      const existingNode = await this.nodeRepository.findOneBy({ id: nodeId });
       page.node = existingNode;
       return await this.pageRepository.save(page);
     } catch (error) {
