@@ -8,7 +8,7 @@ import { PageNotFoundException } from '../exception/page.exception';
 @Injectable()
 export class PageService {
   constructor(
-    private pageRepository: PageRepository,
+    private readonly pageRepository: PageRepository,
     private readonly nodeRepository: NodeRepository,
   ) {}
 
