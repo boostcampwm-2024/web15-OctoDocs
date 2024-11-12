@@ -8,13 +8,18 @@ describe('EdgeController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [EdgeController],
-      providers: [EdgeService],
+      providers: [
+        {
+          provide: EdgeService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<EdgeController>(EdgeController);
   });
 
-  it('should be defined', () => {
+  it('컨트롤러 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(controller).toBeDefined();
   });
 });

@@ -1,4 +1,10 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
 import { Node } from '../node/node.entity';
 
 @Entity()
@@ -16,6 +22,9 @@ export class Page {
   // @Column()
   // createdAt: Date;
 
-  @OneToOne(() => Node, (node) => node.page)
+  @OneToOne(() => Node, (node) => node.page,{
+    onDelete: "CASCADE"
+  })
+  @JoinColumn()
   node: Node;
 }

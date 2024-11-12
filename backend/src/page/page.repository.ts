@@ -7,4 +7,13 @@ export class PageRepository extends Repository<Page> {
   constructor(private dataSource: DataSource) {
     super(Page, dataSource.createEntityManager());
   }
+
+  async findPageList(): Promise<Page[]> {
+    return await this.find({
+      select: {
+        id: true,
+        title: true,
+      },
+    });
+  }
 }
