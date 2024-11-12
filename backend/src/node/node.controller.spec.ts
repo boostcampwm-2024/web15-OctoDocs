@@ -4,6 +4,7 @@ import { NodeService } from './node.service';
 import { NodeResponseMessage } from './node.controller';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
+import { MoveNodeDto } from './dtos/moveNode.dto';
 import { NodeNotFoundException } from '../exception/node.exception';
 
 describe('NodeController', () => {
@@ -23,6 +24,7 @@ describe('NodeController', () => {
             updateNode: jest.fn(),
             findNodeById: jest.fn(),
             getCoordinates: jest.fn(),
+            moveNode: jest.fn(),
           },
         },
       ],
@@ -117,6 +119,31 @@ describe('NodeController', () => {
         .mockRejectedValue(new NodeNotFoundException());
 
       await expect(controller.getCoordinates(1)).rejects.toThrow(
+        NodeNotFoundException,
+      );
+    });
+  });
+
+  describe('moveNode', () => {
+    it('id에 해당하는 노드를 찾아 이동시킨다.', async () => {
+      const id = 2;
+      const dto: MoveNodeDto = { x: 3, y: 4 };
+      const expectedResponse = {
+        message: NodeResponseMessage.NODE_MOVED,
+      };
+
+      await expect(controller.moveNode(id, dto)).resolves.toEqual(
+        expectedResponse,
+      );
+      expect(nodeService.moveNode).toHaveBeenCalledWith(id, dto);
+    });
+
+    it('id에 해당하는 노드가 존재하지 않으면 NodeNotFoundException을 throw한다.', async () => {
+      jest
+        .spyOn(nodeService, 'moveNode')
+        .mockRejectedValue(new NodeNotFoundException());
+
+      await expect(controller.moveNode(1, new MoveNodeDto())).rejects.toThrow(
         NodeNotFoundException,
       );
     });
