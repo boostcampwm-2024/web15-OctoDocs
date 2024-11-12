@@ -8,13 +8,33 @@ import {
 import EditorLayout from "../layout/EditorLayout";
 import EditorTitle from "./EditorTitle";
 import { EditorInstance } from "novel";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SaveStatus from "./ui/SaveStatus";
 import { useDebouncedCallback } from "use-debounce";
+import { WebsocketProvider } from "y-websocket";
+import * as Y from "yjs";
 
 export default function EditorView() {
   const { currentPage } = usePageStore();
   const { page, isLoading } = usePage(currentPage);
+
+  const ydoc = useRef<Y.Doc>();
+  const provider = useRef<WebsocketProvider>();
+
+  useEffect(() => {
+    if (!currentPage) return;
+
+    const doc = new Y.Doc();
+    const wsProvider = new WebsocketProvider(
+      "ws://localhost:1234",
+      `document-${currentPage}`,
+      doc,
+    );
+
+    ydoc.current = doc;
+    provider.current = wsProvider;
+  }, [currentPage]);
+
   const pageTitle = page?.title ?? "제목없음";
   const pageContent = page?.content ?? {};
 
@@ -69,6 +89,8 @@ export default function EditorView() {
     );
   }
 
+  if (!ydoc.current || !provider.current) return <div>로딩중</div>;
+
   return (
     <EditorLayout>
       <SaveStatus saveStatus={saveStatus} />
@@ -77,6 +99,8 @@ export default function EditorView() {
         key={currentPage}
         initialContent={pageContent}
         pageId={currentPage}
+        ydoc={ydoc.current}
+        provider={provider.current}
         onEditorUpdate={handleEditorUpdate}
       />
     </EditorLayout>

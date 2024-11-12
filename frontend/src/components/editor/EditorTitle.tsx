@@ -12,7 +12,6 @@ export default function EditorTitle({
       <input
         type="text"
         className="w-full text-xl font-bold outline-none"
-        defaultValue={"제목없음"}
         value={title}
         onChange={onTitleChange}
       />
