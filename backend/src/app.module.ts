@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Page } from './page/page.entity';
 import { Edge } from './edge/edge.entity';
 import { Node } from './node/node.entity';
+import { YjsModule } from './yjs/yjs.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { Node } from './node/node.entity';
     NodeModule,
     PageModule,
     EdgeModule,
+    YjsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
