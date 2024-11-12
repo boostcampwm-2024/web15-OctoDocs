@@ -13,6 +13,9 @@ import {
 import { NodeService } from './node.service';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { MessageResponseDto } from './dtos/messageResponse.dto';
+import { CoordinateResponseDto } from './dtos/coordinateResponse.dto';
 
 export enum NodeResponseMessage {
   NODE_CREATED = '노드와 페이지를 생성했습니다.',
@@ -25,6 +28,10 @@ export enum NodeResponseMessage {
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
 
+  @ApiResponse({
+    type: MessageResponseDto,
+  })
+  @ApiOperation({ summary: '노드를 생성하면서 페이지도 함께 생성합니다.' })
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
   async createNode(@Body() body: CreateNodeDto): Promise<{ message: string }> {
@@ -33,7 +40,12 @@ export class NodeController {
       message: NodeResponseMessage.NODE_CREATED,
     };
   }
-
+  @ApiResponse({
+    type: MessageResponseDto,
+  })
+  @ApiOperation({
+    summary: '노드를 삭제하면서 페이지도 삭제합니다. (delete: cascade)',
+  })
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
   async deleteNode(@Param('id') id: number): Promise<{ message: string }> {
@@ -42,7 +54,10 @@ export class NodeController {
       message: NodeResponseMessage.NODE_DELETED,
     };
   }
-
+  @ApiResponse({
+    type: MessageResponseDto,
+  })
+  @ApiOperation({ summary: '노드의 제목, 좌표를 수정합니다.' })
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async updateNode(
@@ -54,7 +69,10 @@ export class NodeController {
       message: NodeResponseMessage.NODE_UPDATED,
     };
   }
-
+  @ApiResponse({
+    type: CoordinateResponseDto,
+  })
+  @ApiOperation({ summary: '노드의 좌표를 가져옵니다.' })
   @Get(':id/coordinates')
   @HttpCode(HttpStatus.OK)
   async getCoordinates(@Param('id', ParseIntPipe) id: number) {
