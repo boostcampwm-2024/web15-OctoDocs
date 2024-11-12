@@ -66,13 +66,51 @@ export class NodeService {
 
   async findNodeById(id: number): Promise<Node> {
     // 노드를 조회한다.
-    const node = await this.nodeRepository.findOneBy({ id });
-
+    const node = await this.nodeRepository
+      .createQueryBuilder('node')
+      .leftJoinAndSelect('node.page', 'page')
+      .leftJoinAndSelect('node.outgoingEdges', 'outgoingEdges')
+      .leftJoinAndSelect('node.incomingEdges', 'incomingEdges')
+      .select([
+        'node.id',
+        'node.x',
+        'node.y',
+        'outgoingEdges.id',
+        'incomingEdges.id',
+        'page.id',
+        'page.title',
+      ])
+      .where('node.id = :id', { id })
+      .getOne();
     // 노드가 없으면 NotFound 에러
     if (!node) {
       throw new NodeNotFoundException();
     }
     return node;
+  }
+
+  async findNodes(): Promise<Node[]> {
+    // 노드를 조회한다.
+    const nodes = await this.nodeRepository
+      .createQueryBuilder('node')
+      .leftJoinAndSelect('node.page', 'page')
+      .leftJoinAndSelect('node.outgoingEdges', 'outgoingEdges')
+      .leftJoinAndSelect('node.incomingEdges', 'incomingEdges')
+      .select([
+        'node.id',
+        'node.x',
+        'node.y',
+        'outgoingEdges.id',
+        'incomingEdges.id',
+        'page.id',
+        'page.title',
+      ])
+      .getMany();
+    // 노드가 없으면 NotFound 에러
+    if (!nodes) {
+      throw new NodeNotFoundException();
+    }
+    return nodes;
   }
 
   async getCoordinates(id: number): Promise<{ x: number; y: number }> {
