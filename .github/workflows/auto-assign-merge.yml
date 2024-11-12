@@ -29,7 +29,6 @@ jobs:
               uses: actions/github-script@v6
               with:
                   script: |
-                      const { github, context } = require("@actions/github");
                       await github.rest.issues.addAssignees({
                         owner: context.repo.owner,
                         repo: context.repo.repo,
@@ -53,7 +52,6 @@ jobs:
               uses: actions/github-script@v6
               with:
                   script: |
-                      const { github, context } = require("@actions/github");
                       const prNumber = context.payload.pull_request.number;
                       const assignees = context.payload.pull_request.assignees.map(a => a.login);
 
@@ -106,7 +104,6 @@ jobs:
               uses: actions/github-script@v6
               with:
                   script: |
-                      const { github, context } = require("@actions/github");
                       const prNumber = context.payload.pull_request.number;
 
                       // Check if PR is approved
@@ -127,6 +124,7 @@ jobs:
                         });
 
                         // Delete the branch after merge
+                        const branchName = context.payload.pull_request.head.ref;
                         await github.rest.git.deleteRef({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
