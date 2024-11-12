@@ -12,7 +12,7 @@ import {
 //     queryFn: () => getNodeCoors(id),
 //   });
 
-//   return { data, isError };
+//   return { coors:data?.coordinates, isError };
 // };
 
 export const useCreateNode = () => {

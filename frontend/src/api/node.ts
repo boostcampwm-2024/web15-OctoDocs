@@ -11,10 +11,15 @@ export interface NodeCoors {
   y: number;
 }
 
+interface NodeResponse {
+  message: string;
+  coordinate: NodeCoors;
+}
+
 export const getNodeCoors = async (id: number) => {
   const url = `/node${id}`;
 
-  const res = await Get<NodeCoors>(url);
+  const res = await Get<NodeResponse>(url);
   return res.data;
 };
 

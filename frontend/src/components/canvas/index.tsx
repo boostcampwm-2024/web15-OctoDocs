@@ -31,7 +31,7 @@ export default function Canvas({ className }: CanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const { data: pages } = usePages();
+  const { pages } = usePages();
 
   useEffect(() => {
     if (!pages) {

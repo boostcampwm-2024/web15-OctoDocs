@@ -2,36 +2,46 @@ import { JSONContent } from "novel";
 
 import { Get, Post, Delete, Patch } from "@/lib/axios";
 
-export type Page = {
+export interface Page {
   id: number;
   title: string;
   content: JSONContent;
-};
+}
 
-export type CreatePageRequest = {
+export interface CreatePageRequest {
   title: string;
   content: JSONContent;
   x: number;
   y: number;
-};
+}
 
-export type PageRequest = {
+export interface PageRequest {
   title: string;
   content: JSONContent;
-};
+}
+
+export interface PageResponse {
+  message: string;
+  page: Page;
+}
+
+export interface PagesResponse {
+  message: string;
+  pages: Omit<Page, "content">[];
+}
 
 export const getPage = async (id: number) => {
   const url = `/page/${id}`;
 
-  const res = await Get<Page>(url);
-  return res.data;
+  const res = await Get<PageResponse>(url);
+  return res.data.page;
 };
 
 export const getPages = async () => {
   const url = "/page";
 
-  const res = await Get<Page[]>(url);
-  return res.data;
+  const res = await Get<PagesResponse>(url);
+  return res.data.pages;
 };
 
 export const createPage = async (pageData: CreatePageRequest) => {
