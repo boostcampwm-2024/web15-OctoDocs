@@ -22,6 +22,8 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.59.19",
+    "@tiptap/extension-collaboration": "^2.9.1",
+    "@tiptap/extension-collaboration-cursor": "^2.9.1",
     "@xyflow/react": "^12.3.4",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
@@ -41,6 +43,10 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindest": "^2.3.6",
     "use-debounce": "^10.0.4",
+    "y-prosemirror": "^1.2.12",
+    "y-protocols": "^1.0.6",
+    "y-websocket": "^2.0.4",
+    "yjs": "^13.6.20",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
