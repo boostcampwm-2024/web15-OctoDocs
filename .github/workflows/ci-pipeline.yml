@@ -18,7 +18,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v2
               with:
-                  node-version: "22"
+                  node-version: "23"
 
             # 백엔드 의존성 캐시 설정
             - name: Cache Yarn dependencies for backend
@@ -36,7 +36,7 @@ jobs:
 
             # 백엔드 의존성 아티팩트 업로드
             - name: Save backend node_modules as artifact
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3 # Updated to v3
               with:
                   name: backend_node_modules
                   path: backend/node_modules
@@ -50,7 +50,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v2
               with:
-                  node-version: "16"
+                  node-version: "23"
 
             # 프론트엔드 의존성 캐시 설정
             - name: Cache Yarn dependencies for frontend
@@ -68,7 +68,7 @@ jobs:
 
             # 프론트엔드 의존성 아티팩트 업로드
             - name: Save frontend node_modules as artifact
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3 # Updated to v3
               with:
                   name: frontend_node_modules
                   path: frontend/node_modules
@@ -82,7 +82,7 @@ jobs:
 
             # 백엔드 의존성 아티팩트 다운로드
             - name: Restore backend node_modules
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v3 # Updated to v3
               with:
                   name: backend_node_modules
                   path: backend/node_modules
@@ -107,7 +107,7 @@ jobs:
 
             # 프론트엔드 의존성 아티팩트 다운로드
             - name: Restore frontend node_modules
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v3 # Updated to v3
               with:
                   name: frontend_node_modules
                   path: frontend/node_modules
@@ -132,7 +132,7 @@ jobs:
 
             # 백엔드 의존성 아티팩트 다운로드
             - name: Restore backend node_modules
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v3 # Updated to v3
               with:
                   name: backend_node_modules
                   path: backend/node_modules
@@ -151,7 +151,7 @@ jobs:
 
             # 프론트엔드 의존성 아티팩트 다운로드
             - name: Restore frontend node_modules
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v3 # Updated to v3
               with:
                   name: frontend_node_modules
                   path: frontend/node_modules
@@ -170,7 +170,7 @@ jobs:
 
             # 백엔드 의존성 아티팩트 다운로드
             - name: Restore backend node_modules
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v3 # Updated to v3
               with:
                   name: backend_node_modules
                   path: backend/node_modules
