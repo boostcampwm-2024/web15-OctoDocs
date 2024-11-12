@@ -7,10 +7,10 @@ import Button from "../commons/button";
 // TODO: 에디터 렌더링할 때 필요한 id 받아오는 방법 수정 해야할듯
 export default function Tools() {
   const { setCurrentPage } = usePageStore();
-  const { data } = usePages();
+  const { pages } = usePages();
   const createMutation = useCreatePage();
 
-  if (!data) {
+  if (!pages) {
     return <div>로딩중...</div>;
   }
 
@@ -32,7 +32,7 @@ export default function Tools() {
           x: 0,
           y: 0,
         });
-        setCurrentPage(data[data.length - 1].id);
+        setCurrentPage(pages[pages.length - 1].id);
       }}
     >
       <div>

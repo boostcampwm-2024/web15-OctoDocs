@@ -12,7 +12,7 @@ interface NoteListProps {
 
 export default function NoteList({ className }: NoteListProps) {
   const {
-    data,
+    pages,
     isModalOpen,
     handleNoteClick,
     openModal,
@@ -20,7 +20,7 @@ export default function NoteList({ className }: NoteListProps) {
     onCloseModal,
   } = useNoteList();
 
-  if (!data) {
+  if (!pages) {
     return <div>로딩중</div>;
   }
 
@@ -31,7 +31,7 @@ export default function NoteList({ className }: NoteListProps) {
         onConfirm={onConfirm}
         onCloseModal={onCloseModal}
       />
-      {data.map(({ id, title }) => (
+      {pages.map(({ id, title }) => (
         <Button
           onClick={() => handleNoteClick(id)}
           key={id}

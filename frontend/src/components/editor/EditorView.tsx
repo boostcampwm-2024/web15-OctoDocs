@@ -14,9 +14,9 @@ import { useDebouncedCallback } from "use-debounce";
 
 export default function EditorView() {
   const { currentPage } = usePageStore();
-  const { data, isLoading } = usePage(currentPage);
-  const pageTitle = data?.title ?? "제목없음";
-  const pageContent = data?.content ?? {};
+  const { page, isLoading } = usePage(currentPage);
+  const pageTitle = page?.title ?? "제목없음";
+  const pageContent = page?.content ?? {};
 
   const updatePageMutation = useUpdatePage();
   const optimisticUpdatePageMutation = useOptimisticUpdatePage({
@@ -59,8 +59,14 @@ export default function EditorView() {
     500,
   );
 
-  if (isLoading || !data || currentPage === null) {
-    return <div>로딩 중,,</div>;
+  if (isLoading || !page || currentPage === null) {
+    return (
+      <div>
+        {isLoading && <div>"isLoading"</div>}
+        {!page && <div>"!page"</div>}
+        {currentPage === null && <div>"currrentPage === null"</div>}
+      </div>
+    );
   }
 
   return (

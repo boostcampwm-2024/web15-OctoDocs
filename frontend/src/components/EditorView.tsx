@@ -4,11 +4,13 @@ import { usePage } from "@/hooks/usePages";
 
 export default function EditorView() {
   const { currentPage } = usePageStore();
-  const { data } = usePage(currentPage);
+  const { page } = usePage(currentPage);
 
-  if (!data) {
+  if (!page) {
     return <div></div>;
   }
 
-  return <Editor key={data.id} initialValue={data.content} pageId={data.id} />;
+  return (
+    <Editor key={page.id} initialContent={page.content} pageId={page.id} />
+  );
 }

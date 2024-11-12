@@ -5,7 +5,7 @@ import { useDeletePage, usePages } from "./usePages";
 
 export const useNoteList = () => {
   const { setCurrentPage } = usePageStore();
-  const { data } = usePages();
+  const { pages } = usePages();
 
   const [noteIdToDelete, setNoteIdToDelete] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +36,7 @@ export const useNoteList = () => {
   };
 
   return {
-    data,
+    pages,
     isModalOpen,
     handleNoteClick,
     openModal,

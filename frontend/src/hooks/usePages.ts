@@ -16,12 +16,16 @@ import {
 } from "@/api/page";
 
 export const usePage = (currentPage: number | null) => {
-  const { data, isError, isLoading } = useQuery({
+  const {
+    data: page,
+    isError,
+    isLoading,
+  } = useQuery({
     queryKey: ["page", currentPage],
     queryFn: currentPage ? () => getPage(currentPage) : skipToken,
   });
 
-  return { data, isError, isLoading };
+  return { page, isError, isLoading };
 };
 
 export const useCreatePage = () => {
@@ -48,12 +52,12 @@ export const useDeletePage = () => {
 };
 
 export const usePages = () => {
-  const { data, isError } = useQuery({
+  const { data: pages, isError } = useQuery({
     queryKey: ["pages"],
     queryFn: getPages,
   });
 
-  return { data, isError };
+  return { pages, isError };
 };
 
 export const useUpdatePage = () => {
@@ -90,7 +94,7 @@ export const useOptimisticUpdatePage = ({ id }: { id: number }) => {
       rollback?.();
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["page", id] });
+      // queryClient.invalidateQueries({ queryKey: ["page", id] });
       queryClient.invalidateQueries({ queryKey: ["pages"] });
     },
   });
