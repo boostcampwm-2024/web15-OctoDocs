@@ -7,7 +7,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Node-related directories
 node_modules
 dist
 dist-ssr
@@ -24,4 +23,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
