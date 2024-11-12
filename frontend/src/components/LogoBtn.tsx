@@ -2,7 +2,7 @@ import logo from "/logo.png?url";
 
 export default function LogoBtn() {
   return (
-    <div className="h-8 w-8 rounded-md bg-slate-700 p-2">
+    <div className="h-8 w-8 overflow-clip rounded-md">
       <img src={logo} />
     </div>
   );
