@@ -39,12 +39,7 @@ interface EditorProp {
   provider: WebsocketProvider;
 }
 
-const Editor = ({
-  initialContent,
-  onEditorUpdate,
-  ydoc,
-  provider,
-}: EditorProp) => {
+const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
@@ -57,19 +52,17 @@ const Editor = ({
         onContentError={({ disableCollaboration }) => {
           disableCollaboration();
         }}
-        onCreate={({ editor: currentEditor }) => {
-          provider.on("synced", () => {
-            console.log(ydoc);
-
-            if (
-              !ydoc.getMap("config").get("initialContentLoaded") &&
-              currentEditor
-            ) {
-              ydoc.getMap("config").set("initialContentLoaded", true);
-              currentEditor.commands.setContent(initialContent as JSONContent);
-            }
-          });
-        }}
+        // onCreate={({ editor: currentEditor }) => {
+        //   provider.on("synced", () => {
+        //     if (
+        //       !ydoc.getMap("config").get("initialContentLoaded") &&
+        //       currentEditor
+        //     ) {
+        //       ydoc.getMap("config").set("initialContentLoaded", true);
+        //       ydoc.getMap("content").set("content", initialContent);
+        //     }
+        //   });
+        // }}
         extensions={[
           ...extensions,
           Collaboration.extend().configure({

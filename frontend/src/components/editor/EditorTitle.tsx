@@ -7,6 +7,7 @@ export default function EditorTitle({
   title,
   onTitleChange,
 }: EditorTitleProps) {
+  console.log(title);
   return (
     <div className="p-12 pb-0">
       <input
