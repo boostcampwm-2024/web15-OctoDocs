@@ -9,7 +9,6 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { Page } from './page.entity';
 import { PageService } from './page.service';
 import { CreatePageDto } from './dtos/createPage.dto';
 import { UpdatePageDto } from './dtos/updatePage.dto';

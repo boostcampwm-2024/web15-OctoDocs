@@ -25,6 +25,7 @@ describe('NodeService', () => {
             save: jest.fn(),
             delete: jest.fn(),
             findOneBy: jest.fn(),
+            findOne: jest.fn(),
             update: jest.fn(),
           },
         },
@@ -103,7 +104,7 @@ describe('NodeService', () => {
       const node = new Node();
       node.page = new Page();
 
-      jest.spyOn(nodeRepository, 'findOneBy').mockResolvedValue(node);
+      jest.spyOn(nodeRepository, 'findOne').mockResolvedValue(node);
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(node.page);
       jest.spyOn(nodeRepository, 'save').mockResolvedValue(node);
 
@@ -121,7 +122,7 @@ describe('NodeService', () => {
     });
 
     it('업데이트할 노드가 존재하지 않으면 NodeNotFoundException을 throw한다.', async () => {
-      jest.spyOn(nodeRepository, 'findOneBy').mockResolvedValue(undefined);
+      jest.spyOn(nodeRepository, 'findOne').mockResolvedValue(undefined);
 
       await expect(service.updateNode(1, {} as any)).rejects.toThrow(
         NodeNotFoundException,
@@ -133,12 +134,24 @@ describe('NodeService', () => {
     it('노드 아이디를 받아 해당 노드의 좌표를 반환한다.', async () => {
       const node = { id: 1, x: 1, y: 2 } as Node;
 
-      nodeRepository.findOneBy.mockResolvedValue(node);
+      jest.spyOn(nodeRepository, 'findOne').mockResolvedValue(node);
 
       const coordinates = await service.getCoordinates(1);
 
       expect(coordinates).toEqual({ x: 1, y: 2 });
-      expect(nodeRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(nodeRepository.findOne).toHaveBeenCalledWith({
+        relations: ['page'],
+        select: {
+          id: true,
+          page: {
+            id: true,
+            title: true,
+          },
+        },
+        where: {
+          id: 1,
+        },
+      });
     });
 
     it('노드를 찾을 수 없으면 NodeNotFoundException을 throw한다.', async () => {
@@ -161,20 +174,44 @@ describe('NodeService', () => {
         outgoingEdges: [],
         incomingEdges: [],
       } as Node;
-      jest.spyOn(nodeRepository, 'findOneBy').mockResolvedValue(node);
+      jest.spyOn(nodeRepository, 'findOne').mockResolvedValue(node);
 
       const result = await service.findNodeById(1);
 
       expect(result).toEqual(node);
-      expect(nodeRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(nodeRepository.findOne).toHaveBeenCalledWith({
+        relations: ['page'],
+        select: {
+          id: true,
+          page: {
+            id: true,
+            title: true,
+          },
+        },
+        where: {
+          id: 1,
+        },
+      });
     });
 
     it('노드를 찾을 수 없으면 NodeNotFoundException을 던진다.', async () => {
-      jest.spyOn(nodeRepository, 'findOneBy').mockResolvedValue(undefined);
+      jest.spyOn(nodeRepository, 'findOne').mockResolvedValue(undefined);
       await expect(service.findNodeById(1)).rejects.toThrow(
         NodeNotFoundException,
       );
-      expect(nodeRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(nodeRepository.findOne).toHaveBeenCalledWith({
+        relations: ['page'],
+        select: {
+          id: true,
+          page: {
+            id: true,
+            title: true,
+          },
+        },
+        where: {
+          id: 1,
+        },
+      });
     });
   });
 
