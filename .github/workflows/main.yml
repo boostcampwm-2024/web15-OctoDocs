@@ -60,10 +60,10 @@ jobs:
           target: /home/root
       # 쉘 스크립트 실행
       - name: Run command on remote server
-        uses: appleboy/ssh-action@v0.1.3
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_DEV_IP }}
           username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.PRIVATE_KEY }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           script: |
             sh /home/root/deploy.sh
