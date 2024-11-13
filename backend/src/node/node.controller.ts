@@ -89,7 +89,9 @@ export class NodeController {
   })
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  async deleteNode(@Param('id') id: number): Promise<{ message: string }> {
+  async deleteNode(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
     await this.nodeService.deleteNode(id);
     return {
       message: NodeResponseMessage.NODE_DELETED,
@@ -103,7 +105,7 @@ export class NodeController {
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async updateNode(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateNodeDto,
   ): Promise<{ message: string }> {
     await this.nodeService.updateNode(id, body);
@@ -128,7 +130,10 @@ export class NodeController {
 
   @Patch('/:id/move')
   @HttpCode(HttpStatus.OK)
-  async moveNode(@Param('id') id: number, @Body() body: MoveNodeDto) {
+  async moveNode(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: MoveNodeDto,
+  ) {
     await this.nodeService.moveNode(id, body);
     return {
       message: NodeResponseMessage.NODE_MOVED,
