@@ -3,7 +3,7 @@ name: Create Directory on Remote Server
 on:
   push:
     branches:
-      - feature-be-#110
+      - develop
 
 jobs:
   frontend-CD:
