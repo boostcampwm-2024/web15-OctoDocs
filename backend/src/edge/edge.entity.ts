@@ -8,12 +8,13 @@ import {
 } from 'typeorm';
 import { Node } from '../node/node.entity';
 
-export enum Direction {
-  NORTH = 'N',
-  WEST = 'W',
-  SOUTH = 'S',
-  EAST = 'E',
-}
+// TODO: frontend, backend가 공유하는 shared에 direction.enum.ts로 분리
+// export enum Direction {
+//   NORTH = 'N',
+//   SOUTH = 'S',
+//   EAST = 'E',
+//   WEST = 'W',
+// }
 
 @Entity()
 export class Edge {
@@ -28,17 +29,11 @@ export class Edge {
   @JoinColumn({ name: 'to_node_id' })
   toNode: Node;
 
-  @Column({
-    type: 'enum',
-    enum: Direction,
-  })
-  fromPoint: Direction;
+  @Column()
+  fromPoint: string;
 
-  @Column({
-    type: 'enum',
-    enum: Direction,
-  })
-  toPoint: Direction;
+  @Column()
+  toPoint: string;
 
   @Column({ nullable: true })
   type: string;
