@@ -43,6 +43,12 @@ jobs:
       # 코드 체크아웃
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # .env 파일 생성 후 붙여넣기
+      - name: Create .env file
+        run: |
+          echo "${{secrets.DEVELOPMENT_ENV}}" > ./.env
+
       # 배포용 쉘 스크립트 파일 전송
       - name: Copy deploy.sh to remote server
         uses: appleboy/scp-action@master
@@ -51,4 +57,13 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           source: ./deploy.sh
-          target: /home/root/deploy.sh
+          target: /home/root
+      # 쉘 스크립트 실행
+      - name: Run command on remote server
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          host: ${{ secrets.REMOTE_DEV_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            sh /home/root/deploy.sh
