@@ -21,6 +21,7 @@ import { NoteNode } from "./NoteNode";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 const proOptions = { hideAttribution: true };
 
@@ -32,6 +33,7 @@ export default function Canvas({ className }: CanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { pages } = usePages();
+  const queryClient = useQueryClient();
 
   const ydoc = useRef<Y.Doc>();
   const provider = useRef<WebsocketProvider>();
@@ -56,6 +58,11 @@ export default function Canvas({ className }: CanvasProps) {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
           const node = nodesMap.get(nodeId) as Node;
+
+          if (change.action === "add") {
+            queryClient.invalidateQueries({ queryKey: ["pages"] });
+          }
+
           setNodes((nds) => {
             const index = nds.findIndex((n) => n.id === nodeId);
             if (index === -1) {
@@ -67,6 +74,7 @@ export default function Canvas({ className }: CanvasProps) {
           });
         } else if (change.action === "delete") {
           setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+          queryClient.invalidateQueries({ queryKey: ["pages"] });
         }
       });
     });
@@ -80,7 +88,7 @@ export default function Canvas({ className }: CanvasProps) {
       wsProvider.destroy();
       doc.destroy();
     };
-  }, []);
+  }, [queryClient]);
 
   useEffect(() => {
     if (!pages || !ydoc.current) return;
