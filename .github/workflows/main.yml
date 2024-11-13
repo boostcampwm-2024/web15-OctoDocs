@@ -3,7 +3,7 @@ name: Create Directory on Remote Server
 on:
   push:
     branches:
-      - main
+      - feature-be-#110
 
 jobs:
   create-directory:
@@ -48,7 +48,7 @@ jobs:
       - name: Copy deploy.sh to remote server
         uses: appleboy/scp-action@v0.1.1
         with:
-          host: ${{ secrets.REMOTE_IP }}
+          host: ${{ secrets.REMOTE_DEV_IP }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           source: ./deploy.sh
