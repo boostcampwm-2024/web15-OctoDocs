@@ -1,5 +1,11 @@
-import usePageStore from "@/store/usePageStore";
+import { useMemo, useState } from "react";
+import { EditorInstance } from "novel";
+import { useDebouncedCallback } from "use-debounce";
+import { WebsocketProvider } from "y-websocket";
+import * as Y from "yjs";
+
 import Editor from "./editor";
+import usePageStore from "@/store/usePageStore";
 import {
   usePage,
   useUpdatePage,
@@ -7,50 +13,23 @@ import {
 } from "@/hooks/usePages";
 import EditorLayout from "./layout/EditorLayout";
 import EditorTitle from "./editor/EditorTitle";
-import { EditorInstance } from "novel";
-import { useEffect, useRef, useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
-import { WebsocketProvider } from "y-websocket";
-import * as Y from "yjs";
 import SaveStatus from "./editor/ui/SaveStatus";
 
 export default function EditorView() {
   const { currentPage } = usePageStore();
   const { page, isLoading } = usePage(currentPage);
-  const [editorKey, setEditorKey] = useState(0);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
 
-  const ydoc = useRef<Y.Doc>();
-  const provider = useRef<WebsocketProvider>();
+  const ydoc = useMemo(() => {
+    return new Y.Doc();
+  }, [currentPage]);
 
-  useEffect(() => {
-    if (currentPage === null) return;
-
-    if (provider.current) {
-      provider.current.disconnect();
-      provider.current.destroy();
-    }
-    if (ydoc.current) {
-      ydoc.current.destroy();
-    }
-
-    const doc = new Y.Doc();
-    const wsProvider = new WebsocketProvider(
+  const provider = useMemo(() => {
+    return new WebsocketProvider(
       "ws://localhost:1234",
       `document-${currentPage}`,
-      doc,
+      ydoc,
     );
-
-    ydoc.current = doc;
-    provider.current = wsProvider;
-
-    setEditorKey((prev) => prev + 1);
-
-    return () => {
-      wsProvider.disconnect();
-      wsProvider.destroy();
-      doc.destroy();
-    };
   }, [currentPage]);
 
   const pageTitle = page?.title ?? "제목없음";
@@ -107,18 +86,18 @@ export default function EditorView() {
     );
   }
 
-  if (!ydoc.current || !provider.current) return <div>로딩중</div>;
+  if (!ydoc || !provider) return <div>로딩중</div>;
 
   return (
     <EditorLayout>
       <SaveStatus saveStatus={saveStatus} />
       <EditorTitle title={pageTitle} onTitleChange={handleTitleChange} />
       <Editor
-        key={editorKey}
+        key={ydoc.guid}
         initialContent={pageContent}
         pageId={currentPage}
-        ydoc={ydoc.current}
-        provider={provider.current}
+        ydoc={ydoc}
+        provider={provider}
         onEditorUpdate={handleEditorUpdate}
       />
     </EditorLayout>
