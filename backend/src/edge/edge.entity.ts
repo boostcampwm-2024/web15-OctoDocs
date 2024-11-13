@@ -8,6 +8,13 @@ import {
 } from 'typeorm';
 import { Node } from '../node/node.entity';
 
+export enum Direction {
+  NORTH = 'N',
+  WEST = 'W',
+  SOUTH = 'S',
+  EAST = 'E',
+}
+
 @Entity()
 export class Edge {
   @PrimaryGeneratedColumn('increment')
@@ -21,11 +28,17 @@ export class Edge {
   @JoinColumn({ name: 'to_node_id' })
   toNode: Node;
 
-  @Column()
-  fromPoint: string;
+  @Column({
+    type: 'enum',
+    enum: Direction,
+  })
+  fromPoint: Direction;
 
-  @Column()
-  toPoint: string;
+  @Column({
+    type: 'enum',
+    enum: Direction,
+  })
+  toPoint: Direction;
 
   @Column({ nullable: true })
   type: string;
