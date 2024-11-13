@@ -8,6 +8,14 @@ import {
 } from 'typeorm';
 import { Node } from '../node/node.entity';
 
+// TODO: frontend, backend가 공유하는 shared에 direction.enum.ts로 분리
+// export enum Direction {
+//   NORTH = 'N',
+//   SOUTH = 'S',
+//   EAST = 'E',
+//   WEST = 'W',
+// }
+
 @Entity()
 export class Edge {
   @PrimaryGeneratedColumn('increment')

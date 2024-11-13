@@ -33,6 +33,7 @@ export enum NodeResponseMessage {
 @Controller('node')
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
+
   @ApiResponse({
     type: FindNodesResponseDto,
   })
@@ -49,6 +50,7 @@ export class NodeController {
       nodes: nodes,
     };
   }
+
   @ApiResponse({
     type: FindNodeResponseDto,
   })
@@ -78,6 +80,7 @@ export class NodeController {
       message: NodeResponseMessage.NODE_CREATED,
     };
   }
+
   @ApiResponse({
     type: MessageResponseDto,
   })
@@ -86,12 +89,15 @@ export class NodeController {
   })
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  async deleteNode(@Param('id') id: number): Promise<{ message: string }> {
+  async deleteNode(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
     await this.nodeService.deleteNode(id);
     return {
       message: NodeResponseMessage.NODE_DELETED,
     };
   }
+
   @ApiResponse({
     type: MessageResponseDto,
   })
@@ -99,7 +105,7 @@ export class NodeController {
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async updateNode(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateNodeDto,
   ): Promise<{ message: string }> {
     await this.nodeService.updateNode(id, body);
@@ -107,6 +113,7 @@ export class NodeController {
       message: NodeResponseMessage.NODE_UPDATED,
     };
   }
+
   @ApiResponse({
     type: CoordinateResponseDto,
   })
@@ -123,7 +130,10 @@ export class NodeController {
 
   @Patch('/:id/move')
   @HttpCode(HttpStatus.OK)
-  async moveNode(@Param('id') id: number, @Body() body: MoveNodeDto) {
+  async moveNode(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: MoveNodeDto,
+  ) {
     await this.nodeService.moveNode(id, body);
     return {
       message: NodeResponseMessage.NODE_MOVED,
