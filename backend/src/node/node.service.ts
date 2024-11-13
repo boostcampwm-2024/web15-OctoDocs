@@ -69,17 +69,7 @@ export class NodeService {
     const node = await this.nodeRepository
       .createQueryBuilder('node')
       .leftJoinAndSelect('node.page', 'page')
-      .leftJoinAndSelect('node.outgoingEdges', 'outgoingEdges')
-      .leftJoinAndSelect('node.incomingEdges', 'incomingEdges')
-      .select([
-        'node.id',
-        'node.x',
-        'node.y',
-        'outgoingEdges.id',
-        'incomingEdges.id',
-        'page.id',
-        'page.title',
-      ])
+      .select(['node.id', 'node.x', 'node.y', 'page.id', 'page.title'])
       .where('node.id = :id', { id })
       .getOne();
     // 노드가 없으면 NotFound 에러
@@ -94,17 +84,7 @@ export class NodeService {
     const nodes = await this.nodeRepository
       .createQueryBuilder('node')
       .leftJoinAndSelect('node.page', 'page')
-      .leftJoinAndSelect('node.outgoingEdges', 'outgoingEdges')
-      .leftJoinAndSelect('node.incomingEdges', 'incomingEdges')
-      .select([
-        'node.id',
-        'node.x',
-        'node.y',
-        'outgoingEdges.id',
-        'incomingEdges.id',
-        'page.id',
-        'page.title',
-      ])
+      .select(['node.id', 'node.x', 'node.y', 'page.id', 'page.title'])
       .getMany();
     // 노드가 없으면 NotFound 에러
     if (!nodes) {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray, IsObject } from 'class-validator';
+import { IsString, IsObject } from 'class-validator';
 import { Page } from '../page.entity';
 
 export class FindPageResponseDto {
