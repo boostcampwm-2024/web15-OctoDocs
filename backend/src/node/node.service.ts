@@ -5,6 +5,8 @@ import { Node } from './node.entity';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { NodeNotFoundException } from '../exception/node.exception';
+import { MoveNodeDto } from './dtos/moveNode.dto';
+
 @Injectable()
 export class NodeService {
   constructor(
@@ -131,5 +133,19 @@ export class NodeService {
       x: node.x,
       y: node.y,
     };
+  }
+
+  async moveNode(id: number, dto: MoveNodeDto): Promise<void> {
+    const { x, y } = dto;
+    // 갱신할 노드를 조회한다.
+    const node = await this.findNodeById(id);
+
+    // 노드가 없으면 NotFound 에러
+    if (!node) {
+      throw new NodeNotFoundException();
+    }
+
+    // UPDATE 쿼리를 실행한다.
+    await this.nodeRepository.update(id, { x, y });
   }
 }

@@ -13,11 +13,13 @@ import {
 import { NodeService } from './node.service';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
+import { MoveNodeDto } from './dtos/moveNode.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { CoordinateResponseDto } from './dtos/coordinateResponse.dto';
 import { FindNodeResponseDto } from './dtos/findNodeResponse.dto';
 import { FindNodesResponseDto } from './dtos/findNodesResponse.dto.';
+
 
 export enum NodeResponseMessage {
   NODE_RETURNED = '노드와 페이지를 가져왔습니다.',
@@ -26,6 +28,7 @@ export enum NodeResponseMessage {
   NODE_UPDATED = '노드와 페이지를 갱신했습니다.',
   NODE_DELETED = '노드와 페이지를 삭제했습니다.',
   NODE_GET_COORDINAE = '노드의 현재 좌표를 가져왔습니다.',
+  NODE_MOVED = '노드의 위치를 이동했습니다.',
 }
 
 @Controller('node')
@@ -70,7 +73,7 @@ export class NodeController {
   @ApiOperation({ summary: '노드를 생성하면서 페이지도 함께 생성합니다.' })
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
-  async createNode(@Body() body: CreateNodeDto): Promise<{ message: string }> {
+  async createNode(@Body() body: CreateNodeDto) {
     await this.nodeService.createNode(body);
     return {
       message: NodeResponseMessage.NODE_CREATED,
@@ -116,6 +119,15 @@ export class NodeController {
     return {
       message: NodeResponseMessage.NODE_GET_COORDINAE,
       coordinate: coordinate,
+    };
+  }
+
+  @Patch('/:id/move')
+  @HttpCode(HttpStatus.OK)
+  async moveNode(@Param('id') id: number, @Body() body: MoveNodeDto) {
+    await this.nodeService.moveNode(id, body);
+    return {
+      message: NodeResponseMessage.NODE_MOVED,
     };
   }
 }

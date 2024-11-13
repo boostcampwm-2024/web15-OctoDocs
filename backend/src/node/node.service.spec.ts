@@ -7,6 +7,7 @@ import { Node } from './node.entity';
 import { Page } from '../page/page.entity';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
+import { MoveNodeDto } from './dtos/moveNode.dto';
 
 describe('NodeService', () => {
   let service: NodeService;
@@ -25,6 +26,7 @@ describe('NodeService', () => {
             delete: jest.fn(),
             findOneBy: jest.fn(),
             findOne: jest.fn(),
+            update: jest.fn(),
           },
         },
         {
@@ -210,6 +212,33 @@ describe('NodeService', () => {
           id: 1,
         },
       });
+    });
+  });
+
+  describe('moveNode', () => {
+    it('노드를 성공적으로 이동시킨다.', async () => {
+      const id = 1;
+      const dto: MoveNodeDto = { x: 3, y: 4 };
+      const node = { id: 1, x: 0, y: 0 } as Node;
+
+      jest.spyOn(nodeRepository, 'findOneBy').mockResolvedValue(node);
+      jest
+        .spyOn(nodeRepository, 'update')
+        .mockResolvedValue({ affected: true } as any);
+
+      await service.moveNode(id, dto);
+
+      expect(nodeRepository.update).toHaveBeenCalledWith(id, {
+        x: dto.x,
+        y: dto.y,
+      });
+    });
+
+    it('노드를 찾을 수 없으면 NodeNotFoundException을 던진다.', async () => {
+      jest.spyOn(nodeRepository, 'update').mockRejectedValue(new Error());
+      await expect(service.moveNode(1, {} as any)).rejects.toThrow(
+        NodeNotFoundException,
+      );
     });
   });
 });

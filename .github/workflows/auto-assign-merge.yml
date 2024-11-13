@@ -1,0 +1,133 @@
+name: Auto Assign, Review, and Merge
+
+on:
+    pull_request:
+        types:
+            [
+                opened,
+                labeled,
+                unlabeled,
+                review_requested,
+                review_request_removed,
+            ]
+    pull_request_review:
+        types: [submitted]
+
+jobs:
+    auto-assign:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "16"
+
+            - name: Assign PR creator as Assignee
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      await github.rest.issues.addAssignees({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.payload.pull_request.number,
+                        assignees: [context.actor]
+                      });
+
+    auto-reviewers:
+        runs-on: ubuntu-latest
+        needs: auto-assign
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "16"
+
+            - name: Add reviewers based on labels
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      const prNumber = context.payload.pull_request.number;
+                      const assignees = context.payload.pull_request.assignees.map(a => a.login);
+
+                      // Define reviewers for each label
+                      const BE_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc'].filter(r => !assignees.includes(r));
+                      const FE_reviewers = ['yewonJin', 'djk01281'].filter(r => !assignees.includes(r));
+                      const doc_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc', 'yewonJin', 'djk01281'].filter(r => !assignees.includes(r));
+
+                      // Check the labels on the PR and assign appropriate reviewers
+                      const labels = context.payload.pull_request.labels.map(label => label.name);
+                      let reviewersToAdd = [];
+
+                      if (labels.includes('🐧🚀😶‍🌫️ BE')) {
+                        reviewersToAdd.push(...BE_reviewers);
+                      }
+                      if (labels.includes('🐳🐣 FE')) {
+                        reviewersToAdd.push(...FE_reviewers);
+                      }
+                      if (labels.includes('📚 Documentation')) {
+                        reviewersToAdd.push(...doc_reviewers);
+                      }
+
+                      // Remove duplicates if any
+                      reviewersToAdd = [...new Set(reviewersToAdd)];
+
+                      // Request reviewers
+                      if (reviewersToAdd.length > 0) {
+                        await github.rest.pulls.requestReviewers({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          pull_number: prNumber,
+                          reviewers: reviewersToAdd
+                        });
+                      }
+
+    auto-merge:
+        runs-on: ubuntu-latest
+        needs: [auto-assign, auto-reviewers]
+        if: github.event.pull_request.merged == false
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "16"
+
+            - name: Merge and Close PR if Approved
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      const prNumber = context.payload.pull_request.number;
+
+                      // Check if PR is approved
+                      const reviews = await github.rest.pulls.listReviews({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        pull_number: prNumber
+                      });
+
+                      const approved = reviews.data.some(review => review.state === 'APPROVED');
+
+                      // If approved, merge the PR
+                      if (approved) {
+                        await github.rest.pulls.merge({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          pull_number: prNumber
+                        });
+
+                        // Delete the branch after merge
+                        const branchName = context.payload.pull_request.head.ref;
+                        await github.rest.git.deleteRef({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          ref: `heads/${branchName}`
+                        });
+                      }

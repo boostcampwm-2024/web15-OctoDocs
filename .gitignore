@@ -1,10 +1,14 @@
 # env
 .env
 .env*
+*.local
 
 # compiled output
-/dist
-/node_modules
+*/dist
+*/node_modules
+dist
+node_modules
+dist-ssr
 
 # Logs
 logs
@@ -24,12 +28,18 @@ lerna-debug.log*
 
 # IDEs and editors
 /.idea
+.idea
 .project
 .classpath
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # IDE - VSCode
 .vscode/*

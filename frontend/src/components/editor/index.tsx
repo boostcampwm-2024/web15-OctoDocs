@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   EditorRoot,
   EditorCommand,
@@ -11,6 +11,10 @@ import {
   type EditorInstance,
 } from "novel";
 import { ImageResizer, handleCommandNavigation } from "novel/extensions";
+import Collaboration from "@tiptap/extension-collaboration";
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import { WebsocketProvider } from "y-websocket";
+import * as Y from "yjs";
 
 import "./prosemirror.css";
 import { slashCommand, suggestionItems } from "./slash-commands";
@@ -31,9 +35,16 @@ interface EditorProp {
   pageId: number;
   initialContent?: JSONContent;
   onEditorUpdate?: (event: EditorUpdateEvent) => void;
+  ydoc: Y.Doc;
+  provider: WebsocketProvider;
 }
 
-const Editor = ({ initialContent, onEditorUpdate }: EditorProp) => {
+const Editor = ({
+  initialContent,
+  onEditorUpdate,
+  ydoc,
+  provider,
+}: EditorProp) => {
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
@@ -41,9 +52,33 @@ const Editor = ({ initialContent, onEditorUpdate }: EditorProp) => {
   return (
     <EditorRoot>
       <EditorContent
-        initialContent={initialContent}
         className=""
-        extensions={extensions}
+        enableContentCheck={true}
+        onContentError={({ disableCollaboration }) => {
+          disableCollaboration();
+        }}
+        onCreate={({ editor: currentEditor }) => {
+          provider.on("synced", () => {
+            console.log(ydoc);
+
+            if (
+              !ydoc.getMap("config").get("initialContentLoaded") &&
+              currentEditor
+            ) {
+              ydoc.getMap("config").set("initialContentLoaded", true);
+              currentEditor.commands.setContent(initialContent as JSONContent);
+            }
+          });
+        }}
+        extensions={[
+          ...extensions,
+          Collaboration.extend().configure({
+            document: ydoc,
+          }),
+          CollaborationCursor.extend().configure({
+            provider,
+          }),
+        ]}
         editorProps={{
           handleDOMEvents: {
             keydown: (_view, event) => handleCommandNavigation(event),
