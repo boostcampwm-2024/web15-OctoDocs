@@ -64,6 +64,9 @@ describe('PageService', () => {
         id: 1,
         title: 'new page',
         content: {} as JSON,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
         node: null,
       };
 
@@ -124,12 +127,18 @@ describe('PageService', () => {
         title: 'origin title',
         content: {} as JSON,
         node: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
       };
       const newPage: Page = {
         id: 1,
         title: 'Updated Title',
         content: {} as JSON,
         node: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
       };
 
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(originPage);
@@ -162,6 +171,9 @@ describe('PageService', () => {
         title: 'title',
         content: {} as JSON,
         node: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
       };
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(expectedPage);
 

@@ -128,6 +128,9 @@ describe('PageController', () => {
         title: 'title',
         content: {} as JSON,
         node: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
       };
 
       jest.spyOn(pageService, 'findPageById').mockResolvedValue(expectedPage);
