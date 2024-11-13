@@ -20,7 +20,6 @@ import { CoordinateResponseDto } from './dtos/coordinateResponse.dto';
 import { FindNodeResponseDto } from './dtos/findNodeResponse.dto';
 import { FindNodesResponseDto } from './dtos/findNodesResponse.dto.';
 
-
 export enum NodeResponseMessage {
   NODE_RETURNED = '노드와 페이지를 가져왔습니다.',
   NODE_ALL_RETURNED = '모든 노드를 가져왔습니다.',
