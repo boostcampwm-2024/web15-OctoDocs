@@ -4,6 +4,9 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  VersionColumn,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
 
@@ -18,9 +21,21 @@ export class Page {
   @Column('json') //TODO: Postgres에서는 jsonb로 변경
   content: JSON;
 
-  // TODO:추가적인 메타데이터 컬럼들 (예: 작성일, 수정일 등)
-  // @Column()
-  // createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @VersionColumn()
+  version: number;
+
+  // TODO:추가적인 메타데이터 컬럼들(user 기능 추가할때)
+  // @Column('created_by')
+  // createdBy: string;
+
+  // @Column('updated_by')
+  // updatedBy: string;
 
   @OneToOne(() => Node, (node) => node.page, {
     onDelete: 'CASCADE',

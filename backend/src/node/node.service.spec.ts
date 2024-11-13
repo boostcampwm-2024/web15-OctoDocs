@@ -221,7 +221,7 @@ describe('NodeService', () => {
       const dto: MoveNodeDto = { x: 3, y: 4 };
       const node = { id: 1, x: 0, y: 0 } as Node;
 
-      jest.spyOn(nodeRepository, 'findOneBy').mockResolvedValue(node);
+      jest.spyOn(service, 'findNodeById').mockResolvedValue(node);
       jest
         .spyOn(nodeRepository, 'update')
         .mockResolvedValue({ affected: true } as any);
