@@ -33,6 +33,7 @@ export enum NodeResponseMessage {
 @Controller('node')
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
+
   @ApiResponse({
     type: FindNodesResponseDto,
   })
@@ -49,6 +50,7 @@ export class NodeController {
       nodes: nodes,
     };
   }
+
   @ApiResponse({
     type: FindNodeResponseDto,
   })
@@ -78,6 +80,7 @@ export class NodeController {
       message: NodeResponseMessage.NODE_CREATED,
     };
   }
+
   @ApiResponse({
     type: MessageResponseDto,
   })
@@ -92,6 +95,7 @@ export class NodeController {
       message: NodeResponseMessage.NODE_DELETED,
     };
   }
+
   @ApiResponse({
     type: MessageResponseDto,
   })
@@ -107,6 +111,7 @@ export class NodeController {
       message: NodeResponseMessage.NODE_UPDATED,
     };
   }
+
   @ApiResponse({
     type: CoordinateResponseDto,
   })
