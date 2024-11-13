@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useEffect } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -15,10 +15,7 @@ import {
   EdgeChange,
   Connection,
 } from "@xyflow/react";
-
 import "@xyflow/react/dist/style.css";
-
-import { useEffect } from "react";
 import { usePages } from "@/hooks/usePages";
 import { NoteNode } from "./NoteNode";
 import * as Y from "yjs";
@@ -34,39 +31,11 @@ interface CanvasProps {
 export default function Canvas({ className }: CanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-
   const { pages } = usePages();
-
-  const onConnect = useCallback((connection: Connection) => {
-    if (!connection.source || !connection.target) return;
-
-    const newEdge: Edge = {
-      id: `e${connection.source}-${connection.target}`,
-      source: connection.source,
-      target: connection.target,
-      sourceHandle: connection.sourceHandle,
-      targetHandle: connection.targetHandle,
-    };
-
-    if (ydoc.current) {
-      ydoc.current.getMap("edges").set(newEdge.id, newEdge);
-    }
-  }, []);
-
-  const handleEdgesChange = useCallback((changes: EdgeChange[]) => {
-    if (!ydoc.current) return;
-
-    changes.forEach((change) => {
-      if (change.type === "remove") {
-        ydoc.current?.getMap("edges").delete(change.id);
-      }
-    });
-  }, []);
-
-  const nodeTypes = useMemo(() => ({ note: NoteNode }), []);
 
   const ydoc = useRef<Y.Doc>();
   const provider = useRef<WebsocketProvider>();
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
     const doc = new Y.Doc();
@@ -75,26 +44,36 @@ export default function Canvas({ className }: CanvasProps) {
       "flow-room",
       doc,
     );
-    const nodesMap = doc.getMap("nodes");
-    const edgesMap = doc.getMap("edges");
 
     ydoc.current = doc;
     provider.current = wsProvider;
 
-    if (nodesMap.size === 0 && nodes.length > 0) {
-      nodes.forEach((node) => {
-        nodesMap.set(node.id, node);
-      });
-    }
+    const nodesMap = doc.getMap("nodes");
+    const edgesMap = doc.getMap("edges");
 
-    nodesMap.observe(() => {
-      const yNodes = Array.from(nodesMap.values()) as Node[];
-      setNodes([...yNodes]);
+    nodesMap.observe((event) => {
+      event.changes.keys.forEach((change, key) => {
+        const nodeId = key;
+        if (change.action === "add" || change.action === "update") {
+          const node = nodesMap.get(nodeId) as Node;
+          setNodes((nds) => {
+            const index = nds.findIndex((n) => n.id === nodeId);
+            if (index === -1) {
+              return [...nds, node];
+            }
+            const newNodes = [...nds];
+            newNodes[index] = node;
+            return newNodes;
+          });
+        } else if (change.action === "delete") {
+          setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+        }
+      });
     });
 
     edgesMap.observe(() => {
       const yEdges = Array.from(edgesMap.values()) as Edge[];
-      setEdges([...yEdges]);
+      setEdges(yEdges);
     });
 
     return () => {
@@ -104,59 +83,89 @@ export default function Canvas({ className }: CanvasProps) {
   }, []);
 
   useEffect(() => {
-    if (pages && nodes.length === 0) {
+    if (!pages || !ydoc.current || !isInitialLoad.current) return;
+
+    const nodesMap = ydoc.current.getMap("nodes");
+
+    if (nodesMap.size === 0) {
       const newNodes = pages.map((page, index) => ({
         id: page.id.toString(),
         position: { x: 100 * index, y: 100 },
         data: { title: page.title, id: page.id },
         type: "note",
       }));
-      setNodes([...newNodes]);
+
+      setNodes(newNodes);
+
+      ydoc.current.transact(() => {
+        newNodes.forEach((node) => {
+          nodesMap.set(node.id, node);
+        });
+      });
     }
-  }, [pages, setNodes, nodes.length]);
 
-  // const handleNodesChange = useCallback(
-  //   (changes: NodeChange[]) => {
-  //     if (!ydoc.current) return;
-
-  //     changes.forEach((change) => {
-  //       if (change.type === "position") {
-  //         const node = nodes.find((n) => n.id === change.id);
-  //         if (node) {
-  //           const updatedNode = {
-  //             ...node,
-  //             position: change.position,
-  //           };
-  //           ydoc.current?.getMap("nodes").set(change.id, updatedNode);
-
-  //         }
-  //       }
-  //     });
-  //   },
-  //   [nodes],
-  // );
+    isInitialLoad.current = false;
+  }, [pages, setNodes]);
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
       if (!ydoc.current) return;
+      const nodesMap = ydoc.current.getMap("nodes");
 
-      console.log("Changes:", changes);
+      onNodesChange(changes);
 
       changes.forEach((change) => {
         if (change.type === "position" && change.position) {
-          const nodeIndex = nodes.findIndex((n) => n.id === change.id);
-          if (nodeIndex !== -1) {
+          const node = nodes.find((n) => n.id === change.id);
+          if (node) {
             const updatedNode = {
-              ...nodes[nodeIndex],
+              ...node,
               position: change.position,
             };
-            ydoc.current?.getMap("nodes").set(change.id, updatedNode);
+            nodesMap.set(change.id, updatedNode);
           }
         }
       });
     },
-    [nodes],
+    [nodes, onNodesChange],
   );
+
+  const handleEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      if (!ydoc.current) return;
+      const edgesMap = ydoc.current.getMap("edges");
+
+      changes.forEach((change) => {
+        if (change.type === "remove") {
+          edgesMap.delete(change.id);
+        }
+      });
+
+      onEdgesChange(changes);
+    },
+    [onEdgesChange],
+  );
+
+  const onConnect = useCallback(
+    (connection: Connection) => {
+      if (!connection.source || !connection.target || !ydoc.current) return;
+
+      const newEdge: Edge = {
+        id: `e${connection.source}-${connection.target}`,
+        source: connection.source,
+        target: connection.target,
+        sourceHandle: connection.sourceHandle || undefined,
+        targetHandle: connection.targetHandle || undefined,
+      };
+
+      ydoc.current.getMap("edges").set(newEdge.id, newEdge);
+      setEdges((eds) => addEdge(connection, eds));
+    },
+    [setEdges],
+  );
+
+  const nodeTypes = useMemo(() => ({ note: NoteNode }), []);
+
   return (
     <div className={cn("", className)}>
       <ReactFlow
