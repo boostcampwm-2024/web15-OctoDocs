@@ -6,7 +6,7 @@ on:
       - feature-be-#110
 
 jobs:
-  create-directory:
+  frontend-CD:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,19 +37,15 @@ jobs:
           aws configure set region ap-northeast-2
           aws --endpoint-url=https://kr.object.ncloudstorage.com s3 cp ./frontend/dist s3://octodocs/ --recursive --debug
 
-      # 패키지 설치 및 Nest.js 빌드
-      - name: Install dependencies and build
-        run: |
-          cd backend
-          npm install
-          npm run build
 
-      # 배포용 쉘 스크립트 파일 전송
-      - name: Copy deploy.sh to remote server
-        uses: appleboy/scp-action@v0.1.1
-        with:
-          host: ${{ secrets.REMOTE_DEV_IP }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
-          source: ./deploy.sh
-          target: /home/root/deploy.sh
+  backend-CD:
+
+    # 배포용 쉘 스크립트 파일 전송
+    - name: Copy deploy.sh to remote server
+      uses: appleboy/scp-action@v0.1.1
+      with:
+        host: ${{ secrets.REMOTE_DEV_IP }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+        source: ./deploy.sh
+        target: /home/root/deploy.sh
