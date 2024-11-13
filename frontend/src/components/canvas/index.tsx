@@ -35,7 +35,7 @@ export default function Canvas({ className }: CanvasProps) {
 
   const ydoc = useRef<Y.Doc>();
   const provider = useRef<WebsocketProvider>();
-  const isInitialLoad = useRef(true);
+  const existingPageIds = useRef(new Set<string>());
 
   useEffect(() => {
     const doc = new Y.Doc();
@@ -83,29 +83,36 @@ export default function Canvas({ className }: CanvasProps) {
   }, []);
 
   useEffect(() => {
-    if (!pages || !ydoc.current || !isInitialLoad.current) return;
+    if (!pages || !ydoc.current) return;
 
     const nodesMap = ydoc.current.getMap("nodes");
+    const currentPageIds = new Set(pages.map((page) => page.id.toString()));
 
-    if (nodesMap.size === 0) {
-      const newNodes = pages.map((page, index) => ({
-        id: page.id.toString(),
-        position: { x: 100 * index, y: 100 },
-        data: { title: page.title, id: page.id },
-        type: "note",
-      }));
+    existingPageIds.current.forEach((pageId) => {
+      if (!currentPageIds.has(pageId)) {
+        nodesMap.delete(pageId);
+        existingPageIds.current.delete(pageId);
+      }
+    });
 
-      setNodes(newNodes);
+    pages.forEach((page) => {
+      const pageId = page.id.toString();
+      if (!existingPageIds.current.has(pageId)) {
+        const newNode = {
+          id: pageId,
+          position: {
+            x: Math.random() * 500,
+            y: Math.random() * 500,
+          },
+          data: { title: page.title, id: page.id },
+          type: "note",
+        };
 
-      ydoc.current.transact(() => {
-        newNodes.forEach((node) => {
-          nodesMap.set(node.id, node);
-        });
-      });
-    }
-
-    isInitialLoad.current = false;
-  }, [pages, setNodes]);
+        nodesMap.set(pageId, newNode);
+        existingPageIds.current.add(pageId);
+      }
+    });
+  }, [pages]);
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
