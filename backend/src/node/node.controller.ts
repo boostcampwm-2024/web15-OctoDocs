@@ -17,9 +17,12 @@ import { MoveNodeDto } from './dtos/moveNode.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { CoordinateResponseDto } from './dtos/coordinateResponse.dto';
-
+import { FindNodeResponseDto } from './dtos/findNodeResponse.dto';
+import { FindNodesResponseDto } from './dtos/findNodesResponse.dto.';
 
 export enum NodeResponseMessage {
+  NODE_RETURNED = '노드와 페이지를 가져왔습니다.',
+  NODE_ALL_RETURNED = '모든 노드를 가져왔습니다.',
   NODE_CREATED = '노드와 페이지를 생성했습니다.',
   NODE_UPDATED = '노드와 페이지를 갱신했습니다.',
   NODE_DELETED = '노드와 페이지를 삭제했습니다.',
@@ -30,6 +33,40 @@ export enum NodeResponseMessage {
 @Controller('node')
 export class NodeController {
   constructor(private readonly nodeService: NodeService) {}
+
+  @ApiResponse({
+    type: FindNodesResponseDto,
+  })
+  @ApiOperation({
+    summary:
+      '모든 노드 정보를 가져옵니다. (페이지 정보 중 id와 title만 가져옵니다.)',
+  })
+  @Get('/')
+  @HttpCode(HttpStatus.OK)
+  async getNodes() {
+    const nodes = await this.nodeService.findNodes();
+    return {
+      message: NodeResponseMessage.NODE_ALL_RETURNED,
+      nodes: nodes,
+    };
+  }
+
+  @ApiResponse({
+    type: FindNodeResponseDto,
+  })
+  @ApiOperation({
+    summary:
+      '노드와 페이지 정보를 가져옵니다. (페이지 정보 중 id와 title만 가져옵니다.)',
+  })
+  @Get('/:id')
+  @HttpCode(HttpStatus.OK)
+  async getNodeById(@Param('id', ParseIntPipe) id: number) {
+    const node = await this.nodeService.findNodeById(id);
+    return {
+      message: NodeResponseMessage.NODE_RETURNED,
+      node: node,
+    };
+  }
 
   @ApiResponse({
     type: MessageResponseDto,
@@ -43,6 +80,7 @@ export class NodeController {
       message: NodeResponseMessage.NODE_CREATED,
     };
   }
+
   @ApiResponse({
     type: MessageResponseDto,
   })
@@ -51,12 +89,15 @@ export class NodeController {
   })
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  async deleteNode(@Param('id') id: number): Promise<{ message: string }> {
+  async deleteNode(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
     await this.nodeService.deleteNode(id);
     return {
       message: NodeResponseMessage.NODE_DELETED,
     };
   }
+
   @ApiResponse({
     type: MessageResponseDto,
   })
@@ -64,7 +105,7 @@ export class NodeController {
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async updateNode(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateNodeDto,
   ): Promise<{ message: string }> {
     await this.nodeService.updateNode(id, body);
@@ -72,6 +113,7 @@ export class NodeController {
       message: NodeResponseMessage.NODE_UPDATED,
     };
   }
+
   @ApiResponse({
     type: CoordinateResponseDto,
   })
@@ -88,7 +130,10 @@ export class NodeController {
 
   @Patch('/:id/move')
   @HttpCode(HttpStatus.OK)
-  async moveNode(@Param('id') id: number, @Body() body: MoveNodeDto) {
+  async moveNode(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: MoveNodeDto,
+  ) {
     await this.nodeService.moveNode(id, body);
     return {
       message: NodeResponseMessage.NODE_MOVED,

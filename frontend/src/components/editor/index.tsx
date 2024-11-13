@@ -57,16 +57,11 @@ const Editor = ({
         onContentError={({ disableCollaboration }) => {
           disableCollaboration();
         }}
-        onCreate={({ editor: currentEditor }) => {
-          provider.on("synced", () => {
-            console.log(ydoc);
-
-            if (
-              !ydoc.getMap("config").get("initialContentLoaded") &&
-              currentEditor
-            ) {
-              ydoc.getMap("config").set("initialContentLoaded", true);
-              currentEditor.commands.setContent(initialContent as JSONContent);
+        initialContent={initialContent}
+        onCreate={({ editor }) => {
+          provider.on("sync", () => {
+            if (editor.isEmpty && initialContent) {
+              editor.commands.setContent(initialContent);
             }
           });
         }}

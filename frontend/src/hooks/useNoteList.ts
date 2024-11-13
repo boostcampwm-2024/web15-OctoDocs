@@ -13,6 +13,7 @@ export const useNoteList = () => {
   const deleteMutation = useDeletePage();
 
   const handleNoteClick = (id: number) => {
+    console.log("handleNoteClick", id);
     setCurrentPage(id);
   };
 

@@ -31,7 +31,7 @@ fi
 
 # 의존성 설치 및 애플리케이션 시작
 echo "의존성 설치 중..."
-npm install
+yarn install
 
 echo "애플리케이션 시작 중..."
-nohup npm start &
+nohup yarn start &

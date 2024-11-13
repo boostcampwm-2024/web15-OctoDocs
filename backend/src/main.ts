@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useWebSocketAdapter(new WsAdapter(app));
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.enableCors();
+  
   const config = new DocumentBuilder()
     .setTitle('OctoDocs')
     .setDescription('OctoDocs API 명세서')

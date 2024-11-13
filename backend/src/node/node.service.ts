@@ -49,9 +49,25 @@ export class NodeService {
   }
 
   async updateNode(id: number, dto: UpdateNodeDto): Promise<Node> {
-    // 갱신할 노드를 조회한다.
-    const node = await this.findNodeById(id);
+    // 노드를 조회한다.
+    const node = await this.nodeRepository.findOne({
+      relations: ['page'],
+      select: {
+        id: true,
+        page: {
+          id: true,
+          title: true, // content 제외하고 title만 선택
+        },
+      },
+      where: {
+        id,
+      },
+    });
 
+    // 노드가 없으면 NotFound 에러
+    if (!node) {
+      throw new NodeNotFoundException();
+    }
     // 노드와 연결된 페이지를 조회한다.
     const linkedPage = await this.pageRepository.findOneBy({
       id: node.page.id,
@@ -68,13 +84,44 @@ export class NodeService {
 
   async findNodeById(id: number): Promise<Node> {
     // 노드를 조회한다.
-    const node = await this.nodeRepository.findOneBy({ id });
+    const node = await this.nodeRepository.findOne({
+      relations: ['page'],
+      select: {
+        id: true,
+        page: {
+          id: true,
+          title: true, // content 제외하고 title만 선택
+        },
+      },
+      where: {
+        id,
+      },
+    });
 
     // 노드가 없으면 NotFound 에러
     if (!node) {
       throw new NodeNotFoundException();
     }
     return node;
+  }
+
+  async findNodes(): Promise<Node[]> {
+    // 노드를 조회한다.
+    const nodes = await this.nodeRepository.find({
+      relations: ['page'],
+      select: {
+        id: true,
+        page: {
+          id: true,
+          title: true, // content 제외하고 title만 선택
+        },
+      },
+    });
+    // 노드가 없으면 NotFound 에러
+    if (!nodes) {
+      throw new NodeNotFoundException();
+    }
+    return nodes;
   }
 
   async getCoordinates(id: number): Promise<{ x: number; y: number }> {

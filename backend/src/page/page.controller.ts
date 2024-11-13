@@ -8,8 +8,8 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { Page } from './page.entity';
 import { PageService } from './page.service';
 import { CreatePageDto } from './dtos/createPage.dto';
 import { UpdatePageDto } from './dtos/updatePage.dto';
@@ -29,6 +29,7 @@ export enum PageResponseMessage {
 @Controller('page')
 export class PageController {
   constructor(private readonly pageService: PageService) {}
+
   @ApiResponse({
     type: MessageResponseDto,
   })
@@ -54,7 +55,9 @@ export class PageController {
   })
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  async deletePage(@Param('id') id: number): Promise<MessageResponseDto> {
+  async deletePage(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<MessageResponseDto> {
     await this.pageService.deletePage(id);
     return {
       message: PageResponseMessage.PAGE_DELETED,
@@ -68,7 +71,7 @@ export class PageController {
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async updatePage(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdatePageDto,
   ): Promise<MessageResponseDto> {
     await this.pageService.updatePage(id, body);
@@ -96,7 +99,9 @@ export class PageController {
   @ApiOperation({ summary: '특정 페이지를 가져옵니다.' })
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  async findPage(@Param('id') id: number): Promise<FindPageResponseDto> {
+  async findPage(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<FindPageResponseDto> {
     return {
       message: PageResponseMessage.PAGE_RETURNED,
       page: await this.pageService.findPageById(id),

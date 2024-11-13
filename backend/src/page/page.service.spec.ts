@@ -58,12 +58,15 @@ describe('PageService', () => {
         x: 1,
         y: 1,
       };
-
+      const newDate = new Date();
       // 페이지 엔티티
       const newPage: Page = {
         id: 1,
         title: 'new page',
         content: {} as JSON,
+        createdAt: newDate,
+        updatedAt: newDate,
+        version: 1,
         node: null,
       };
 
@@ -119,17 +122,25 @@ describe('PageService', () => {
         title: 'Updated Title',
         content: {} as JSON,
       };
+      const originDate = new Date();
       const originPage: Page = {
         id: 1,
         title: 'origin title',
         content: {} as JSON,
         node: null,
+        createdAt: originDate,
+        updatedAt: originDate,
+        version: 1,
       };
+      const newDate = new Date();
       const newPage: Page = {
         id: 1,
         title: 'Updated Title',
         content: {} as JSON,
         node: null,
+        createdAt: newDate,
+        updatedAt: newDate,
+        version: 1,
       };
 
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(originPage);
@@ -157,11 +168,15 @@ describe('PageService', () => {
 
   describe('findPageById', () => {
     it('id에 해당하는 페이지를 찾아 성공적으로 반환한다.', async () => {
+      const newDate = new Date();
       const expectedPage: Page = {
         id: 1,
         title: 'title',
         content: {} as JSON,
         node: null,
+        createdAt: newDate,
+        updatedAt: newDate,
+        version: 1,
       };
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(expectedPage);
 
