@@ -37,41 +37,31 @@ export default function Canvas({ className }: CanvasProps) {
 
   const { pages } = usePages();
 
-  const onConnect = useCallback(
-    (connection: Connection) => {
-      if (!connection.source || !connection.target) return;
+  const onConnect = useCallback((connection: Connection) => {
+    if (!connection.source || !connection.target) return;
 
-      const newEdge: Edge = {
-        id: `e${connection.source}-${connection.target}`,
-        source: connection.source,
-        target: connection.target,
-        sourceHandle: connection.sourceHandle || undefined,
-        targetHandle: connection.targetHandle || undefined,
-      };
+    const newEdge: Edge = {
+      id: `e${connection.source}-${connection.target}`,
+      source: connection.source,
+      target: connection.target,
+      sourceHandle: connection.sourceHandle,
+      targetHandle: connection.targetHandle,
+    };
 
-      if (ydoc.current) {
-        ydoc.current.getMap("edges").set(newEdge.id, newEdge);
+    if (ydoc.current) {
+      ydoc.current.getMap("edges").set(newEdge.id, newEdge);
+    }
+  }, []);
+
+  const handleEdgesChange = useCallback((changes: EdgeChange[]) => {
+    if (!ydoc.current) return;
+
+    changes.forEach((change) => {
+      if (change.type === "remove") {
+        ydoc.current?.getMap("edges").delete(change.id);
       }
-
-      setEdges((eds) => addEdge(connection, eds));
-    },
-    [setEdges],
-  );
-
-  const handleEdgesChange = useCallback(
-    (changes: EdgeChange[]) => {
-      onEdgesChange(changes);
-
-      if (!ydoc.current) return;
-
-      changes.forEach((change) => {
-        if (change.type === "remove") {
-          ydoc.current?.getMap("edges").delete(change.id);
-        }
-      });
-    },
-    [onEdgesChange],
-  );
+    });
+  }, []);
 
   const nodeTypes = useMemo(() => ({ note: NoteNode }), []);
 
@@ -91,20 +81,20 @@ export default function Canvas({ className }: CanvasProps) {
     ydoc.current = doc;
     provider.current = wsProvider;
 
-    if (nodesMap.size === 0) {
+    if (nodesMap.size === 0 && nodes.length > 0) {
       nodes.forEach((node) => {
-        nodesMap.set(node.id, JSON.parse(JSON.stringify(node)));
+        nodesMap.set(node.id, node);
       });
     }
 
     nodesMap.observe(() => {
       const yNodes = Array.from(nodesMap.values()) as Node[];
-      setNodes(yNodes);
+      setNodes([...yNodes]);
     });
 
     edgesMap.observe(() => {
       const yEdges = Array.from(edgesMap.values()) as Edge[];
-      setEdges(yEdges);
+      setEdges([...yEdges]);
     });
 
     return () => {
@@ -114,40 +104,59 @@ export default function Canvas({ className }: CanvasProps) {
   }, []);
 
   useEffect(() => {
-    if (pages) {
+    if (pages && nodes.length === 0) {
       const newNodes = pages.map((page, index) => ({
         id: page.id.toString(),
         position: { x: 100 * index, y: 100 },
         data: { title: page.title, id: page.id },
         type: "note",
       }));
-      setNodes(newNodes);
+      setNodes([...newNodes]);
     }
-  }, [pages, setNodes]);
+  }, [pages, setNodes, nodes.length]);
+
+  // const handleNodesChange = useCallback(
+  //   (changes: NodeChange[]) => {
+  //     if (!ydoc.current) return;
+
+  //     changes.forEach((change) => {
+  //       if (change.type === "position") {
+  //         const node = nodes.find((n) => n.id === change.id);
+  //         if (node) {
+  //           const updatedNode = {
+  //             ...node,
+  //             position: change.position,
+  //           };
+  //           ydoc.current?.getMap("nodes").set(change.id, updatedNode);
+
+  //         }
+  //       }
+  //     });
+  //   },
+  //   [nodes],
+  // );
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      onNodesChange(changes);
-      if (!ydoc.current) {
-        return;
-      }
+      if (!ydoc.current) return;
+
+      console.log("Changes:", changes);
 
       changes.forEach((change) => {
-        if (change.type === "position") {
-          const node = nodes.find((n) => n.id === change.id);
-          if (node) {
+        if (change.type === "position" && change.position) {
+          const nodeIndex = nodes.findIndex((n) => n.id === change.id);
+          if (nodeIndex !== -1) {
             const updatedNode = {
-              ...node,
-              position: change.position || node.position,
+              ...nodes[nodeIndex],
+              position: change.position,
             };
             ydoc.current?.getMap("nodes").set(change.id, updatedNode);
           }
         }
       });
     },
-    [nodes, onNodesChange],
+    [nodes],
   );
-
   return (
     <div className={cn("", className)}>
       <ReactFlow
