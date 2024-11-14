@@ -57,7 +57,6 @@ const Editor = ({
         onContentError={({ disableCollaboration }) => {
           disableCollaboration();
         }}
-        initialContent={initialContent}
         onCreate={({ editor }) => {
           provider.on("sync", () => {
             if (editor.isEmpty && initialContent) {
