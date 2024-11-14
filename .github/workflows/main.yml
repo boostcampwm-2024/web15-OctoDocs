@@ -100,15 +100,6 @@ jobs:
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           source: ./.env
           target: /home/root/app/octodocs
-      # .sh 파일 전송
-      - name: Copy deploy.sh to remote server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_DEV_IP }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
-          source: ./deploy.sh
-          target: /home/root/app/octodocs
       # yarn start
       - name: yarn start
         env:
