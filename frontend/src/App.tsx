@@ -5,6 +5,7 @@ import HoverTrigger from "./components/HoverTrigger";
 import EditorView from "./components/EditorView";
 import SideWrapper from "./components/layout/SideWrapper";
 import Canvas from "./components/canvas";
+import ScrollWrapper from "./components/layout/ScrollWrapper";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,9 @@ function App() {
         </SideWrapper>
         <Canvas className="z-0 h-full w-full" />
         <HoverTrigger className="absolute inset-0 z-20 w-64">
-          <Sidebar />
+          <ScrollWrapper height={"h-[720px]"} className="overflow-x-clip">
+            <Sidebar />
+          </ScrollWrapper>
         </HoverTrigger>
       </div>
     </QueryClientProvider>
