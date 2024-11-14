@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EdgeRepository } from './edge.repository';
-import { NodeRepository } from 'src/node/node.repository';
+import { NodeRepository } from '../node/node.repository';
 import { Edge } from './edge.entity';
 import { CreateEdgeDto } from './dtos/createEdge.dto';
-import { EdgeNotFoundException } from 'src/exception/edge.exception';
+import { EdgeNotFoundException } from '../exception/edge.exception';
 
 @Injectable()
 export class EdgeService {

@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EdgeService } from './edge.service';
 import { EdgeRepository } from './edge.repository';
+import { NodeRepository } from '../node/node.repository';
+
 describe('EdgeService', () => {
   let service: EdgeService;
 
@@ -10,6 +12,10 @@ describe('EdgeService', () => {
         EdgeService,
         {
           provide: EdgeRepository,
+          useValue: {},
+        },
+        {
+          provide: NodeRepository,
           useValue: {},
         },
       ],
