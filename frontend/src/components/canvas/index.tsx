@@ -86,7 +86,10 @@ export default function Canvas({ className }: CanvasProps) {
               return [...nds, node];
             }
             const newNodes = [...nds];
-            newNodes[index] = node;
+            newNodes[index] = {
+              ...newNodes[index],
+              position: node.position,
+            };
             return newNodes;
           });
         } else if (change.action === "delete") {
@@ -122,10 +125,11 @@ export default function Canvas({ className }: CanvasProps) {
 
     pages.forEach((page) => {
       const pageId = page.id.toString();
-      //if (!existingPageIds.current.has(pageId)) {
+      const existingNode = nodesMap.get(pageId) as Node | undefined;
+
       const newNode = {
         id: pageId,
-        position: {
+        position: existingNode?.position || {
           x: Math.random() * 500,
           y: Math.random() * 500,
         },
@@ -133,9 +137,10 @@ export default function Canvas({ className }: CanvasProps) {
         type: "note",
       };
 
-      nodesMap.set(pageId, newNode);
-      existingPageIds.current.add(pageId);
-      //}
+      if (!existingNode) {
+        nodesMap.set(pageId, newNode);
+        existingPageIds.current.add(pageId);
+      }
     });
   }, [pages]);
 
@@ -144,22 +149,22 @@ export default function Canvas({ className }: CanvasProps) {
       if (!ydoc) return;
       const nodesMap = ydoc.getMap("nodes");
 
-      onNodesChange(changes);
-
       changes.forEach((change) => {
         if (change.type === "position" && change.position) {
-          const node = nodes.find((n) => n.id === change.id);
-          if (node) {
+          const existingNode = nodesMap.get(change.id) as Node | undefined;
+          if (existingNode) {
             const updatedNode = {
-              ...node,
+              ...existingNode,
               position: change.position,
             };
             nodesMap.set(change.id, updatedNode);
           }
         }
       });
+
+      onNodesChange(changes);
     },
-    [nodes, onNodesChange],
+    [onNodesChange],
   );
 
   const handleEdgesChange = useCallback(
