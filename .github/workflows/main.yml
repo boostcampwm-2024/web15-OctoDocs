@@ -107,9 +107,6 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
         run: |
-          mkdir ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST << 'EOF'
             DIR="/home/root/app/octodocs"
             cd "$DIR"
