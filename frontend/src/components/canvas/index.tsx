@@ -14,6 +14,7 @@ import {
   Edge,
   EdgeChange,
   Connection,
+  ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { usePages } from "@/hooks/usePages";
@@ -30,7 +31,7 @@ interface CanvasProps {
   className?: string;
 }
 
-export default function Canvas({ className }: CanvasProps) {
+function Flow({ className }: CanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { pages } = usePages();
@@ -70,11 +71,14 @@ export default function Canvas({ className }: CanvasProps) {
     const nodesMap = ydoc.getMap("nodes");
     const edgesMap = ydoc.getMap("edges");
 
+    const initialNodes = Array.from(nodesMap.values()) as Node[];
+    setNodes(initialNodes);
+
     nodesMap.observe((event) => {
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
-          const node = nodesMap.get(nodeId) as Node;
+          const updatedNode = nodesMap.get(nodeId) as Node;
 
           if (change.action === "add") {
             queryClient.invalidateQueries({ queryKey: ["pages"] });
@@ -83,10 +87,13 @@ export default function Canvas({ className }: CanvasProps) {
           setNodes((nds) => {
             const index = nds.findIndex((n) => n.id === nodeId);
             if (index === -1) {
-              return [...nds, node];
+              return [...nds, updatedNode];
             }
             const newNodes = [...nds];
-            newNodes[index] = node;
+            newNodes[index] = {
+              ...updatedNode,
+              selected: newNodes[index].selected,
+            };
             return newNodes;
           });
         } else if (change.action === "delete") {
@@ -103,7 +110,6 @@ export default function Canvas({ className }: CanvasProps) {
 
     return () => {
       wsProvider.destroy();
-      ydoc.destroy();
     };
   }, [ydoc, queryClient]);
 
@@ -122,29 +128,28 @@ export default function Canvas({ className }: CanvasProps) {
 
     pages.forEach((page) => {
       const pageId = page.id.toString();
-      //if (!existingPageIds.current.has(pageId)) {
+      const existingNode = nodesMap.get(pageId) as Node | undefined;
+
       const newNode = {
         id: pageId,
-        position: {
+        type: "note",
+        data: { title: page.title, id: page.id },
+        position: existingNode?.position || {
           x: Math.random() * 500,
           y: Math.random() * 500,
         },
-        data: { title: page.title, id: page.id },
-        type: "note",
+        selected: false,
       };
 
       nodesMap.set(pageId, newNode);
       existingPageIds.current.add(pageId);
-      //}
     });
-  }, [pages]);
+  }, [pages, ydoc]);
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
       if (!ydoc) return;
       const nodesMap = ydoc.getMap("nodes");
-
-      onNodesChange(changes);
 
       changes.forEach((change) => {
         if (change.type === "position" && change.position) {
@@ -153,11 +158,14 @@ export default function Canvas({ className }: CanvasProps) {
             const updatedNode = {
               ...node,
               position: change.position,
+              selected: false,
             };
             nodesMap.set(change.id, updatedNode);
           }
         }
       });
+
+      onNodesChange(changes);
     },
     [nodes, onNodesChange],
   );
@@ -209,11 +217,20 @@ export default function Canvas({ className }: CanvasProps) {
         proOptions={proOptions}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
+        selectNodesOnDrag={false}
       >
         <Controls />
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
     </div>
+  );
+}
+
+export default function Canvas(props: CanvasProps) {
+  return (
+    <ReactFlowProvider>
+      <Flow {...props} />
+    </ReactFlowProvider>
   );
 }
