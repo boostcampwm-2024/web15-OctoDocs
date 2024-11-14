@@ -54,25 +54,31 @@ jobs:
               with:
                   script: |
                       const prNumber = context.payload.pull_request.number;
+                      const prAuthor = context.payload.pull_request.user.login;
                       const assignees = context.payload.pull_request.assignees.map(a => a.login);
 
                       // Define reviewers for each label
-                      const BE_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc'].filter(r => !assignees.includes(r));
-                      const FE_reviewers = ['yewonJin', 'djk01281'].filter(r => !assignees.includes(r));
-                      const doc_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc', 'yewonJin', 'djk01281'].filter(r => !assignees.includes(r));
+                      const BE_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc'];
+                      const FE_reviewers = ['yewonJin', 'djk01281'];
+                      const doc_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc', 'yewonJin', 'djk01281'];
+
+                      // Function to filter out assignees and PR author
+                      const filterReviewers = (reviewers) => {
+                        return reviewers.filter(r => !assignees.includes(r) && r !== prAuthor);
+                      };
 
                       // Check the labels on the PR and assign appropriate reviewers
                       const labels = context.payload.pull_request.labels.map(label => label.name);
                       let reviewersToAdd = [];
 
                       if (labels.includes('🐧🚀😶‍🌫️ BE')) {
-                        reviewersToAdd.push(...BE_reviewers);
+                        reviewersToAdd.push(...filterReviewers(BE_reviewers));
                       }
                       if (labels.includes('🐳🐣 FE')) {
-                        reviewersToAdd.push(...FE_reviewers);
+                        reviewersToAdd.push(...filterReviewers(FE_reviewers));
                       }
                       if (labels.includes('📚 Documentation')) {
-                        reviewersToAdd.push(...doc_reviewers);
+                        reviewersToAdd.push(...filterReviewers(doc_reviewers));
                       }
 
                       // Remove duplicates if any
