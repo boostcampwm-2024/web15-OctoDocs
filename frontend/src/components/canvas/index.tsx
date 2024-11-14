@@ -42,7 +42,7 @@ export default function Canvas({ className }: CanvasProps) {
   useEffect(() => {
     const doc = new Y.Doc();
     const wsProvider = new WebsocketProvider(
-      "ws://localhost:1234",
+      import.meta.env.VITE_WS_URL,
       "flow-room",
       doc,
     );
