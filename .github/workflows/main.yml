@@ -112,6 +112,7 @@ jobs:
             cd "$DIR"
             cd backend
             nohup yarn start &
+            disown
             exit
           EOF
       # # 배포용 쉘 스크립트 파일 전송
