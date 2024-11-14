@@ -73,16 +73,10 @@ export default function EditorView() {
   );
 
   if (isLoading || !page || currentPage === null) {
-    return (
-      <div>
-        {isLoading && <div>"isLoading"</div>}
-        {!page && <div>"!page"</div>}
-        {currentPage === null && <div>"currrentPage === null"</div>}
-      </div>
-    );
+    return null;
   }
 
-  if (!ydoc || !provider) return <div>로딩중</div>;
+  if (!ydoc || !provider) return null;
 
   return (
     <EditorLayout>
