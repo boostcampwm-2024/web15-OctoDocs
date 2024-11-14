@@ -17,6 +17,7 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { FindPagesResponseDto } from './dtos/findPagesResponse.dto';
 import { FindPageResponseDto } from './dtos/findPageResponse.dto';
+import { CreatePageResponseDto } from './dtos/createPageResponse.dto';
 
 export enum PageResponseMessage {
   PAGE_CREATED = '페이지와 노드를 생성했습니다.',
@@ -31,7 +32,7 @@ export class PageController {
   constructor(private readonly pageService: PageService) {}
 
   @ApiResponse({
-    type: MessageResponseDto,
+    type: CreatePageResponseDto,
   })
   @ApiOperation({ summary: '페이지를 생성하고 노드도 생성합니다.' })
   @ApiBody({
@@ -40,10 +41,13 @@ export class PageController {
   })
   @Post('/')
   @HttpCode(HttpStatus.CREATED)
-  async createPage(@Body() body: CreatePageDto): Promise<MessageResponseDto> {
-    await this.pageService.createPage(body);
+  async createPage(
+    @Body() body: CreatePageDto,
+  ): Promise<CreatePageResponseDto> {
+    const newPage = await this.pageService.createPage(body);
     return {
       message: PageResponseMessage.PAGE_CREATED,
+      pageId: newPage.id,
     };
   }
 
