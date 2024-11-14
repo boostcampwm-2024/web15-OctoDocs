@@ -48,15 +48,6 @@ jobs:
       - name: Create .env file
         run: |
           echo "${{secrets.DEVELOPMENT_ENV}}" > ./.env
-      # .env 파일 전송
-      - name: Copy .env to remote server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_DEV_IP }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
-          source: ./.env
-          target: /home/root/app/actodocs
       # sh 실행
       - name: Connect to Remote Server and Run Commands
         env:
@@ -68,21 +59,25 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST << 'EOF'
-            DIR="/home/root/app/actodocs"
+            DIR="/home/root/app/octodocs"
             
             # Check if directory exists
-            if [ -d "$DIR/backend" ]; then
-                echo "$DIR/backend 디렉토리가 존재합니다. 최신 버전으로 업데이트 중..."
+            if [ -d "$DIR" ]; then
+                echo "$DIR 디렉토리가 존재합니다. 최신 버전으로 업데이트 중..."
                 cd "$DIR"
                 git pull
             else
-                echo "$DIR/backend 디렉토리가 존재하지 않습니다. 클론 중..."
+                echo "$DIR 디렉토리가 존재하지 않습니다. 클론 중..."
                 git clone https://github.com/boostcampwm-2024/web15-OctoDocs.git "$DIR"
                 cd "$DIR"
             fi
 
             # Move to backend directory
             cd backend
+
+            # Install dependencies and start application
+            echo "의존성 설치"
+            yarn install
 
             # Check and kill existing process
             EXISTING_PID=$(lsof -ti :3000)
@@ -95,13 +90,30 @@ jobs:
                 echo "실행 중인 프로세스가 없습니다."
             fi
 
-            # Install dependencies and start application
-            echo "의존성 설치"
-            yarn install
 
             echo "시작"
             yarn start
           EOF
+      # .env 파일 전송
+      - name: Copy .env to remote server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_DEV_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          source: ./.env
+          target: /home/root/app/octodocs
+      # yarn start
+      - name: yarn start
+        env:
+          REMOTE_HOST: ${{ secrets.REMOTE_DEV_IP }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
+        run: |
+          DIR="/home/root/app/octodocs"
+          cd DIR
+          cd backend
+          yarn start
       # # 배포용 쉘 스크립트 파일 전송
       # - name: Copy deploy.sh to remote server
       #   uses: appleboy/scp-action@master
