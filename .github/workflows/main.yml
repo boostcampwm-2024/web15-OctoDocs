@@ -14,6 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # .env 파일 생성 후 붙여넣기
+      - name: Create .env file
+        run: |
+          echo "${{secrets.DEVELOPMENT_FE_ENV}}" > ./frontend/.env
+
       # Node.js 설치
       - name: Set up Node.js
         uses: actions/setup-node@v3
