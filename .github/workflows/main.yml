@@ -111,7 +111,8 @@ jobs:
             DIR="/home/root/app/octodocs"
             cd "$DIR"
             cd backend
-            nohup yarn start & disown
+            nohup yarn start &
+            exit
           EOF
       # # 배포용 쉘 스크립트 파일 전송
       # - name: Copy deploy.sh to remote server
