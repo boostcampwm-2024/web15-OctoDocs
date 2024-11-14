@@ -107,10 +107,15 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
         run: |
-          DIR="/home/root/app/octodocs"
-          cd "$DIR"
-          cd backend
-          yarn start
+          mkdir ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST << 'EOF'
+            DIR="/home/root/app/octodocs"
+            cd "$DIR"
+            cd backend
+            yarn start
+          EOF
       # # 배포용 쉘 스크립트 파일 전송
       # - name: Copy deploy.sh to remote server
       #   uses: appleboy/scp-action@master
