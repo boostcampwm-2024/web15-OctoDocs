@@ -49,7 +49,7 @@ jobs:
         run: |
           echo "${{secrets.DEVELOPMENT_ENV}}" > ./.env
       # .env 파일 전송
-      - name: Copy deploy.sh to remote server
+      - name: Copy .env to remote server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.REMOTE_DEV_IP }}
@@ -60,9 +60,9 @@ jobs:
       # sh 실행
       - name: Connect to Remote Server and Run Commands
         env:
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_HOST: ${{ secrets.REMOTE_DEV_IP }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
         run: |
           echo "$SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
