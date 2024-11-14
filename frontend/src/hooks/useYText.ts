@@ -2,7 +2,9 @@ import { useState } from "react";
 import * as Y from "yjs";
 import diff from "fast-diff";
 
-function diffToDelta(diffResult) {
+type DiffResult = [number, string][]; // 각 요소는 [연산자, 값] 형태
+
+function diffToDelta(diffResult: DiffResult) {
   return diffResult.map(([op, value]) =>
     op === diff.INSERT
       ? { insert: value }
