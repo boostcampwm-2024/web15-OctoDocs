@@ -18,21 +18,22 @@ export default function Tools() {
     <Button
       className="flex flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100"
       onClick={() => {
-        createMutation.mutate({
-          title: "제목 없음",
-          content: {
-            type: "doc",
-            content: [
-              {
-                type: "paragraph",
-                content: [{ type: "text", text: "" }],
-              },
-            ],
-          },
-          x: 0,
-          y: 0,
-        });
-        setCurrentPage(pages[pages.length - 1].id);
+        createMutation
+          .mutateAsync({
+            title: "제목 없음",
+            content: {
+              type: "doc",
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "" }],
+                },
+              ],
+            },
+            x: 0,
+            y: 0,
+          })
+          .then((res) => setCurrentPage(res.pageId));
       }}
     >
       <div>

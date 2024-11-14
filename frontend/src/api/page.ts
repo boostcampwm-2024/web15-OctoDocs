@@ -30,6 +30,11 @@ export interface PagesResponse {
   pages: Omit<Page, "content">[];
 }
 
+interface CreatePageResponse {
+  message: string;
+  pageId: number;
+}
+
 export const getPage = async (id: number) => {
   const url = `/page/${id}`;
 
@@ -47,7 +52,7 @@ export const getPages = async () => {
 export const createPage = async (pageData: CreatePageRequest) => {
   const url = `/page`;
 
-  const res = await Post<null, CreatePageRequest>(url, pageData);
+  const res = await Post<CreatePageResponse, CreatePageRequest>(url, pageData);
   return res.data;
 };
 
