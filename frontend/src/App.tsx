@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import Sidebar from "./components/sidebar";
 import HoverTrigger from "./components/HoverTrigger";
 import EditorView from "./components/EditorView";
@@ -12,7 +11,7 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="h-screen bg-white">
+      <div className="fixed inset-0 bg-white">
         <SideWrapper side="right">
           <EditorView />
         </SideWrapper>
