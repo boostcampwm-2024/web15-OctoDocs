@@ -108,7 +108,7 @@ jobs:
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
         run: |
           DIR="/home/root/app/octodocs"
-          cd DIR
+          cd "$DIR"
           cd backend
           yarn start
       # # 배포용 쉘 스크립트 파일 전송
