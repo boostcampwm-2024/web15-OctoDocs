@@ -47,8 +47,18 @@ describe('PageController', () => {
       };
       const expectedResponse = {
         message: PageResponseMessage.PAGE_CREATED,
+        pageId: 1,
       };
-
+      const newDate = new Date();
+      jest.spyOn(pageService, 'createPage').mockResolvedValue({
+        id: 1,
+        title: 'New Page',
+        content: {} as JSON,
+        createdAt: newDate,
+        updatedAt: newDate,
+        version: 1,
+        node: null,
+      });
       const result = await controller.createPage(dto);
 
       expect(pageService.createPage).toHaveBeenCalledWith(dto);
