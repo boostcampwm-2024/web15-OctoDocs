@@ -91,9 +91,8 @@ function Flow({ className }: CanvasProps) {
             }
             const newNodes = [...nds];
             newNodes[index] = {
-              ...newNodes[index],
-              position: updatedNode.position,
-              selected: false,
+              ...updatedNode,
+              selected: newNodes[index].selected,
             };
             return newNodes;
           });
@@ -131,21 +130,19 @@ function Flow({ className }: CanvasProps) {
       const pageId = page.id.toString();
       const existingNode = nodesMap.get(pageId) as Node | undefined;
 
-      if (!existingNode) {
-        const newNode = {
-          id: pageId,
-          type: "note",
-          data: { title: page.title, id: page.id },
-          position: {
-            x: Math.random() * 500,
-            y: Math.random() * 500,
-          },
-          selected: false,
-        };
+      const newNode = {
+        id: pageId,
+        type: "note",
+        data: { title: page.title, id: page.id },
+        position: existingNode?.position || {
+          x: Math.random() * 500,
+          y: Math.random() * 500,
+        },
+        selected: false,
+      };
 
-        nodesMap.set(pageId, newNode);
-        existingPageIds.current.add(pageId);
-      }
+      nodesMap.set(pageId, newNode);
+      existingPageIds.current.add(pageId);
     });
   }, [pages, ydoc]);
 
