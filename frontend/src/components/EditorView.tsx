@@ -6,11 +6,7 @@ import * as Y from "yjs";
 
 import Editor from "./editor";
 import usePageStore from "@/store/usePageStore";
-import {
-  usePage,
-  useUpdatePage,
-  useOptimisticUpdatePage,
-} from "@/hooks/usePages";
+import { usePage, useUpdatePage } from "@/hooks/usePages";
 import EditorLayout from "./layout/EditorLayout";
 import EditorTitle from "./editor/EditorTitle";
 import SaveStatus from "./editor/ui/SaveStatus";
@@ -36,7 +32,7 @@ export default function EditorView() {
   const pageContent = page?.content ?? {};
 
   const updatePageMutation = useUpdatePage();
-  const optimisticUpdatePageMutation = useOptimisticUpdatePage({
+  /*   const optimisticUpdatePageMutation = useOptimisticUpdatePage({
     id: currentPage ?? 0,
   });
 
@@ -54,7 +50,7 @@ export default function EditorView() {
         onError: () => setSaveStatus("unsaved"),
       },
     );
-  };
+  }; */
 
   const handleEditorUpdate = useDebouncedCallback(
     async ({ editor }: { editor: EditorInstance }) => {
@@ -91,7 +87,11 @@ export default function EditorView() {
   return (
     <EditorLayout>
       <SaveStatus saveStatus={saveStatus} />
-      <EditorTitle title={pageTitle} onTitleChange={handleTitleChange} />
+      <EditorTitle
+        key={currentPage}
+        currentPage={currentPage}
+        pageContent={pageContent}
+      />
       <Editor
         key={ydoc.guid}
         initialContent={pageContent}

@@ -22,6 +22,7 @@ import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import useYDocStore from "@/store/useYDocStore";
 
 const proOptions = { hideAttribution: true };
 
@@ -35,23 +36,39 @@ export default function Canvas({ className }: CanvasProps) {
   const { pages } = usePages();
   const queryClient = useQueryClient();
 
-  const ydoc = useRef<Y.Doc>();
+  const { ydoc } = useYDocStore();
+
   const provider = useRef<WebsocketProvider>();
   const existingPageIds = useRef(new Set<string>());
 
   useEffect(() => {
-    const doc = new Y.Doc();
+    if (!pages) return;
+
+    const yMap = ydoc.getMap("title");
+
+    pages.forEach((page) => {
+      if (yMap.get(`title_${page.id}`)) return;
+
+      const yText = new Y.Text();
+      yText.insert(0, page.title);
+
+      yMap.set(`title_${page.id}`, yText);
+    });
+  }, [pages]);
+
+  useEffect(() => {
+    if (!ydoc) return;
+
     const wsProvider = new WebsocketProvider(
       import.meta.env.VITE_WS_URL,
       "flow-room",
-      doc,
+      ydoc,
     );
 
-    ydoc.current = doc;
     provider.current = wsProvider;
 
-    const nodesMap = doc.getMap("nodes");
-    const edgesMap = doc.getMap("edges");
+    const nodesMap = ydoc.getMap("nodes");
+    const edgesMap = ydoc.getMap("edges");
 
     nodesMap.observe((event) => {
       event.changes.keys.forEach((change, key) => {
@@ -86,14 +103,14 @@ export default function Canvas({ className }: CanvasProps) {
 
     return () => {
       wsProvider.destroy();
-      doc.destroy();
+      ydoc.destroy();
     };
-  }, [queryClient]);
+  }, [ydoc, queryClient]);
 
   useEffect(() => {
-    if (!pages || !ydoc.current) return;
+    if (!pages || !ydoc) return;
 
-    const nodesMap = ydoc.current.getMap("nodes");
+    const nodesMap = ydoc.getMap("nodes");
     const currentPageIds = new Set(pages.map((page) => page.id.toString()));
 
     existingPageIds.current.forEach((pageId) => {
@@ -105,27 +122,27 @@ export default function Canvas({ className }: CanvasProps) {
 
     pages.forEach((page) => {
       const pageId = page.id.toString();
-      if (!existingPageIds.current.has(pageId)) {
-        const newNode = {
-          id: pageId,
-          position: {
-            x: Math.random() * 500,
-            y: Math.random() * 500,
-          },
-          data: { title: page.title, id: page.id },
-          type: "note",
-        };
+      //if (!existingPageIds.current.has(pageId)) {
+      const newNode = {
+        id: pageId,
+        position: {
+          x: Math.random() * 500,
+          y: Math.random() * 500,
+        },
+        data: { title: page.title, id: page.id },
+        type: "note",
+      };
 
-        nodesMap.set(pageId, newNode);
-        existingPageIds.current.add(pageId);
-      }
+      nodesMap.set(pageId, newNode);
+      existingPageIds.current.add(pageId);
+      //}
     });
   }, [pages]);
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      if (!ydoc.current) return;
-      const nodesMap = ydoc.current.getMap("nodes");
+      if (!ydoc) return;
+      const nodesMap = ydoc.getMap("nodes");
 
       onNodesChange(changes);
 
@@ -147,8 +164,8 @@ export default function Canvas({ className }: CanvasProps) {
 
   const handleEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
-      if (!ydoc.current) return;
-      const edgesMap = ydoc.current.getMap("edges");
+      if (!ydoc) return;
+      const edgesMap = ydoc.getMap("edges");
 
       changes.forEach((change) => {
         if (change.type === "remove") {
@@ -163,7 +180,7 @@ export default function Canvas({ className }: CanvasProps) {
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (!connection.source || !connection.target || !ydoc.current) return;
+      if (!connection.source || !connection.target || !ydoc) return;
 
       const newEdge: Edge = {
         id: `e${connection.source}-${connection.target}`,
@@ -173,7 +190,7 @@ export default function Canvas({ className }: CanvasProps) {
         targetHandle: connection.targetHandle || undefined,
       };
 
-      ydoc.current.getMap("edges").set(newEdge.id, newEdge);
+      ydoc.getMap("edges").set(newEdge.id, newEdge);
       setEdges((eds) => addEdge(connection, eds));
     },
     [setEdges],

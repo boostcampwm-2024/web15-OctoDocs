@@ -1,19 +1,39 @@
+import useYDocStore from "@/store/useYDocStore";
+import { useYText } from "@/hooks/useYText";
+import { useOptimisticUpdatePage } from "@/hooks/usePages";
+import { JSONContent } from "novel";
+
 interface EditorTitleProps {
-  title?: string;
-  onTitleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  currentPage: number;
+  pageContent: JSONContent;
 }
 
 export default function EditorTitle({
-  title,
-  onTitleChange,
+  currentPage,
+  pageContent,
 }: EditorTitleProps) {
+  const { ydoc } = useYDocStore();
+  const { input, setYText } = useYText(ydoc, currentPage);
+
+  const optimisticUpdatePageMutation = useOptimisticUpdatePage({
+    id: currentPage ?? 0,
+  });
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setYText(e.target.value);
+
+    optimisticUpdatePageMutation.mutate({
+      pageData: { title: e.target.value, content: pageContent },
+    });
+  };
+
   return (
     <div className="p-12 pb-0">
       <input
         type="text"
+        value={input as string}
         className="w-full text-xl font-bold outline-none"
-        value={title}
-        onChange={onTitleChange}
+        onChange={handleTitleChange}
       />
     </div>
   );
