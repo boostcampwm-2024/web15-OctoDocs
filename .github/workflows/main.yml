@@ -75,8 +75,9 @@ jobs:
             # Move to backend directory
             cd backend
 
-            # Install dependencies and start application
+            # Install dependencies
             echo "의존성 설치"
+            yarn -v
             yarn install
 
             # Check and kill existing process
@@ -89,10 +90,6 @@ jobs:
             else
                 echo "실행 중인 프로세스가 없습니다."
             fi
-
-
-            echo "시작"
-            yarn start
           EOF
       # .env 파일 전송
       - name: Copy .env to remote server
