@@ -56,23 +56,66 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           source: ./.env
-          target: /home/root/app/autodocs
+          target: /home/root/app/actodocs
+      # sh 실행
+      - name: Connect to Remote Server and Run Commands
+        env:
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST << 'EOF'
+            DIR="/home/root/app/actodocs"
+            
+            # Check if directory exists
+            if [ -d "$DIR/backend" ]; then
+                echo "$DIR/backend 디렉토리가 존재합니다. 최신 버전으로 업데이트 중..."
+                cd "$DIR"
+                git pull
+            else
+                echo "$DIR/backend 디렉토리가 존재하지 않습니다. 클론 중..."
+                git clone https://github.com/boostcampwm-2024/web15-OctoDocs.git "$DIR"
+                cd "$DIR"
+            fi
 
-      # 배포용 쉘 스크립트 파일 전송
-      - name: Copy deploy.sh to remote server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.REMOTE_DEV_IP }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
-          source: ./deploy.sh
-          target: /home/root
-      # 쉘 스크립트 실행
-      - name: Run command on remote server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.REMOTE_DEV_IP }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
-          script: |
-            sh /home/root/deploy.sh
+            # Move to backend directory
+            cd backend
+
+            # Check and kill existing process
+            EXISTING_PID=$(lsof -ti :3000)
+
+            if [ -n "$EXISTING_PID" ]; then
+                echo "프로세스 종료 중...: $EXISTING_PID"
+                kill -9 "$EXISTING_PID"
+                echo "$EXISTING_PID 프로세스 종료"
+            else
+                echo "실행 중인 프로세스가 없습니다."
+            fi
+
+            # Install dependencies and start application
+            echo "의존성 설치"
+            yarn install
+
+            echo "시작"
+            yarn start
+          EOF
+      # # 배포용 쉘 스크립트 파일 전송
+      # - name: Copy deploy.sh to remote server
+      #   uses: appleboy/scp-action@master
+      #   with:
+      #     host: ${{ secrets.REMOTE_DEV_IP }}
+      #     username: ${{ secrets.REMOTE_USER }}
+      #     key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+      #     source: ./deploy.sh
+      #     target: /home/root
+      # # 쉘 스크립트 실행
+      # - name: Run command on remote server
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.REMOTE_DEV_IP }}
+      #     username: ${{ secrets.REMOTE_USER }}
+      #     key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+      #     script: |
+      #       sh /home/root/deploy.sh
