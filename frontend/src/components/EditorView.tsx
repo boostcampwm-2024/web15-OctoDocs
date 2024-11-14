@@ -26,7 +26,7 @@ export default function EditorView() {
 
   const provider = useMemo(() => {
     return new WebsocketProvider(
-      "ws://localhost:1234",
+      import.meta.env.VITE_WS_URL,
       `document-${currentPage}`,
       ydoc,
     );
