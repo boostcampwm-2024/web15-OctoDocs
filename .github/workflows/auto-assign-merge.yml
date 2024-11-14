@@ -3,18 +3,18 @@ name: Auto Assign, Review, and Merge
 on:
     pull_request:
         types:
-            [
-                opened,
-                labeled,
-                unlabeled,
-                review_requested,
-                review_request_removed,
-            ]
+            - opened
+            - labeled
+            - unlabeled
+            - review_requested
+            - review_request_removed
     pull_request_review:
-        types: [submitted]
+        types:
+            - submitted
 
 jobs:
     auto-assign:
+        if: github.event_name == 'pull_request'
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
@@ -37,6 +37,7 @@ jobs:
                       });
 
     auto-reviewers:
+        if: github.event_name == 'pull_request'
         runs-on: ubuntu-latest
         needs: auto-assign
         steps:
@@ -88,9 +89,9 @@ jobs:
                       }
 
     auto-merge:
+        if: github.event_name == 'pull_request_review' && github.event.action == 'submitted' && github.event.review.state == 'approved'
         runs-on: ubuntu-latest
         needs: [auto-assign, auto-reviewers]
-        if: github.event.pull_request.merged == false
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -105,6 +106,17 @@ jobs:
               with:
                   script: |
                       const prNumber = context.payload.pull_request.number;
+
+                      // Check if PR is already merged
+                      const pr = await github.rest.pulls.get({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        pull_number: prNumber
+                      });
+
+                      if (pr.data.merged) {
+                        return;
+                      }
 
                       // Check if PR is approved
                       const reviews = await github.rest.pulls.listReviews({
