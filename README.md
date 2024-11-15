@@ -1,7 +1,45 @@
+![project-intro](https://github.com/user-attachments/assets/0df1909c-436d-4516-a639-78c4088e9871)
+
+> 배포 링크: http://octodocs.s3-website.kr.object.ncloudstorage.com/
+>
+
+
+<div align="center">
+  
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23FF9782&title_bg=%23231F20&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false)](https://hits.seeyoufarm.com)
+  
+</div>
+
+<div align="center">
+
+[Project Wiki](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) | [Backlog](https://github.com/orgs/boostcampwm-2024/projects/120)
+
+
+</div>
 
 ## 🐙 프로젝트 소개
-![project-intro](https://github.com/user-attachments/assets/0df1909c-436d-4516-a639-78c4088e9871)
+
+> “Notion을 쓰고 있는데, 문서끼리 관계 표현이 너무 어려워요…”
+> 
+
+> “Obsidian으로 노트 정리를 잘 하고 있는데, 공유하기가 너무 불편해요…”
+> 
+
+이런 고민, 이제 OctoDocs로 해결해보세요!!
+
+- OctoDocs는
+    - **실시간 협업**이 지원되는 **연결형 지식관리 도구**입니다.
+    - **실시간 동시편집** 과 **마크다운** 형식 문서편집을 지원합니다.
+
+## 😎 핵심 기능
+
+![image](https://github.com/user-attachments/assets/4c0010db-d4a3-455f-ab26-03e04c85e46e)
+
+## 🚀시스템 아키텍처
+
+v.241115
+
+![image](https://github.com/user-attachments/assets/5435ab1a-419d-46cb-837a-d79029b6a223)
 
 
 ## 🧸 팀원 소개
