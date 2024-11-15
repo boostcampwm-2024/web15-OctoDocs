@@ -11,6 +11,7 @@ async function bootstrap() {
   
   app.useWebSocketAdapter(new WsAdapter(app));
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.setGlobalPrefix("api");
   
   const config = new DocumentBuilder()
     .setTitle('OctoDocs')
