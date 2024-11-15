@@ -74,14 +74,23 @@ function Flow({ className }: CanvasProps) {
     const initialNodes = Array.from(nodesMap.values()) as Node[];
     setNodes(initialNodes);
 
+    let isInitialSync = true;
+
     nodesMap.observe((event) => {
+      if (isInitialSync) {
+        isInitialSync = false;
+        return;
+      }
+
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
           const updatedNode = nodesMap.get(nodeId) as Node;
 
           if (change.action === "add") {
-            queryClient.invalidateQueries({ queryKey: ["pages"] });
+            if (!existingPageIds.current.has(nodeId)) {
+              queryClient.invalidateQueries({ queryKey: ["pages"] });
+            }
           }
 
           setNodes((nds) => {
