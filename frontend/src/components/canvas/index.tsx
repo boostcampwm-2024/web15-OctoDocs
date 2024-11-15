@@ -88,9 +88,7 @@ function Flow({ className }: CanvasProps) {
           const updatedNode = nodesMap.get(nodeId) as Node;
 
           if (change.action === "add") {
-            if (!existingPageIds.current.has(nodeId)) {
-              queryClient.invalidateQueries({ queryKey: ["pages"] });
-            }
+            queryClient.invalidateQueries({ queryKey: ["pages"] });
           }
 
           setNodes((nds) => {
