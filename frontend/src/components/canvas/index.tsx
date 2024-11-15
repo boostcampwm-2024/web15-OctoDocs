@@ -74,7 +74,14 @@ function Flow({ className }: CanvasProps) {
     const initialNodes = Array.from(nodesMap.values()) as Node[];
     setNodes(initialNodes);
 
+    let isInitialSync = true;
+
     nodesMap.observe((event) => {
+      if (isInitialSync) {
+        isInitialSync = false;
+        return;
+      }
+
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
