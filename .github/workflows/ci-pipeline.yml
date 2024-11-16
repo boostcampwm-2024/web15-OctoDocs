@@ -134,7 +134,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "23"
+      # 루트 의존성 캐시 설정
+      - name: Cache Yarn dependencies for root
+        id: cache-root-deps
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-root-yarn-${{ hashFiles('yarn.lock') }}
 
+      # 루트 의존성 설치
+      - name: Install root dependencies
+        if: steps.cache-root-deps.outputs.cache-hit != 'true'
+        run: yarn install
+        
       # 백엔드 의존성 캐시 복원
       - name: Restore Yarn dependencies for backend
         uses: actions/cache@v3
