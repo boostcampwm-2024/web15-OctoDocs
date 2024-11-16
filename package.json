@@ -9,7 +9,8 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "start": "node apps/backend/dist/main.js",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    "lint": "turbo run lint",
+    "test": "turbo run test"
   },
   "dependencies": {
     "turbo": "^2.3.0"
