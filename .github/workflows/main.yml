@@ -57,6 +57,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_DEV_IP }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          BRANCH_NAME: feature-be-#173
         run: |
           mkdir ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_rsa
@@ -68,6 +69,10 @@ jobs:
             if [ -d "$DIR" ]; then
                 echo "$DIR 디렉토리가 존재합니다. 최신 버전으로 업데이트 중..."
                 cd "$DIR"
+                git fetch origin $BRANCH_NAME
+                git switch -c $BRANCH_NAME origin/$BRANCH_NAME
+
+
                 git pull
             else
                 echo "$DIR 디렉토리가 존재하지 않습니다. 클론 중..."
@@ -75,8 +80,6 @@ jobs:
                 cd "$DIR"
             fi
 
-            # Move to backend directory
-            cd backend
 
             # Install dependencies
             echo "의존성 설치"
