@@ -2,7 +2,7 @@ name: Create Directory on Remote Server
 on:
   push:
     branches:
-      - be-feature-#173
+      - develop
 
 jobs:
   env:
@@ -24,7 +24,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_DEV_IP }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
-          BRANCH_NAME: "feature-be-#173"
+          BRANCH_NAME: "develop"
         run: |
           mkdir ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_rsa
@@ -36,16 +36,16 @@ jobs:
             if [ -d "$DIR" ]; then
                 echo "$DIR 디렉토리가 존재합니다. 최신 버전으로 업데이트 중..."
                 cd "$DIR"
-                git switch -c be-feature-#173
-                git pull origin be-feature-#173
+                git switch -c develop
+                git pull origin develop
 
 
             else
                 echo "$DIR 디렉토리가 존재하지 않습니다. 클론 중..."
                 git clone https://github.com/boostcampwm-2024/web15-OctoDocs.git "$DIR"
                 cd "$DIR"
-                git switch -c be-feature-#173
-                git pull origin be-feature-#173
+                git switch -c develop
+                git pull origin develop
             fi
 
 
