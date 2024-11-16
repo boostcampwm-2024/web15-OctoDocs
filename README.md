@@ -1,4 +1,5 @@
-![project-intro](https://github.com/user-attachments/assets/0df1909c-436d-4516-a639-78c4088e9871)
+![Sprint 33](https://github.com/user-attachments/assets/2b23184d-90ed-458d-9dc4-dab9579c1e48)
+
 
 > 배포 링크: http://octodocs.s3-website.kr.object.ncloudstorage.com/
 >
