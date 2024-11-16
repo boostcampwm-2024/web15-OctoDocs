@@ -69,11 +69,9 @@ jobs:
             if [ -d "$DIR" ]; then
                 echo "$DIR 디렉토리가 존재합니다. 최신 버전으로 업데이트 중..."
                 cd "$DIR"
-                git fetch origin $BRANCH_NAME
-                git switch -c $BRANCH_NAME origin/$BRANCH_NAME
+                git switch -c $feature-be-#173 origin/feature-be-#173
 
 
-                git pull
             else
                 echo "$DIR 디렉토리가 존재하지 않습니다. 클론 중..."
                 git clone https://github.com/boostcampwm-2024/web15-OctoDocs.git "$DIR"
