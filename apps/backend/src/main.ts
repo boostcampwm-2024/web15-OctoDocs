@@ -8,11 +8,11 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   app.useWebSocketAdapter(new WsAdapter(app));
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.setGlobalPrefix("api");
-  
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('OctoDocs')
     .setDescription('OctoDocs API 명세서')
@@ -21,7 +21,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
   app.enableCors({
-    origin: process.env.origin
+    origin: process.env.origin,
   });
   await app.listen(3000);
 }

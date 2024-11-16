@@ -27,13 +27,13 @@ jobs:
         id: cache-backend-deps
         uses: actions/cache@v3
         with:
-          path: backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('backend/yarn.lock') }}
+          path: apps/backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('apps/backend/yarn.lock') }}
 
       # 백엔드 의존성 설치
       - name: Install backend dependencies
         if: steps.cache-backend-deps.outputs.cache-hit != 'true'
-        working-directory: ./backend
+        working-directory: ./apps/backend
         run: yarn install
 
   setup-frontend:
@@ -54,13 +54,13 @@ jobs:
         id: cache-frontend-deps
         uses: actions/cache@v3
         with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('frontend/yarn.lock') }}
+          path: apps/frontend/node_modules
+          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('apps/frontend/yarn.lock') }}
 
       # 프론트엔드 의존성 설치
       - name: Install frontend dependencies
         if: steps.cache-frontend-deps.outputs.cache-hit != 'true'
-        working-directory: ./frontend
+        working-directory: ./apps/frontend
         run: yarn install
 
   backend-lint:
@@ -79,12 +79,12 @@ jobs:
       - name: Restore Yarn dependencies for backend
         uses: actions/cache@v3
         with:
-          path: backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('backend/yarn.lock') }}
+          path: apps/backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('apps/backend/yarn.lock') }}
 
       # 백엔드 린트 실행
       - name: Run backend lint
-        working-directory: ./backend
+        working-directory: ./apps/backend
         run: yarn lint
         continue-on-error: true
 
@@ -109,12 +109,12 @@ jobs:
       - name: Restore Yarn dependencies for frontend
         uses: actions/cache@v3
         with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('frontend/yarn.lock') }}
+          path: apps/frontend/node_modules
+          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('apps/frontend/yarn.lock') }}
 
       # 프론트엔드 린트 실행
       - name: Run frontend lint
-        working-directory: ./frontend
+        working-directory: ./apps/frontend
         run: yarn lint
         continue-on-error: true
 
@@ -139,8 +139,8 @@ jobs:
       - name: Restore Yarn dependencies for backend
         uses: actions/cache@v3
         with:
-          path: backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('backend/yarn.lock') }}
+          path: apps/backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('apps/backend/yarn.lock') }}
 
       # 백엔드 빌드 실행
       - name: Run backend build
@@ -163,8 +163,8 @@ jobs:
       - name: Restore Yarn dependencies for frontend
         uses: actions/cache@v3
         with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('frontend/yarn.lock') }}
+          path: apps/frontend/node_modules
+          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('apps/frontend/yarn.lock') }}
 
       # 프론트엔드 빌드 실행
       - name: Run frontend build
@@ -187,10 +187,10 @@ jobs:
       - name: Restore Yarn dependencies for backend
         uses: actions/cache@v3
         with:
-          path: backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('backend/yarn.lock') }}
+          path: apps/backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('apps/backend/yarn.lock') }}
 
       # 백엔드 테스트 실행
       - name: Run backend tests
-        working-directory: ./backend
+        working-directory: ./apps/backend
         run: yarn test
