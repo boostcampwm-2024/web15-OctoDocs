@@ -57,7 +57,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_DEV_IP }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
-          BRANCH_NAME: feature-be-#173
+          BRANCH_NAME: "feature-be-#173"
         run: |
           mkdir ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_rsa
