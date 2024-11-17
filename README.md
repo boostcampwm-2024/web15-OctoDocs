@@ -9,10 +9,11 @@
 
 
 
+
+
 <div align="center">
   
-   ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23000000&title_bg=%23000000&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false) [![Group 81 (1)](https://github.com/user-attachments/assets/df2dbeb3-dfe7-44b7-a808-d80c7dbc6e16)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) [![Group 82 (1)](https://github.com/user-attachments/assets/2db4fb08-7ab7-4af2-9a08-8f0dc0cf6696)
-](https://github.com/orgs/boostcampwm-2024/projects/120) 
+   ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23000000&title_bg=%23000000&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false) [![Group 83 (2)](https://github.com/user-attachments/assets/2d106d94-430c-47bc-a9e2-1f0026f76c2f)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) [![Group 84 (2)](https://github.com/user-attachments/assets/b29b191b-8172-42a9-b541-40fdb8f165f3)](https://github.com/orgs/boostcampwm-2024/projects/120) 
 
 </div>
 
