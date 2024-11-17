@@ -71,13 +71,13 @@ export function useCollaborativeCursors({
   }, [ydoc, roomName]);
 
   const updateCursorPosition = useCallback(
-    (x: number, y: number) => {
+    (x: number | null, y: number | null) => {
       if (!provider.current?.awareness) return;
 
-      const cursor = flowInstance?.screenToFlowPosition({
-        x,
-        y,
-      });
+      const cursor =
+        x !== null && y !== null
+          ? flowInstance?.screenToFlowPosition({ x, y })
+          : null;
 
       provider.current.awareness.setLocalState({
         cursor,
@@ -103,14 +103,8 @@ export function useCollaborativeCursors({
   );
 
   const handleMouseLeave = useCallback(() => {
-    if (!provider.current?.awareness) return;
-
-    provider.current.awareness.setLocalState({
-      cursor: null,
-      color: userColor.current,
-      clientId: provider.current.awareness.clientID,
-    });
-  }, []);
+    updateCursorPosition(null, null);
+  }, [updateCursorPosition]);
 
   return {
     cursors,
