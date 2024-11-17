@@ -4,17 +4,16 @@
 > 배포 링크: http://octodocs.s3-website.kr.object.ncloudstorage.com/
 >
 
+<br>
+
+
+
+
+
 
 <div align="center">
   
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23FF9782&title_bg=%23231F20&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false)](https://hits.seeyoufarm.com)
-  
-</div>
-
-<div align="center">
-
-[Project Wiki](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) | [Backlog](https://github.com/orgs/boostcampwm-2024/projects/120)
-
+   ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23000000&title_bg=%23000000&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false) [![Group 83 (2)](https://github.com/user-attachments/assets/2d106d94-430c-47bc-a9e2-1f0026f76c2f)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) [![Group 84 (2)](https://github.com/user-attachments/assets/b29b191b-8172-42a9-b541-40fdb8f165f3)](https://github.com/orgs/boostcampwm-2024/projects/120) 
 
 </div>
 
