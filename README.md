@@ -6,11 +6,13 @@
 
 <br>
 
+
 <div align="center">
   
-   [![Group 77](https://github.com/user-attachments/assets/fa8ac598-71ca-4b0d-9e71-693041787d7d)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) [![Group 78](https://github.com/user-attachments/assets/217fd214-9073-4dd9-8f85-5a191861e67c)](https://github.com/orgs/boostcampwm-2024/projects/120) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23FF9782&title_bg=%23231F20&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false)](https://hits.seeyoufarm.com)
+   ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fboostcampwm-2024%2Fweb15-OctoDocs&count_bg=%23000000&title_bg=%23000000&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false) [![Group 77](https://github.com/user-attachments/assets/fa8ac598-71ca-4b0d-9e71-693041787d7d)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) [![Group 78](https://github.com/user-attachments/assets/217fd214-9073-4dd9-8f85-5a191861e67c)](https://github.com/orgs/boostcampwm-2024/projects/120) 
 
 </div>
+
 
 ## 🐙 프로젝트 소개
 
