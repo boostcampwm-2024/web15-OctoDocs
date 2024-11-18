@@ -2,6 +2,7 @@
 .env
 .env*
 *.local
+.turbo
 
 # compiled output
 */dist

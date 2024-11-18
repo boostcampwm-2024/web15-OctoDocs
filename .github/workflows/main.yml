@@ -1,47 +1,11 @@
 name: Create Directory on Remote Server
-
 on:
   push:
     branches:
       - develop
 
 jobs:
-  frontend-CD:
-    runs-on: ubuntu-latest
-
-    steps:
-      # 코드 체크아웃
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # .env 파일 생성 후 붙여넣기
-      - name: Create .env file
-        run: |
-          echo "${{secrets.DEVELOPMENT_FE_ENV}}" > ./frontend/.env
-
-      # Node.js 설치
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "23"
-      # 패키지 설치 및 React 빌드
-      - name: Install dependencies and build
-        run: |
-          cd frontend
-          npm install
-          npm run build
-
-      # aws cli를 통해 ncloud object storage 업로드
-      - name: Configure AWS credentials
-        env:
-          NCLOUD_ACCESS_KEY_ID: ${{ secrets.NCLOUD_ACCESS_KEY_ID }}
-          NCLOUD_SECRET_ACCESS_KEY: ${{ secrets.NCLOUD_SECRET_ACCESS_KEY }}
-        run: |
-          aws configure set aws_access_key_id $NCLOUD_ACCESS_KEY_ID
-          aws configure set aws_secret_access_key $NCLOUD_SECRET_ACCESS_KEY
-          aws configure set region ap-northeast-2
-          aws --endpoint-url=https://kr.object.ncloudstorage.com s3 cp ./frontend/dist s3://octodocs/ --recursive --debug
-  backend-CD:
+  env:
     runs-on: ubuntu-latest
 
     steps:
@@ -53,12 +17,14 @@ jobs:
       - name: Create .env file
         run: |
           echo "${{secrets.DEVELOPMENT_ENV}}" > ./.env
+
       # sh 실행
       - name: Connect to Remote Server and Run Commands
         env:
           REMOTE_HOST: ${{ secrets.REMOTE_DEV_IP }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          BRANCH_NAME: "develop"
         run: |
           mkdir ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_rsa
@@ -70,20 +36,26 @@ jobs:
             if [ -d "$DIR" ]; then
                 echo "$DIR 디렉토리가 존재합니다. 최신 버전으로 업데이트 중..."
                 cd "$DIR"
-                git pull
+                git switch -c develop
+                git pull origin develop
+
+
             else
                 echo "$DIR 디렉토리가 존재하지 않습니다. 클론 중..."
                 git clone https://github.com/boostcampwm-2024/web15-OctoDocs.git "$DIR"
                 cd "$DIR"
+                git switch -c develop
+                git pull origin develop
             fi
 
-            # Move to backend directory
-            cd backend
 
             # Install dependencies
             echo "의존성 설치"
             yarn -v
             yarn install
+
+            # build
+            yarn build
 
             # Check and kill existing process
             EXISTING_PID=$(lsof -ti :3000)
@@ -104,7 +76,15 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.REMOTE_PRIVATE_KEY }}
           source: ./.env
-          target: /home/root/app/octodocs
+          target: /home/root/app/octodocs/apps/backend
+      - name: Copy .env to remote server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_DEV_IP }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }}
+          source: ./.env
+          target: /home/root/app/octodocs/apps/frontend
       # yarn start
       - name: yarn start
         env:
@@ -112,23 +92,4 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           SSH_KEY: ${{ secrets.REMOTE_PRIVATE_KEY }}
         run: |
-          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd /home/root/app/octodocs; nohup yarn start > nohup.out 2> nohup.err < /dev/null &"
-
-      # # 배포용 쉘 스크립트 파일 전송
-      # - name: Copy deploy.sh to remote server
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.REMOTE_DEV_IP }}
-      #     username: ${{ secrets.REMOTE_USER }}
-      #     key: ${{ secrets.REMOTE_PRIVATE_KEY }}
-      #     source: ./deploy.sh
-      #     target: /home/root
-      # # 쉘 스크립트 실행
-      # - name: Run command on remote server
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.REMOTE_DEV_IP }}
-      #     username: ${{ secrets.REMOTE_USER }}
-      #     key: ${{ secrets.REMOTE_PRIVATE_KEY }}
-      #     script: |
-      #       sh /home/root/deploy.sh
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "nohup node /home/root/app/octodocs/apps/backend/dist/main.js > nohup.out 2> nohup.err < /dev/null &"

@@ -36,35 +36,35 @@ interface CreatePageResponse {
 }
 
 export const getPage = async (id: number) => {
-  const url = `/page/${id}`;
+  const url = `/api/page/${id}`;
 
   const res = await Get<PageResponse>(url);
   return res.data.page;
 };
 
 export const getPages = async () => {
-  const url = "/page";
+  const url = "/api/page";
 
   const res = await Get<PagesResponse>(url);
   return res.data.pages;
 };
 
 export const createPage = async (pageData: CreatePageRequest) => {
-  const url = `/page`;
+  const url = `/api/page`;
 
   const res = await Post<CreatePageResponse, CreatePageRequest>(url, pageData);
   return res.data;
 };
 
 export const deletePage = async (id: number) => {
-  const url = `/page/${id}`;
+  const url = `/api/page/${id}`;
 
   const res = await Delete<null>(url);
   return res.data;
 };
 
 export const updatePage = async (id: number, pageData: PageRequest) => {
-  const url = `/page/${id}`;
+  const url = `/api/page/${id}`;
 
   const res = await Patch<null, PageRequest>(url, pageData);
   return res.data;

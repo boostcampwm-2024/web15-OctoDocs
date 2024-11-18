@@ -10,15 +10,21 @@ import { Page } from './page/page.entity';
 import { Edge } from './edge/edge.entity';
 import { Node } from './node/node.entity';
 import { YjsModule } from './yjs/yjs.module';
+import * as path from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', '..', 'frontend', 'dist'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env', // * nest 디렉터리 기준
+      envFilePath: path.join(__dirname, '..', '.env'), // * nest 디렉터리 기준
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get('DB_NAME'),
@@ -26,7 +32,6 @@ import { YjsModule } from './yjs/yjs.module';
         logging: true,
         synchronize: true,
       }),
-      inject: [ConfigService],
     }),
     NodeModule,
     PageModule,

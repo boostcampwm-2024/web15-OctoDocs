@@ -1,0 +1,23 @@
+{
+  "name": "octodocs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/boostcampwm-2024/web15-OctoDocs.git",
+  "author": "ez <105545215+ezcolin2@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "node apps/backend/dist/main.js",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "dependencies": {
+    "turbo": "^2.3.0"
+  },
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "packageManager": "yarn@1.22.22"
+}

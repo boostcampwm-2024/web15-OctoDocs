@@ -17,28 +17,28 @@ interface NodeResponse {
 }
 
 export const getNodeCoors = async (id: number) => {
-  const url = `/node${id}`;
+  const url = `/api/node${id}`;
 
   const res = await Get<NodeResponse>(url);
   return res.data;
 };
 
 export const createNode = async (id: number, nodeData: NodeRequest) => {
-  const url = `/node/${id}`;
+  const url = `/api/node/${id}`;
 
   const res = await Post<null, NodeRequest>(url, nodeData);
   return res.data;
 };
 
 export const deleteNode = async (id: number) => {
-  const url = `/node/${id}`;
+  const url = `/api/node/${id}`;
 
   const res = await Delete<null>(url);
   return res.data;
 };
 
 export const updateNode = async (id: number, nodeData: NodeRequest) => {
-  const url = `/node/${id}`;
+  const url = `/api/node/${id}`;
 
   const res = await Patch<null, NodeRequest>(url, nodeData);
   return res.data;
