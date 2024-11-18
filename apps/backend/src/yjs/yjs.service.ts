@@ -10,11 +10,7 @@ import { Server } from 'socket.io';
 import { YSocketIO } from 'y-socket.io/dist/server';
 import * as Y from 'yjs';
 
-@WebSocketGateway({
-  cors: false,
-  transports: ['websocket', 'polling'],
-  port: 1234,
-})
+@WebSocketGateway(1234)
 export class YjsService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
