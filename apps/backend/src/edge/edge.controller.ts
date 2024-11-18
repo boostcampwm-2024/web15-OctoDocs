@@ -33,11 +33,11 @@ export class EdgeController {
   })
   @Get('/')
   @HttpCode(HttpStatus.OK)
-  async getNodes() {
-    const nodes = await this.edgeService.findEdges();
+  async findEdges() {
+    const edges = await this.edgeService.findEdges();
     return {
       message: EdgeResponseMessage.EDGE_ALL_RETURNED,
-      nodes: nodes,
+      edges: edges,
     };
   }
 
@@ -56,7 +56,7 @@ export class EdgeController {
   @ApiOperation({ summary: '엣지를 삭제합니다.' })
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  async deleteNode(
+  async deleteEdge(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
     await this.edgeService.deleteEdge(id);

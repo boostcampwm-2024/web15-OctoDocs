@@ -2,7 +2,7 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
+  // Column,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
@@ -21,9 +21,9 @@ export class Edge {
   @JoinColumn({ name: 'to_node_id' })
   toNode: Node;
 
-  @Column({ nullable: true })
-  type: string;
+  // @Column({ nullable: true })
+  // type: string;
 
-  @Column({ nullable: true })
-  color: string;
+  // @Column({ nullable: true })
+  // color: string;
 }
