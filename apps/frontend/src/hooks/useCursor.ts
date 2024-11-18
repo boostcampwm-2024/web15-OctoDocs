@@ -1,7 +1,7 @@
 import { useReactFlow, type XYPosition } from "@xyflow/react";
 import * as Y from "yjs";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { WebsocketProvider } from "y-websocket";
+import { SocketIOProvider } from "y-socket.io";
 
 const CURSOR_COLORS = [
   "#7d7b94",
@@ -29,7 +29,7 @@ export function useCollaborativeCursors({
   roomName = "cursor-room",
 }: CollaborativeCursorsProps) {
   const flowInstance = useReactFlow();
-  const provider = useRef<WebsocketProvider>();
+  const provider = useRef<SocketIOProvider>();
   const [cursors, setCursors] = useState<Map<number, AwarenessState>>(
     new Map(),
   );
@@ -39,10 +39,19 @@ export function useCollaborativeCursors({
   );
 
   useEffect(() => {
-    const wsProvider = new WebsocketProvider(
+    const wsProvider = new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
-      roomName,
+      `flow-room`,
       ydoc,
+      {
+        autoConnect: true,
+        disableBc: false,
+      },
+      {
+        reconnectionDelayMax: 10000,
+        timeout: 5000,
+        transports: ["websocket", "polling"],
+      },
     );
 
     provider.current = wsProvider;
