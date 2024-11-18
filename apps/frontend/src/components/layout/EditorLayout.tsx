@@ -10,7 +10,9 @@ const EditorLayout = ({ children }: EditorLayoutProps) => {
 
   return (
     <div
-      className={`absolute right-0 h-[720px] w-[520px] transform rounded-bl-lg rounded-br-lg rounded-tr-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out ${isPanelOpen ? "translate-x-0" : "translate-x-full"}`}
+      className={`absolute right-0 h-[720px] w-[520px] rounded-bl-lg rounded-br-lg rounded-tr-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out ${
+        isPanelOpen ? "transform-none" : "translate-x-full"
+      }`}
     >
       <div className="h-full overflow-auto">{children}</div>
 

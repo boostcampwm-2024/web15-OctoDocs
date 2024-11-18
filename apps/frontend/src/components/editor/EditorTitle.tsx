@@ -32,7 +32,7 @@ export default function EditorTitle({
       <input
         type="text"
         value={input as string}
-        className="w-full text-xl font-bold outline-none"
+        className="w-full text-4xl font-bold outline-none"
         onChange={handleTitleChange}
       />
     </div>

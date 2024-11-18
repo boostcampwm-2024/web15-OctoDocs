@@ -25,6 +25,9 @@ import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import useYDocStore from "@/store/useYDocStore";
 
+import { useCollaborativeCursors } from "@/hooks/useCursor";
+import { CollaborativeCursors } from "../CursorView";
+
 const proOptions = { hideAttribution: true };
 
 interface CanvasProps {
@@ -38,6 +41,12 @@ function Flow({ className }: CanvasProps) {
   const queryClient = useQueryClient();
 
   const { ydoc } = useYDocStore();
+
+  const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
+    useCollaborativeCursors({
+      ydoc,
+      roomName: "flow-room",
+    });
 
   const provider = useRef<WebsocketProvider>();
   const existingPageIds = useRef(new Set<string>());
@@ -214,12 +223,14 @@ function Flow({ className }: CanvasProps) {
   const nodeTypes = useMemo(() => ({ note: NoteNode }), []);
 
   return (
-    <div className={cn("", className)}>
+    <div className={cn("", className)} onMouseMove={handleMouseMove}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={handleNodesChange}
         onEdgesChange={handleEdgesChange}
+        onMouseLeave={handleMouseLeave}
+        onNodeDrag={handleNodeDrag}
         onConnect={onConnect}
         proOptions={proOptions}
         nodeTypes={nodeTypes}
@@ -229,6 +240,7 @@ function Flow({ className }: CanvasProps) {
         <Controls />
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <CollaborativeCursors cursors={cursors} />
       </ReactFlow>
     </div>
   );
