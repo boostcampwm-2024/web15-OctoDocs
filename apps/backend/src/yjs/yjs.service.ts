@@ -10,6 +10,7 @@ import { Server } from 'socket.io';
 import { YSocketIO } from 'y-socket.io/dist/server';
 import * as Y from 'yjs';
 import { NodeService } from '../node/node.service';
+import { NodeCacheService } from 'src/node-cache/node-cache.service';
 
 @WebSocketGateway(1234)
 export class YjsService
@@ -18,7 +19,10 @@ export class YjsService
   private logger = new Logger('YjsGateway');
   private ysocketio: YSocketIO;
 
-  constructor(private readonly nodeService: NodeService) {}
+  constructor(
+    private readonly nodeService: NodeService,
+    private readonly nodeCacheService: NodeCacheService,
+  ) {}
   @WebSocketServer()
   server: Server;
 
@@ -40,32 +44,32 @@ export class YjsService
     });
 
     this.ysocketio.on('document-loaded', (doc: Y.Doc) => {
-      doc.on('update', (update) => {
-        // console.log(Y.decodeUpdate(update).structs);
-        // console.log(doc.share.get('default'));
+      doc.on('update', () => {
         const nodes = Object.values(doc.getMap('nodes').toJSON());
-        console.log(nodes);
+
+        // 모든 노드에 대해 검사한다.
         nodes.forEach((node) => {
           const { title, id } = node.data;
           const { x, y } = node.position;
           console.log(title, id, x, y);
-          this.nodeService.updateNode(id, { title, x, y });
+          // 만약 캐쉬에 노드가 존재하지 않다면 갱신 후 캐쉬에 노드를 넣는다.
+          if (!this.nodeCacheService.has(id)) {
+            console.log(id);
+            this.nodeService.updateNode(id, { title, x, y });
+            this.nodeCacheService.set(id, { title, x, y });
+            return;
+          }
+
+          // 만약 캐쉬에 노드가 존재하고 title이 다르다면 갱신한다.
+          if (!this.nodeCacheService.hasSameTitle(id, title)) {
+            this.nodeService.updateNode(id, { title, x, y });
+            this.nodeCacheService.set(id, { title, x, y });
+            return;
+          }
+          // 만약 캐쉬에 노드가 존재하고 title이 동일하다면 패스한다.
         });
       });
-      this.logger.log(`Document loaded: ${doc.guid}`);
-      setTimeout(() => {
-        const titleMap = doc.getMap('title');
-        titleMap.observe(() => {
-          console.log(titleMap.toString());
-        });
-      }, 5000);
-      // const toggleMap = doc.getMap('toggleMap');
-      // toggleMap.observe(() => {
-      //   const toggleState = toggleMap.get('toggle') || false;
-      //   this.logger.log('🐰 토글 상태 변경', {
-      //     toggleState,
-      //   });
-      // });
+
     });
   }
 
