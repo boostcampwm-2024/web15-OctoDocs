@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { EditorInstance } from "novel";
 import { useDebouncedCallback } from "use-debounce";
 import * as Y from "yjs";
@@ -15,19 +15,18 @@ export default function EditorView() {
   const { currentPage } = usePageStore();
   const { page, isLoading } = usePage(currentPage);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
-
-  const ydoc = useRef<Y.Doc>();
-  const provider = useRef<SocketIOProvider>();
+  const [ydoc, setYDoc] = useState<Y.Doc | null>(null);
+  const [provider, setProvider] = useState<SocketIOProvider | null>(null);
 
   useEffect(() => {
     if (!currentPage) return;
 
-    if (provider.current) {
-      provider.current.disconnect();
+    if (provider) {
+      provider.disconnect();
     }
 
     const doc = new Y.Doc();
-    ydoc.current = doc;
+    setYDoc(doc);
 
     const wsProvider = new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
@@ -44,7 +43,7 @@ export default function EditorView() {
       },
     );
 
-    provider.current = wsProvider;
+    setProvider(wsProvider);
 
     return () => {
       wsProvider.disconnect();
@@ -79,7 +78,7 @@ export default function EditorView() {
     return null;
   }
 
-  if (!ydoc.current || !provider.current) return null;
+  if (!ydoc || !provider) return null;
 
   return (
     <EditorLayout>
@@ -90,11 +89,11 @@ export default function EditorView() {
         pageContent={pageContent}
       />
       <Editor
-        key={provider.current.doc.guid + currentPage}
+        key={ydoc.guid}
         initialContent={pageContent}
         pageId={currentPage}
-        ydoc={ydoc.current}
-        provider={provider.current}
+        ydoc={ydoc}
+        provider={provider}
         onEditorUpdate={handleEditorUpdate}
       />
     </EditorLayout>
