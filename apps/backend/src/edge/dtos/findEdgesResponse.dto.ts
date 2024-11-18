@@ -15,9 +15,7 @@ export class FindEdgesResponseDto {
       {
         id: 1,
         fromNode: 2,
-        fromPoint: 'N',
         toNode: 7,
-        toPoint: 'W',
       },
     ],
     description: '모든 Edge 배열',
