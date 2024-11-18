@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EditorInstance } from "novel";
 import { useDebouncedCallback } from "use-debounce";
 import * as Y from "yjs";
@@ -16,15 +16,23 @@ export default function EditorView() {
   const { page, isLoading } = usePage(currentPage);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
 
-  const ydoc = useMemo(() => {
-    return new Y.Doc();
-  }, [currentPage]);
+  const ydoc = useRef<Y.Doc>();
+  const provider = useRef<SocketIOProvider>();
 
-  const provider = useMemo(() => {
-    return new SocketIOProvider(
+  useEffect(() => {
+    if (!currentPage) return;
+
+    if (provider.current) {
+      provider.current.disconnect();
+    }
+
+    const doc = new Y.Doc();
+    ydoc.current = doc;
+
+    const wsProvider = new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
       `document-${currentPage}`,
-      ydoc,
+      doc,
       {
         autoConnect: true,
         disableBc: false,
@@ -35,32 +43,18 @@ export default function EditorView() {
         transports: ["websocket", "polling"],
       },
     );
+
+    provider.current = wsProvider;
+
+    return () => {
+      wsProvider.disconnect();
+    };
   }, [currentPage]);
 
   const pageTitle = page?.title ?? "제목없음";
   const pageContent = page?.content ?? {};
 
   const updatePageMutation = useUpdatePage();
-  /*   const optimisticUpdatePageMutation = useOptimisticUpdatePage({
-    id: currentPage ?? 0,
-  });
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (currentPage === null) return;
-
-    setSaveStatus("unsaved");
-
-    optimisticUpdatePageMutation.mutate(
-      {
-        pageData: { title: e.target.value, content: pageContent },
-      },
-      {
-        onSuccess: () => setSaveStatus("saved"),
-        onError: () => setSaveStatus("unsaved"),
-      },
-    );
-  }; */
-
   const handleEditorUpdate = useDebouncedCallback(
     async ({ editor }: { editor: EditorInstance }) => {
       if (currentPage === null) {
@@ -85,7 +79,7 @@ export default function EditorView() {
     return null;
   }
 
-  if (!ydoc || !provider) return null;
+  if (!ydoc.current || !provider.current) return null;
 
   return (
     <EditorLayout>
@@ -96,11 +90,11 @@ export default function EditorView() {
         pageContent={pageContent}
       />
       <Editor
-        key={ydoc.guid}
+        key={provider.current.doc.guid + currentPage}
         initialContent={pageContent}
         pageId={currentPage}
-        ydoc={ydoc}
-        provider={provider}
+        ydoc={ydoc.current}
+        provider={provider.current}
         onEditorUpdate={handleEditorUpdate}
       />
     </EditorLayout>
