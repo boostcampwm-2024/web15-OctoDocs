@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { EditorInstance } from "novel";
 import { useDebouncedCallback } from "use-debounce";
 import * as Y from "yjs";
@@ -15,16 +15,23 @@ export default function EditorView() {
   const { currentPage } = usePageStore();
   const { page, isLoading } = usePage(currentPage);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
+  const [ydoc, setYDoc] = useState<Y.Doc | null>(null);
+  const [provider, setProvider] = useState<SocketIOProvider | null>(null);
 
-  const ydoc = useMemo(() => {
-    return new Y.Doc();
-  }, [currentPage]);
+  useEffect(() => {
+    if (!currentPage) return;
 
-  const provider = useMemo(() => {
-    return new SocketIOProvider(
+    if (provider) {
+      provider.disconnect();
+    }
+
+    const doc = new Y.Doc();
+    setYDoc(doc);
+
+    const wsProvider = new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
       `document-${currentPage}`,
-      ydoc,
+      doc,
       {
         autoConnect: true,
         disableBc: false,
@@ -35,32 +42,18 @@ export default function EditorView() {
         transports: ["websocket", "polling"],
       },
     );
+
+    setProvider(wsProvider);
+
+    return () => {
+      wsProvider.disconnect();
+    };
   }, [currentPage]);
 
   const pageTitle = page?.title ?? "제목없음";
   const pageContent = page?.content ?? {};
 
   const updatePageMutation = useUpdatePage();
-  /*   const optimisticUpdatePageMutation = useOptimisticUpdatePage({
-    id: currentPage ?? 0,
-  });
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (currentPage === null) return;
-
-    setSaveStatus("unsaved");
-
-    optimisticUpdatePageMutation.mutate(
-      {
-        pageData: { title: e.target.value, content: pageContent },
-      },
-      {
-        onSuccess: () => setSaveStatus("saved"),
-        onError: () => setSaveStatus("unsaved"),
-      },
-    );
-  }; */
-
   const handleEditorUpdate = useDebouncedCallback(
     async ({ editor }: { editor: EditorInstance }) => {
       if (currentPage === null) {
