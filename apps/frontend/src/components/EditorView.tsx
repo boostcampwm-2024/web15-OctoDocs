@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { EditorInstance } from "novel";
 import { useDebouncedCallback } from "use-debounce";
-import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
+import { SocketIOProvider } from "y-socket.io";
 
 import Editor from "./editor";
 import usePageStore from "@/store/usePageStore";
@@ -21,10 +21,19 @@ export default function EditorView() {
   }, [currentPage]);
 
   const provider = useMemo(() => {
-    return new WebsocketProvider(
+    return new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
       `document-${currentPage}`,
       ydoc,
+      {
+        autoConnect: true,
+        disableBc: false,
+      },
+      {
+        reconnectionDelayMax: 10000,
+        timeout: 5000,
+        transports: ["websocket", "polling"],
+      },
     );
   }, [currentPage]);
 
