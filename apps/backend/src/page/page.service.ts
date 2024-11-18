@@ -14,17 +14,18 @@ export class PageService {
   ) {}
 
   async createPage(dto: CreatePageDto): Promise<Page> {
-    const { title, content, x, y } = dto;
+    const { title, x, y } = dto;
 
-    // 페이지부터 생성한다.
-    const page = await this.pageRepository.save({ title, content });
+    // 노드부터 생성한다.
+    const node = await this.nodeRepository.save({ title, x, y });
 
-    // 노드를 생성한다.
-    const node = await this.nodeRepository.save({ id: page.id, x, y });
+    // 페이지를 생성한다.
+    const page = await this.pageRepository.save({ title, content: {} });
 
-    // 노드와 페이지를 서로 연결하여 저장한다.
-    page.node = node;
-    return await this.pageRepository.save(page);
+    // 페이지와 노드를 서로 연결하여 저장한다.
+    node.page = page;
+    await this.nodeRepository.save(node);
+    return page;
   }
 
   async createLinkedPage(title: string, nodeId: number): Promise<Page> {
