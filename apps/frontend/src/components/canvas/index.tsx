@@ -20,7 +20,8 @@ import "@xyflow/react/dist/style.css";
 import { usePages } from "@/hooks/usePages";
 import { NoteNode } from "./NoteNode";
 import * as Y from "yjs";
-import { WebsocketProvider } from "y-websocket";
+// import { WebsocketProvider } from "y-websocket";
+import { SocketIOProvider } from "y-socket.io";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import useYDocStore from "@/store/useYDocStore";
@@ -48,7 +49,7 @@ function Flow({ className }: CanvasProps) {
       roomName: "flow-room",
     });
 
-  const provider = useRef<WebsocketProvider>();
+  const provider = useRef<SocketIOProvider>();
   const existingPageIds = useRef(new Set<string>());
 
   useEffect(() => {
@@ -69,10 +70,19 @@ function Flow({ className }: CanvasProps) {
   useEffect(() => {
     if (!ydoc) return;
 
-    const wsProvider = new WebsocketProvider(
+    const wsProvider = new SocketIOProvider(
       import.meta.env.VITE_WS_URL,
-      "flow-room",
+      `flow-room`,
       ydoc,
+      {
+        autoConnect: true,
+        disableBc: false,
+      },
+      {
+        reconnectionDelayMax: 10000,
+        timeout: 5000,
+        transports: ["websocket", "polling"],
+      },
     );
 
     provider.current = wsProvider;

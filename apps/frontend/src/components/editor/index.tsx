@@ -13,8 +13,8 @@ import {
 import { ImageResizer, handleCommandNavigation } from "novel/extensions";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
-import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
+import { SocketIOProvider } from "y-socket.io";
 
 import "./prosemirror.css";
 import { slashCommand, suggestionItems } from "./slash-commands";
@@ -36,7 +36,7 @@ interface EditorProp {
   initialContent?: JSONContent;
   onEditorUpdate?: (event: EditorUpdateEvent) => void;
   ydoc: Y.Doc;
-  provider: WebsocketProvider;
+  provider: SocketIOProvider;
 }
 
 const Editor = ({
