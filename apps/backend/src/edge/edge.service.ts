@@ -13,7 +13,7 @@ export class EdgeService {
   ) {}
 
   async createEdge(dto: CreateEdgeDto): Promise<Edge> {
-    const { fromNode, fromPoint, toNode, toPoint } = dto;
+    const { fromNode, toNode } = dto;
 
     // 출발 노드를 조회한다.
     const existingFromNode = await this.nodeRepository.findOneBy({
@@ -25,9 +25,7 @@ export class EdgeService {
     // 엣지를 생성한다.
     return await this.edgeRepository.save({
       fromNode: existingFromNode,
-      fromPoint,
       toNode: existingToNode,
-      toPoint,
     });
   }
 
@@ -50,11 +48,9 @@ export class EdgeService {
         fromNode: {
           id: true,
         },
-        fromPoint: true,
         toNode: {
           id: true,
         },
-        toPoint: true,
       },
     });
     // 엣지가 없으면 NotFound 에러
