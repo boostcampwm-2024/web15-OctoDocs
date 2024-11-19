@@ -5,11 +5,14 @@ import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 
 import Editor from "./editor";
-import usePageStore from "@/store/usePageStore";
-import { usePage, useUpdatePage } from "@/hooks/usePages";
 import EditorLayout from "./layout/EditorLayout";
 import EditorTitle from "./editor/EditorTitle";
 import SaveStatus from "./editor/ui/SaveStatus";
+import ActiveUser from "./commons/activeUser";
+
+import usePageStore from "@/store/usePageStore";
+import useUserStore from "@/store/useUserStore";
+import { usePage, useUpdatePage } from "@/hooks/usePages";
 
 export default function EditorView() {
   const { currentPage } = usePageStore();
@@ -17,6 +20,7 @@ export default function EditorView() {
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
   const [ydoc, setYDoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<SocketIOProvider | null>(null);
+  const { users } = useUserStore();
 
   useEffect(() => {
     if (!currentPage) return;
@@ -87,6 +91,12 @@ export default function EditorView() {
         key={currentPage}
         currentPage={currentPage}
         pageContent={pageContent}
+      />
+      <ActiveUser
+        className="px-12 py-4"
+        users={users.filter(
+          (user) => user.currentPageId === currentPage.toString(),
+        )}
       />
       <Editor
         key={ydoc.guid}
