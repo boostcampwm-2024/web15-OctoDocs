@@ -14,7 +14,29 @@ import { PageService } from '../page/page.service';
 import { NodeCacheService } from '../node-cache/node-cache.service';
 import { yXmlFragmentToProsemirrorJSON } from 'y-prosemirror';
 import { EdgeService } from '../edge/edge.service';
+// yMap에 저장되는 Node 형태
+type YMapNode = {
+  id: string; // 노드 아이디
+  type: string; // 노드의 유형
+  data: {
+    title: string; // 제목
+    id: number; // 페이지 아이디
+  };
+  position: {
+    x: number; // X 좌표
+    y: number; // Y 좌표
+  };
+  selected: boolean;
+};
 
+// yMap에 저장되는 edge 형태
+type YMapEdge = {
+  id: string; // Edge 아이디
+  source: string; // 출발 노드 아이디
+  target: string; // 도착 노드 아이디
+  sourceHandle: string;
+  targetHandle: string;
+};
 @WebSocketGateway(1234)
 export class YjsService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -62,7 +84,7 @@ export class YjsService
         const nodes = Object.values(doc.getMap('nodes').toJSON());
 
         // 모든 노드에 대해 검사한다.
-        nodes.forEach((node: any) => {
+        nodes.forEach((node: YMapNode) => {
           const { title, id } = node.data;
           const { x, y } = node.position;
           // 만약 캐쉬에 노드가 존재하지 않다면 갱신 후 캐쉬에 노드를 넣는다.
@@ -84,7 +106,8 @@ export class YjsService
       // edge의 변경 사항을 감지한다.
       edges.observe(() => {
         const edges = Object.values(doc.getMap('edges').toJSON());
-        edges.forEach(async (edge: any) => {
+        edges.forEach(async (edge: YMapEdge) => {
+          console.log(edge);
           const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
             parseInt(edge.source),
             parseInt(edge.target),
