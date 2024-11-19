@@ -95,57 +95,75 @@ jobs:
                       }
 
     auto-merge:
-        if: github.event_name == 'pull_request_review' && github.event.action == 'submitted' && github.event.review.state == 'approved'
+        if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
         runs-on: ubuntu-latest
-        needs: [auto-assign, auto-reviewers]
+        permissions:
+            pull-requests: write
+            contents: write
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
-
-            - name: Set up Node.js
-              uses: actions/setup-node@v2
-              with:
-                  node-version: "16"
-
             - name: Merge and Close PR if Approved
               uses: actions/github-script@v6
               with:
                   script: |
-                      const prNumber = context.payload.pull_request.number;
+                      const prNumber = context.payload.pull_request.number || context.payload.review.pull_request_number;
 
-                      // Check if PR is already merged
-                      const pr = await github.rest.pulls.get({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        pull_number: prNumber
-                      });
-
-                      if (pr.data.merged) {
-                        return;
-                      }
-
-                      // Check if PR is approved
-                      const reviews = await github.rest.pulls.listReviews({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        pull_number: prNumber
-                      });
-
-                      const approved = reviews.data.some(review => review.state === 'APPROVED');
-
-                      // If approved, merge the PR
-                      if (approved) {
-                        await github.rest.pulls.merge({
+                      try {
+                        // PR 정보 가져오기
+                        const pr = await github.rest.pulls.get({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
                           pull_number: prNumber
                         });
 
-                        // Delete the branch after merge
-                        const branchName = context.payload.pull_request.head.ref;
-                        await github.rest.git.deleteRef({
+                        if (pr.data.merged) {
+                          console.log('PR이 이미 머지되었습니다.');
+                          return;
+                        }
+
+                        // 머지 가능 상태 확인
+                        if (!pr.data.mergeable) {
+                          console.log('PR에 충돌이 있습니다. 수동 확인이 필요합니다.');
+                          core.setFailed('PR에 충돌이 있어 자동 머지를 진행할 수 없습니다.');
+                          return;
+                        }
+
+                        // 모든 리뷰 확인
+                        const reviews = await github.rest.pulls.listReviews({
                           owner: context.repo.owner,
                           repo: context.repo.repo,
-                          ref: `heads/${branchName}`
+                          pull_number: prNumber
                         });
+
+                        // 각 리뷰어의 최신 리뷰 상태만 확인
+                        const latestReviews = new Map();
+                        reviews.data.forEach(review => {
+                          latestReviews.set(review.user.login, review.state);
+                        });
+
+                        const hasRejection = Array.from(latestReviews.values()).includes('CHANGES_REQUESTED');
+                        const approvalCount = Array.from(latestReviews.values()).filter(state => state === 'APPROVED').length;
+
+                        if (!hasRejection && approvalCount >= 1) {
+                          console.log('PR 머지를 시도합니다...');
+                          await github.rest.pulls.merge({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            pull_number: prNumber
+                          });
+
+                          // 브랜치 삭제
+                          const branchName = pr.data.head.ref;
+                          if (branchName !== 'main' && branchName !== 'master') {
+                            await github.rest.git.deleteRef({
+                              owner: context.repo.owner,
+                              repo: context.repo.repo,
+                              ref: `heads/${branchName}`
+                            });
+                          }
+                        } else {
+                          console.log('머지 조건이 충족되지 않았습니다.');
+                        }
+                      } catch (error) {
+                        console.error('Error:', error);
+                        core.setFailed(error.message);
                       }
