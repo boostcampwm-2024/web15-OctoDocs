@@ -7,10 +7,15 @@ export interface Coors {
 
 interface CursorProps {
   coors: Coors;
+  clientId: string;
   color?: string;
 }
 
-export default function Cursor({ coors, color = "#ffb8b9" }: CursorProps) {
+export default function Cursor({
+  coors,
+  color = "#ffb8b9",
+  clientId,
+}: CursorProps) {
   const { x, y } = coors;
 
   return (
@@ -35,6 +40,9 @@ export default function Cursor({ coors, color = "#ffb8b9" }: CursorProps) {
           strokeWidth="4"
         />
       </svg>
+      <p className="absolute px-1" style={{ backgroundColor: color }}>
+        {clientId}
+      </p>
     </motion.div>
   );
 }
