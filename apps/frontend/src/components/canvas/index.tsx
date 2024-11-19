@@ -21,7 +21,6 @@ import "@xyflow/react/dist/style.css";
 import { usePages } from "@/hooks/usePages";
 import { NoteNode } from "./NoteNode";
 import * as Y from "yjs";
-// import { WebsocketProvider } from "y-websocket";
 import { SocketIOProvider } from "y-socket.io";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -33,6 +32,10 @@ import { CollaborativeCursors } from "../CursorView";
 import { getHandlePosition } from "@/lib/getHandlePosition";
 
 const proOptions = { hideAttribution: true };
+
+interface YNode extends Node {
+  isHolding: boolean;
+}
 
 interface CanvasProps {
   className?: string;
@@ -54,6 +57,7 @@ function Flow({ className }: CanvasProps) {
 
   const provider = useRef<SocketIOProvider>();
   const existingPageIds = useRef(new Set<string>());
+  const holdingNodeRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!pages) return;
@@ -93,7 +97,15 @@ function Flow({ className }: CanvasProps) {
     const nodesMap = ydoc.getMap("nodes");
     const edgesMap = ydoc.getMap("edges");
 
-    const initialNodes = Array.from(nodesMap.values()) as Node[];
+    const yNodes = Array.from(nodesMap.values()) as YNode[];
+
+    const initialNodes = yNodes.map((yNode) => {
+      const nodeEntries = Object.entries(yNode).filter(
+        ([key]) => key !== "isHolding",
+      );
+      return Object.fromEntries(nodeEntries) as Node;
+    });
+
     setNodes(initialNodes);
 
     let isInitialSync = true;
@@ -107,7 +119,11 @@ function Flow({ className }: CanvasProps) {
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
-          const updatedNode = nodesMap.get(nodeId) as Node;
+          const updatedYNode = nodesMap.get(nodeId) as YNode;
+          const updatedNodeEntries = Object.entries(updatedYNode).filter(
+            ([key]) => key !== "isHolding",
+          );
+          const updatedNode = Object.fromEntries(updatedNodeEntries) as Node;
 
           if (change.action === "add") {
             queryClient.invalidateQueries({ queryKey: ["pages"] });
@@ -157,9 +173,9 @@ function Flow({ className }: CanvasProps) {
 
     pages.forEach((page) => {
       const pageId = page.id.toString();
-      const existingNode = nodesMap.get(pageId) as Node | undefined;
+      const existingNode = nodesMap.get(pageId) as YNode | undefined;
 
-      const newNode = {
+      const newNode: YNode = {
         id: pageId,
         type: "note",
         data: { title: page.title, id: page.id },
@@ -168,6 +184,7 @@ function Flow({ className }: CanvasProps) {
           y: Math.random() * 500,
         },
         selected: false,
+        isHolding: false,
       };
 
       nodesMap.set(pageId, newNode);
@@ -185,12 +202,13 @@ function Flow({ className }: CanvasProps) {
         if (change.type === "position" && change.position) {
           const node = nodes.find((n) => n.id === change.id);
           if (node) {
-            const updatedNode = {
+            const updatedYNode: YNode = {
               ...node,
               position: change.position,
               selected: false,
+              isHolding: holdingNodeRef.current === change.id,
             };
-            nodesMap.set(change.id, updatedNode);
+            nodesMap.set(change.id, updatedYNode);
 
             edges.forEach((edge) => {
               if (edge.source === change.id || edge.target === change.id) {
@@ -330,6 +348,25 @@ function Flow({ className }: CanvasProps) {
     [setEdges, edges, nodes, ydoc],
   );
 
+  const onNodeDragStart = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      holdingNodeRef.current = node.id;
+    },
+    [],
+  );
+
+  const onNodeDragStop = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      if (ydoc) {
+        const nodesMap = ydoc.getMap("nodes");
+        const yNode = nodesMap.get(node.id) as YNode | undefined;
+        if (yNode) {
+          nodesMap.set(node.id, { ...yNode, isHolding: false });
+        }
+      }
+    },
+    [ydoc],
+  );
   const nodeTypes = useMemo(() => ({ note: NoteNode }), []);
 
   return (
@@ -341,6 +378,8 @@ function Flow({ className }: CanvasProps) {
         onEdgesChange={handleEdgesChange}
         onMouseLeave={handleMouseLeave}
         onNodeDrag={handleNodeDrag}
+        onNodeDragStart={onNodeDragStart}
+        onNodeDragStop={onNodeDragStop}
         onConnect={onConnect}
         proOptions={proOptions}
         nodeTypes={nodeTypes}
