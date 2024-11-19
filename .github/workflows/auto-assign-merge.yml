@@ -29,12 +29,18 @@ jobs:
               uses: actions/github-script@v6
               with:
                   script: |
-                      await github.rest.issues.addAssignees({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        issue_number: context.payload.pull_request.number,
-                        assignees: [context.actor]
-                      });
+                      const prNumber = context.payload.pull_request.number;
+                      const currentAssignees = context.payload.pull_request.assignees.map(a => a.login);
+
+                      // PR 작성자가 이미 담당자로 지정되어 있지 않은 경우에만 할당
+                      if (!currentAssignees.includes(context.actor)) {
+                          await github.rest.issues.addAssignees({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            issue_number: prNumber,
+                            assignees: [context.actor]
+                          });
+                      }
 
     auto-reviewers:
         if: github.event_name == 'pull_request'
@@ -57,14 +63,22 @@ jobs:
                       const prAuthor = context.payload.pull_request.user.login;
                       const assignees = context.payload.pull_request.assignees.map(a => a.login);
 
-                      // Define reviewers for each label
+                      // 현재 리뷰어 목록 가져오기
+                      const currentReviewers = context.payload.pull_request.requested_reviewers
+                          ? context.payload.pull_request.requested_reviewers.map(r => r.login)
+                          : [];
+
                       const BE_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc'];
                       const FE_reviewers = ['yewonJin', 'djk01281'];
                       const doc_reviewers = ['summersummerwhy', 'ezcolin2', 'Tolerblanc', 'yewonJin', 'djk01281'];
 
-                      // Function to filter out assignees and PR author
+                      // Function to filter out assignees, PR author, and current reviewers
                       const filterReviewers = (reviewers) => {
-                        return reviewers.filter(r => !assignees.includes(r) && r !== prAuthor);
+                          return reviewers.filter(r => 
+                              !assignees.includes(r) && 
+                              r !== prAuthor && 
+                              !currentReviewers.includes(r)
+                          );
                       };
 
                       // Check the labels on the PR and assign appropriate reviewers
@@ -72,26 +86,36 @@ jobs:
                       let reviewersToAdd = [];
 
                       if (labels.includes('🐧🚀😶‍🌫️ BE')) {
-                        reviewersToAdd.push(...filterReviewers(BE_reviewers));
+                          reviewersToAdd.push(...filterReviewers(BE_reviewers));
                       }
                       if (labels.includes('🐳🐣 FE')) {
-                        reviewersToAdd.push(...filterReviewers(FE_reviewers));
+                          reviewersToAdd.push(...filterReviewers(FE_reviewers));
                       }
                       if (labels.includes('📚 Documentation')) {
-                        reviewersToAdd.push(...filterReviewers(doc_reviewers));
+                          reviewersToAdd.push(...filterReviewers(doc_reviewers));
                       }
 
-                      // Remove duplicates if any
+                      // Remove duplicates and limit the number of reviewers
                       reviewersToAdd = [...new Set(reviewersToAdd)];
+                      const maxReviewers = 4; // 최대 리뷰어 수 제한
+                      reviewersToAdd = reviewersToAdd.slice(0, maxReviewers);
 
-                      // Request reviewers
+                      // Request reviewers only if there are new reviewers to add
                       if (reviewersToAdd.length > 0) {
-                        await github.rest.pulls.requestReviewers({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          pull_number: prNumber,
-                          reviewers: reviewersToAdd
-                        });
+                          try {
+                              await github.rest.pulls.requestReviewers({
+                                  owner: context.repo.owner,
+                                  repo: context.repo.repo,
+                                  pull_number: prNumber,
+                                  reviewers: reviewersToAdd
+                              });
+                              console.log(`Added reviewers: ${reviewersToAdd.join(', ')}`);
+                          } catch (error) {
+                              console.error('Failed to add reviewers:', error);
+                              // 실패해도 워크플로우는 계속 진행
+                          }
+                      } else {
+                          console.log('No new reviewers to add');
                       }
 
     auto-merge:
