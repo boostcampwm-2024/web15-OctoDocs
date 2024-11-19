@@ -51,19 +51,18 @@ export class YjsService
         nodes.forEach((node) => {
           const { title, id } = node.data;
           const { x, y } = node.position;
-          console.log(title, id, x, y);
           // 만약 캐쉬에 노드가 존재하지 않다면 갱신 후 캐쉬에 노드를 넣는다.
           if (!this.nodeCacheService.has(id)) {
             console.log(id);
             this.nodeService.updateNode(id, { title, x, y });
-            this.nodeCacheService.set(id, { title, x, y });
+            this.nodeCacheService.set(id, title);
             return;
           }
 
           // 만약 캐쉬에 노드가 존재하고 title이 다르다면 갱신한다.
           if (!this.nodeCacheService.hasSameTitle(id, title)) {
             this.nodeService.updateNode(id, { title, x, y });
-            this.nodeCacheService.set(id, { title, x, y });
+            this.nodeCacheService.set(id, title);
             return;
           }
           // 만약 캐쉬에 노드가 존재하고 title이 동일하다면 패스한다.

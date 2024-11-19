@@ -18,13 +18,13 @@ export class NodeCacheService {
     this.cache = new CacheContainer(new MemoryStorage());
   }
 
-  async set(nodeId: number, value: Node): Promise<void> {
+  async set(nodeId: number, title: string): Promise<void> {
     const config = { ttl: this.ttlTime };
-    await this.cache.setItem(nodeId.toString(), value, config);
+    await this.cache.setItem(nodeId.toString(), title, config);
   }
 
-  async get(nodeId: number): Promise<Node | undefined> {
-    return await this.cache.getItem<Node>(nodeId.toString());
+  async get(nodeId: number): Promise<String | undefined> {
+    return await this.cache.getItem<String>(nodeId.toString());
   }
 
   async has(nodeId: number): Promise<boolean> {
@@ -33,7 +33,7 @@ export class NodeCacheService {
   }
 
   async hasSameTitle(nodeId: number, title: string): Promise<boolean> {
-    const node = await this.get(nodeId);
-    return !!node && node.title === title;
+    const savedTitle = await this.get(nodeId);
+    return !!savedTitle && savedTitle === title;
   }
 }
