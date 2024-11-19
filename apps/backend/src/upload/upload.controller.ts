@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
+import { InvalidFileException } from 'src/exception/upload.exception';
 
 @Controller('upload')
 export class UploadController {
@@ -16,7 +17,7 @@ export class UploadController {
     FileInterceptor('file', {
       fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return callback(new Error('이미지 파일만 업로드 가능합니다.'), false);
+          return callback(new InvalidFileException(), false);
         }
         callback(null, true);
       },
