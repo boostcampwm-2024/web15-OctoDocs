@@ -44,4 +44,8 @@ lerna-debug.log*
 
 # IDE - VSCode
 .vscode/*
-apps/backend/db.sqlite
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+db.sqlite
