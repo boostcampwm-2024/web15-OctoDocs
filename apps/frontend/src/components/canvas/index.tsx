@@ -120,7 +120,6 @@ function Flow({ className }: CanvasProps) {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
           const updatedYNode = nodesMap.get(nodeId) as YNode;
-          console.log(updatedYNode);
           const updatedNodeEntries = Object.entries(updatedYNode).filter(
             ([key]) => key !== "isHolding",
           );
