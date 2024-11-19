@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import Sidebar from "./components/sidebar";
 import HoverTrigger from "./components/HoverTrigger";
 import EditorView from "./components/EditorView";
@@ -6,9 +7,13 @@ import SideWrapper from "./components/layout/SideWrapper";
 import Canvas from "./components/canvas";
 import ScrollWrapper from "./components/layout/ScrollWrapper";
 
+import { useSyncedUsers } from "./hooks/useSyncedUsers";
+
 const queryClient = new QueryClient();
 
 function App() {
+  useSyncedUsers();
+
   return (
     <QueryClientProvider client={queryClient}>
       <div className="fixed inset-0 bg-white">
