@@ -1,7 +1,9 @@
 import { Handle, NodeProps, Position, type Node } from "@xyflow/react";
+
+import ActiveUser from "../commons/activeUser";
+
 import usePageStore from "@/store/usePageStore";
 import useUserStore from "@/store/useUserStore";
-import { cn } from "@/lib/utils";
 
 export type NoteNodeData = { title: string; id: number };
 export type NoteNodeType = Node<NoteNodeData, "note">;
@@ -49,24 +51,12 @@ export function NoteNode({ data }: NodeProps<NoteNodeType>) {
         isConnectable={true}
       />
       {data.title}
-      <div className="flex justify-end gap-2">
-        {users
-          .filter((user) => user.currentPageId === data.id.toString())
-          .map((user) => (
-            <div
-              style={{ backgroundColor: user.color }}
-              className={cn("group relative h-5 w-5 rounded-full")}
-              key={user.clientId}
-            >
-              <div
-                style={{ backgroundColor: user.color }}
-                className="absolute left-2 z-10 hidden px-2 text-sm group-hover:flex"
-              >
-                {user.clientId}
-              </div>
-            </div>
-          ))}
-      </div>
+      <ActiveUser
+        className="justify-end"
+        users={users.filter(
+          (user) => user.currentPageId === data.id.toString(),
+        )}
+      />
     </div>
   );
 }
