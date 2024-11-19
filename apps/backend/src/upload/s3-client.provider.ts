@@ -9,7 +9,7 @@ export const s3ClientProvider: Provider = {
   useFactory: (configService: ConfigService) => {
     return new S3Client({
       region: configService.get('CLOUD_REGION'),
-      endpoint: `https://${configService.get('CLOUD_ENDPOINT')}`,
+      endpoint: configService.get('CLOUD_ENDPOINT'),
       credentials: {
         accessKeyId: configService.get('CLOUD_ACCESS_KEY_ID'),
         secretAccessKey: configService.get('CLOUD_SECRET_ACCESS_KEY'),
