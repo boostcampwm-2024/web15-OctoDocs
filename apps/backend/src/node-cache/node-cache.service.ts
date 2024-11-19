@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Cache, CacheContainer } from 'node-ts-cache';
+import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
-
-type Node = {
-  title: string;
-  x: number;
-  y: number;
-};
 
 @Injectable()
 export class NodeCacheService {

@@ -5,12 +5,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { YSocketIO } from 'y-socket.io/dist/server';
 import * as Y from 'yjs';
 import { NodeService } from '../node/node.service';
-import { NodeCacheService } from 'src/node-cache/node-cache.service';
+import { NodeCacheService } from '../node-cache/node-cache.service';
 
 @WebSocketGateway(1234)
 export class YjsService
@@ -68,7 +68,6 @@ export class YjsService
           // 만약 캐쉬에 노드가 존재하고 title이 동일하다면 패스한다.
         });
       });
-
     });
   }
 

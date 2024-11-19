@@ -2,19 +2,11 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  Column,
+  // Column,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
-
-// TODO: frontend, backend가 공유하는 shared에 direction.enum.ts로 분리
-// export enum Direction {
-//   NORTH = 'N',
-//   SOUTH = 'S',
-//   EAST = 'E',
-//   WEST = 'W',
-// }
 
 @Entity()
 export class Edge {
@@ -29,15 +21,9 @@ export class Edge {
   @JoinColumn({ name: 'to_node_id' })
   toNode: Node;
 
-  @Column()
-  fromPoint: string;
+  // @Column({ nullable: true })
+  // type: string;
 
-  @Column()
-  toPoint: string;
-
-  @Column({ nullable: true })
-  type: string;
-
-  @Column({ nullable: true })
-  color: string;
+  // @Column({ nullable: true })
+  // color: string;
 }
