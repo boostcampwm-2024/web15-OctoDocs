@@ -37,6 +37,16 @@ type YMapEdge = {
   sourceHandle: string;
   targetHandle: string;
 };
+
+// Y.Doc에는 name 컬럼이 없어서 생성했습니다.
+class CustomDoc extends Y.Doc {
+  name: string;
+
+  constructor(name: string) {
+    super();
+    this.name = name;
+  }
+}
 @WebSocketGateway(1234)
 export class YjsService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -65,14 +75,15 @@ export class YjsService
 
     this.ysocketio.initialize();
 
-    this.ysocketio.on('document-loaded', (doc: any) => {
+    this.ysocketio.on('document-loaded', (doc: Y.Doc) => {
       const nodes = doc.getMap('nodes');
       const edges = doc.getMap('edges');
       const editorDoc = doc.getXmlFragment('default');
 
       // page content의 변경 사항을 감지한다.
       editorDoc.observeDeep(() => {
-        const pageId = editorDoc.doc.name.split('-')[1];
+        const document = editorDoc.doc as CustomDoc;
+        const pageId = parseInt(document.name.split('-')[1]);
         this.pageService.updatePage(
           pageId,
           JSON.parse(JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc))),
