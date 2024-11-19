@@ -9,9 +9,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Page } from './page/page.entity';
 import { Edge } from './edge/edge.entity';
 import { Node } from './node/node.entity';
+import { User } from './auth/entities/user.entity';
 import { YjsModule } from './yjs/yjs.module';
 import * as path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get('DB_NAME'),
-        entities: [Node, Page, Edge],
+        entities: [Node, Page, Edge, User],
         logging: true,
         synchronize: true,
       }),
@@ -37,6 +39,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     PageModule,
     EdgeModule,
     YjsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
