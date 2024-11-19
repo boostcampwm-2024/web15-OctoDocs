@@ -12,6 +12,7 @@ import { Node } from './node/node.entity';
 import { YjsModule } from './yjs/yjs.module';
 import * as path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     PageModule,
     EdgeModule,
     YjsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

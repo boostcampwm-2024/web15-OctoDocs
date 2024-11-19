@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './filter/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as express from 'express';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -13,12 +14,13 @@ async function bootstrap() {
   app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.setGlobalPrefix('api');
+  app.use(express.urlencoded({ extended: true }));
 
   const config = new DocumentBuilder()
     .setTitle('OctoDocs')
     .setDescription('OctoDocs API 명세서')
     .build();
-  console.log(process.env.origin);
+
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
   app.enableCors({
