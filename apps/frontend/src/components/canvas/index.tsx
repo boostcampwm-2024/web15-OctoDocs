@@ -10,6 +10,7 @@ import {
   BackgroundVariant,
   ConnectionMode,
   type Node,
+  Position,
   NodeChange,
   Edge,
   EdgeChange,
@@ -28,6 +29,8 @@ import useYDocStore from "@/store/useYDocStore";
 
 import { useCollaborativeCursors } from "@/hooks/useCursor";
 import { CollaborativeCursors } from "../CursorView";
+
+import { getHandlePosition } from "@/lib/getHandlePosition";
 
 const proOptions = { hideAttribution: true };
 
@@ -176,6 +179,7 @@ function Flow({ className }: CanvasProps) {
     (changes: NodeChange[]) => {
       if (!ydoc) return;
       const nodesMap = ydoc.getMap("nodes");
+      const edgesMap = ydoc.getMap("edges");
 
       changes.forEach((change) => {
         if (change.type === "position" && change.position) {
@@ -187,13 +191,66 @@ function Flow({ className }: CanvasProps) {
               selected: false,
             };
             nodesMap.set(change.id, updatedNode);
+
+            edges.forEach((edge) => {
+              if (edge.source === change.id || edge.target === change.id) {
+                const sourceNode = nodes.find((n) => n.id === edge.source);
+                const targetNode = nodes.find((n) => n.id === edge.target);
+
+                if (sourceNode && targetNode) {
+                  const handlePositions = [
+                    Position.Left,
+                    Position.Right,
+                    Position.Top,
+                    Position.Bottom,
+                  ];
+                  let shortestDistance = Infinity;
+                  let bestHandles = {
+                    source: edge.sourceHandle,
+                    target: edge.targetHandle,
+                  };
+
+                  handlePositions.forEach((sourceHandle) => {
+                    handlePositions.forEach((targetHandle) => {
+                      const sourcePosition = getHandlePosition(
+                        sourceNode,
+                        sourceHandle,
+                      );
+                      const targetPosition = getHandlePosition(
+                        targetNode,
+                        targetHandle,
+                      );
+                      const distance = Math.sqrt(
+                        Math.pow(sourcePosition.x - targetPosition.x, 2) +
+                          Math.pow(sourcePosition.y - targetPosition.y, 2),
+                      );
+
+                      if (distance < shortestDistance) {
+                        shortestDistance = distance;
+                        bestHandles = {
+                          source: sourceHandle,
+                          target: targetHandle,
+                        };
+                      }
+                    });
+                  });
+
+                  const updatedEdge = {
+                    ...edge,
+                    sourceHandle: bestHandles.source,
+                    targetHandle: bestHandles.target,
+                  };
+                  edgesMap.set(edge.id, updatedEdge);
+                }
+              }
+            });
           }
         }
       });
 
       onNodesChange(changes);
     },
-    [nodes, onNodesChange],
+    [nodes, edges, onNodesChange],
   );
 
   const handleEdgesChange = useCallback(
@@ -216,18 +273,61 @@ function Flow({ className }: CanvasProps) {
     (connection: Connection) => {
       if (!connection.source || !connection.target || !ydoc) return;
 
-      const newEdge: Edge = {
-        id: `e${connection.source}-${connection.target}`,
-        source: connection.source,
-        target: connection.target,
-        sourceHandle: connection.sourceHandle || undefined,
-        targetHandle: connection.targetHandle || undefined,
-      };
+      const isConnected = edges.some(
+        (edge) =>
+          (edge.source === connection.source &&
+            edge.target === connection.target) ||
+          (edge.source === connection.target &&
+            edge.target === connection.source),
+      );
 
-      ydoc.getMap("edges").set(newEdge.id, newEdge);
-      setEdges((eds) => addEdge(connection, eds));
+      if (isConnected) return;
+
+      const sourceNode = nodes.find((n) => n.id === connection.source);
+      const targetNode = nodes.find((n) => n.id === connection.target);
+
+      if (sourceNode && targetNode) {
+        const handlePositions = [
+          Position.Left,
+          Position.Right,
+          Position.Top,
+          Position.Bottom,
+        ];
+        let shortestDistance = Infinity;
+        let closestHandles = {
+          source: connection.sourceHandle,
+          target: connection.targetHandle,
+        };
+
+        handlePositions.forEach((sourceHandle) => {
+          handlePositions.forEach((targetHandle) => {
+            const sourcePosition = getHandlePosition(sourceNode, sourceHandle);
+            const targetPosition = getHandlePosition(targetNode, targetHandle);
+            const distance = Math.sqrt(
+              Math.pow(sourcePosition.x - targetPosition.x, 2) +
+                Math.pow(sourcePosition.y - targetPosition.y, 2),
+            );
+
+            if (distance < shortestDistance) {
+              shortestDistance = distance;
+              closestHandles = { source: sourceHandle, target: targetHandle };
+            }
+          });
+        });
+
+        const newEdge: Edge = {
+          id: `e${connection.source}-${connection.target}`,
+          source: connection.source,
+          target: connection.target,
+          sourceHandle: closestHandles.source,
+          targetHandle: closestHandles.target,
+        };
+
+        ydoc.getMap("edges").set(newEdge.id, newEdge);
+        setEdges((eds) => addEdge(newEdge, eds));
+      }
     },
-    [setEdges],
+    [setEdges, edges, nodes, ydoc],
   );
 
   const nodeTypes = useMemo(() => ({ note: NoteNode }), []);
