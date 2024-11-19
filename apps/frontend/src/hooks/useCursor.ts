@@ -4,16 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SocketIOProvider } from "y-socket.io";
 import useUserStore from "@/store/useUserStore";
 
-const CURSOR_COLORS = [
-  "#7d7b94",
-  "#41c76d",
-  "#f86e7e",
-  "#f6b8b8",
-  "#f7d353",
-  "#3b5bf7",
-  "#59cbf7",
-] as const;
-
 export interface AwarenessState {
   cursor: XYPosition | null;
   color: string;
@@ -64,7 +54,7 @@ export function useCollaborativeCursors({
       const states = new Map(
         Array.from(
           wsProvider.awareness.getStates() as Map<number, AwarenessState>,
-        ).filter(([key, state]) => state.cursor !== null),
+        ).filter(([, state]) => state.cursor !== null),
       );
       setCursors(states);
     });
