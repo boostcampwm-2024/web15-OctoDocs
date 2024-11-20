@@ -31,6 +31,10 @@ import { CollaborativeCursors } from "../CursorView";
 
 import { getHandlePosition } from "@/lib/getHandlePosition";
 
+import ELK from "elkjs";
+
+const elk = new ELK();
+
 const proOptions = { hideAttribution: true };
 
 interface YNode extends Node {
@@ -191,6 +195,41 @@ function Flow({ className }: CanvasProps) {
       existingPageIds.current.add(pageId);
     });
   }, [pages, ydoc]);
+
+  const performLayout = async () => {
+    const graph = {
+      id: "root",
+      layoutOptions: {
+        "elk.algorithm": "force",
+      },
+      children: nodes.map((node) => ({
+        id: node.id,
+        width: 160, // 실제 노드 너비로 변경하기 (node.width)
+        height: 40, // 실제 노드 높이로 변경하기 (node.height)
+      })),
+      edges: edges.map((edge) => ({
+        id: edge.id,
+        sources: [edge.source],
+        targets: [edge.target],
+      })),
+    };
+
+    const layout = await elk.layout(graph);
+
+    const updatedNodes = nodes.map((node) => {
+      const layoutNode = layout!.children!.find((n) => n.id === node.id);
+
+      return {
+        ...node,
+        position: {
+          x: layoutNode!.x as number,
+          y: layoutNode!.y as number,
+        },
+      };
+    });
+
+    setNodes(updatedNodes);
+  };
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -387,6 +426,18 @@ function Flow({ className }: CanvasProps) {
         selectNodesOnDrag={false}
       >
         <Controls />
+        <div
+          id="layout-button"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "10px",
+            zIndex: 999,
+            position: "relative",
+          }}
+        >
+          <button onClick={performLayout}>Layout</button>
+        </div>
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         <CollaborativeCursors cursors={cursors} />
