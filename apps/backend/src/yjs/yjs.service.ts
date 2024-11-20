@@ -93,12 +93,16 @@ export class YjsService
       // 노드를 클릭해 페이지를 열었을 때만 해당 페이지 값을 가져와서 초기 데이터로 세팅해줍니다.
       if (customDoc.name !== 'flow-room') {
         const pageId = parseInt(customDoc.name.split('-')[1]);
-        const content = await this.pageService.findPageById(pageId);
+        const findPage = await this.pageService.findPageById(pageId);
 
         // content가 비어있다면 내부 구조가 novel editor schema를 따르지 않기 때문에 오류가 납니다.
-        // type이라는 key가 있을 때만 초기 데이터를 세팅해줍니다.
-        'type' in content &&
-          this.initializePageContent(content.content, editorDoc);
+        // content가 존재할 때만 넣어줍니다.
+        const novelEditorContent = {
+          type: 'doc',
+          content: findPage.content,
+        };
+        Object.keys(findPage.content).length > 0 &&
+          this.initializePageContent(novelEditorContent, editorDoc);
 
         // 페이지 내용 변경 사항을 감지해서 데이터베이스에 갱신합니다.
         editorDoc.observeDeep(() => {
@@ -207,7 +211,7 @@ export class YjsService
     });
   }
   // yXmlFragment에 content를 넣어준다.
-  initializePageContent(content: JSON, yXmlFragment: Y.XmlFragment) {
+  initializePageContent(content: Object, yXmlFragment: Y.XmlFragment) {
     prosemirrorJSONToYXmlFragment(novelEditorSchema, content, yXmlFragment);
   }
   handleConnection() {
