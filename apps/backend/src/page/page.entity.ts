@@ -30,6 +30,9 @@ export class Page {
   @VersionColumn()
   version: number;
 
+  @Column({ nullable: true })
+  emoji: string | null;
+
   // TODO:추가적인 메타데이터 컬럼들(user 기능 추가할때)
   // @Column('created_by')
   // createdBy: string;

@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { PageService } from '../page/page.service';
 import { EdgeService } from '../edge/edge.service';
 import { NodeService } from '../node/node.service';
 import { YjsService } from './yjs.service';
-import { PageService } from '../page/page.service';
+
 import { NodeCacheService } from '../node-cache/node-cache.service';
 
 describe('PageService', () => {
@@ -272,6 +273,10 @@ describe('PageService', () => {
           provide: NodeCacheService,
           useValue: {},
         },
+        {
+          provide: NodeCacheService,
+          useValue: {},
+        },
       ],
     }).compile();
 
@@ -287,6 +292,7 @@ describe('PageService', () => {
     expect(pageService).toBeDefined();
     expect(nodeService).toBeDefined();
     expect(edgeService).toBeDefined();
+    expect(nodeCacheService).toBeDefined();
   });
 
   it('모든 페이지 목록을 조회할 수 있다.', async () => {});
