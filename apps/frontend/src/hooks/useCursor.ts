@@ -2,16 +2,7 @@ import { useReactFlow, type XYPosition } from "@xyflow/react";
 import * as Y from "yjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SocketIOProvider } from "y-socket.io";
-
-const CURSOR_COLORS = [
-  "#7d7b94",
-  "#41c76d",
-  "#f86e7e",
-  "#f6b8b8",
-  "#f7d353",
-  "#3b5bf7",
-  "#59cbf7",
-] as const;
+import useUserStore from "@/store/useUserStore";
 
 export interface AwarenessState {
   cursor: XYPosition | null;
@@ -33,10 +24,7 @@ export function useCollaborativeCursors({
   const [cursors, setCursors] = useState<Map<number, AwarenessState>>(
     new Map(),
   );
-  const clientId = useRef<number | null>(null);
-  const userColor = useRef(
-    CURSOR_COLORS[Math.floor(Math.random() * CURSOR_COLORS.length)],
-  );
+  const { currentUser } = useUserStore();
 
   useEffect(() => {
     const wsProvider = new SocketIOProvider(
@@ -55,21 +43,18 @@ export function useCollaborativeCursors({
     );
 
     provider.current = wsProvider;
-    clientId.current = wsProvider.awareness.clientID;
 
     wsProvider.awareness.setLocalState({
       cursor: null,
-      color: userColor.current,
-      clientId: wsProvider.awareness.clientID,
+      color: currentUser.color,
+      clientId: currentUser.clientId,
     });
 
     wsProvider.awareness.on("change", () => {
       const states = new Map(
         Array.from(
           wsProvider.awareness.getStates() as Map<number, AwarenessState>,
-        ).filter(
-          ([key, state]) => key !== clientId.current && state.cursor !== null,
-        ),
+        ).filter(([, state]) => state.cursor !== null),
       );
       setCursors(states);
     });
@@ -90,8 +75,8 @@ export function useCollaborativeCursors({
 
       provider.current.awareness.setLocalState({
         cursor,
-        color: userColor.current,
-        clientId: provider.current.awareness.clientID,
+        color: currentUser.color,
+        clientId: currentUser.clientId,
       });
     },
     [flowInstance],

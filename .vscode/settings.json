@@ -1,6 +1,6 @@
 {
-    "files.associations": {
-        "*.ttml": "xml",
-        "*.ttss": "css"
-    }
+  "files.associations": {
+    "*.ttml": "xml",
+    "*.ttss": "css"
+  }
 }

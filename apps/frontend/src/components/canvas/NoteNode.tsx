@@ -1,11 +1,16 @@
 import { Handle, NodeProps, Position, type Node } from "@xyflow/react";
+
+import ActiveUser from "../commons/activeUser";
+
 import usePageStore from "@/store/usePageStore";
+import useUserStore from "@/store/useUserStore";
 
 export type NoteNodeData = { title: string; id: number };
 export type NoteNodeType = Node<NoteNodeData, "note">;
 
 export function NoteNode({ data }: NodeProps<NoteNodeType>) {
   const { setCurrentPage } = usePageStore();
+  const { users } = useUserStore();
 
   const handleNodeClick = () => {
     const id = data.id;
@@ -46,6 +51,12 @@ export function NoteNode({ data }: NodeProps<NoteNodeType>) {
         isConnectable={true}
       />
       {data.title}
+      <ActiveUser
+        className="justify-end"
+        users={users.filter(
+          (user) => user.currentPageId === data.id.toString(),
+        )}
+      />
     </div>
   );
 }

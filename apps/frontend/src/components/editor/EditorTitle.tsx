@@ -28,7 +28,7 @@ export default function EditorTitle({
   };
 
   return (
-    <div className="p-12 pb-0">
+    <div className="pb-0">
       <input
         type="text"
         value={input as string}
