@@ -122,6 +122,7 @@ export class YjsService
       const edgesMap = doc.getMap('edges');
 
       this.initializeYNodeMap(nodes, nodesMap);
+      this.initializeYEdgeMap(edges, edgesMap);
 
       // node의 변경 사항을 감지한다.
       nodesMap.observe(() => {
@@ -151,8 +152,6 @@ export class YjsService
       edgesMap.observe(() => {
         const edges = Object.values(doc.getMap('edges').toJSON());
         edges.forEach(async (edge: YMapEdge) => {
-          console.log(edge);
-          console.log(edge);
           const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
             parseInt(edge.source),
             parseInt(edge.target),
@@ -172,7 +171,6 @@ export class YjsService
   // YMap에 노드 정보를 넣어준다.
   initializeYNodeMap(nodes: Node[], yMap: Y.Map<Object>): void {
     nodes.forEach((node) => {
-      console.log(node);
       const nodeId = node.id.toString(); // id를 string으로 변환
 
       // Y.Map에 데이터를 삽입
@@ -193,6 +191,21 @@ export class YjsService
     });
   }
 
+  // yMap에 edge 정보를 넣어준다.
+  initializeYEdgeMap(edges: Edge[], yMap: Y.Map<Object>): void {
+    edges.forEach((edge) => {
+      const edgeId = edge.id.toString(); // id를 string으로 변환
+
+      // Y.Map에 데이터를 삽입
+      yMap.set(edgeId, {
+        id: edgeId,
+        source: edge.fromNode.id,
+        target: edge.toNode.id,
+        sourceHandle: 'left',
+        targetHandle: 'left',
+      });
+    });
+  }
   // yXmlFragment에 content를 넣어준다.
   initializePageContent(content: JSON, yXmlFragment: Y.XmlFragment) {
     prosemirrorJSONToYXmlFragment(novelEditorSchema, content, yXmlFragment);
