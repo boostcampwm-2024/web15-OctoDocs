@@ -33,10 +33,6 @@
   font-weight: 600;
 }
 
-.ProseMirror {
-  @apply p-8 sm:px-12;
-}
-
 .ProseMirror .p {
   @apply my-0;
 }
