@@ -57,13 +57,13 @@ const Editor = ({
         onContentError={({ disableCollaboration }) => {
           disableCollaboration();
         }}
-        onCreate={({ editor }) => {
-          provider.on("sync", () => {
-            if (editor.isEmpty && initialContent) {
-              editor.commands.setContent(initialContent);
-            }
-          });
-        }}
+        // onCreate={({ editor }) => {
+        //   provider.on("sync", () => {
+        //     if (editor.isEmpty && initialContent) {
+        //       editor.commands.setContent(initialContent);
+        //     }
+        //   });
+        // }}
         extensions={[
           ...extensions,
           Collaboration.extend().configure({
