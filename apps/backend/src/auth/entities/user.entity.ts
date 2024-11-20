@@ -12,7 +12,7 @@ export class User {
   @Column()
   provider: string; // 'naver' 또는 'kakao'
 
-  @Column({ nullable: true })
+  @Column()
   email: string;
 
   @Column({ nullable: true })

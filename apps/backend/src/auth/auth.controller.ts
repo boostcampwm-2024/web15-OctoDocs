@@ -1,42 +1,39 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @Get('naver')
+  @UseGuards(AuthGuard('naver'))
+  async naverLogin() {
+    // 네이버 로그인 페이지로 리디렉션
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Get('naver/callback')
+  @UseGuards(AuthGuard('naver'))
+  async naverCallback(@Req() req) {
+    // 네이버 인증 후 콜백 처리
+    return req.user;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.authService.findOne(+id);
+  // }
+
+  @Get('kakao')
+  @UseGuards(AuthGuard('kakao'))
+  async kakaoLogin() {
+    // 카카오 로그인 페이지로 리디렉션
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Get('kakao/callback')
+  @UseGuards(AuthGuard('kakao'))
+  async kakaoCallback(@Req() req) {
+    // 카카오 인증 후 콜백 처리
+    return req.user;
   }
 }
