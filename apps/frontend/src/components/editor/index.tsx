@@ -15,6 +15,7 @@ import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
+import { handleImageDrop, handleImagePaste } from "novel/plugins";
 
 import "./prosemirror.css";
 import { slashCommand, suggestionItems } from "./slash-commands";
@@ -25,6 +26,7 @@ import { LinkSelector } from "./selectors/link-selector";
 import { MathSelector } from "./selectors/math-selector";
 import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
+import { uploadFn } from "@/lib/upload";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -39,12 +41,7 @@ interface EditorProp {
   provider: SocketIOProvider;
 }
 
-const Editor = ({
-  initialContent,
-  onEditorUpdate,
-  ydoc,
-  provider,
-}: EditorProp) => {
+const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
@@ -74,6 +71,9 @@ const Editor = ({
           }),
         ]}
         editorProps={{
+          handlePaste: (view, event) => handleImagePaste(view, event, uploadFn),
+          handleDrop: (view, event, _slice, moved) =>
+            handleImageDrop(view, event, moved, uploadFn),
           handleDOMEvents: {
             keydown: (_view, event) => handleCommandNavigation(event),
           },
