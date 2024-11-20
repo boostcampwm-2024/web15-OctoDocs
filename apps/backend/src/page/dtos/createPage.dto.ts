@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsJSON } from 'class-validator';
+import { IsString, IsNumber, IsJSON, IsOptional } from 'class-validator';
 
 export class CreatePageDto {
   @ApiProperty({
@@ -29,4 +29,13 @@ export class CreatePageDto {
   })
   @IsNumber()
   y: number;
+
+  @ApiProperty({
+    example: '📝',
+    description: '페이지 이모지',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  emoji?: string;
 }
