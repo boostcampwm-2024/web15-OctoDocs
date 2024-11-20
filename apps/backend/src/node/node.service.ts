@@ -111,6 +111,8 @@ export class NodeService {
       relations: ['page'],
       select: {
         id: true,
+        x: true,
+        y: true,
         page: {
           id: true,
           title: true, // content 제외하고 title만 선택

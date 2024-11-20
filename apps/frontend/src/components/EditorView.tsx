@@ -66,13 +66,13 @@ export default function EditorView() {
       const json = editor.getJSON();
 
       setSaveStatus("unsaved");
-      updatePageMutation.mutate(
-        { id: currentPage, pageData: { title: pageTitle, content: json } },
-        {
-          onSuccess: () => setSaveStatus("saved"),
-          onError: () => setSaveStatus("unsaved"),
-        },
-      );
+      // updatePageMutation.mutate(
+      //   { id: currentPage, pageData: { title: pageTitle, content: json } },
+      //   {
+      //     onSuccess: () => setSaveStatus("saved"),
+      //     onError: () => setSaveStatus("unsaved"),
+      //   },
+      // );
     },
     500,
   );
