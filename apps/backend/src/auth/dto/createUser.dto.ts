@@ -22,7 +22,7 @@ export class CreateUserDto {
   @IsEmail()
   @ApiProperty({
     example: 'abc1234@naver.com',
-    description: '사용자의 카카오/네이버 이메일 주소',
+    description: '사용자의 이메일 주소(카카오, 네이버 외에도) 가능',
   })
   email: string;
 }

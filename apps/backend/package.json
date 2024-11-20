@@ -37,6 +37,7 @@
     "lib0": "^0.2.98",
     "node-ts-cache": "^4.4.0",
     "node-ts-cache-storage-memory": "^4.4.0",
+    "passport": "^0.7.0",
     "passport-kakao": "^1.0.1",
     "passport-naver": "^1.0.6",
     "path": "^0.12.7",
