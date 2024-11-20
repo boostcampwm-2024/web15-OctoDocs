@@ -97,11 +97,13 @@ export class YjsService
 
         // content가 비어있다면 내부 구조가 novel editor schema를 따르지 않기 때문에 오류가 납니다.
         // content가 존재할 때만 넣어줍니다.
+        const pageContent = JSON.parse(JSON.stringify(findPage.content));
         const novelEditorContent = {
           type: 'doc',
-          content: findPage.content,
+          content: pageContent,
         };
-        Object.keys(findPage.content).length > 0 &&
+        pageContent.length > 0 &&
+          // JSON.parse(findPage.content).length > 0 &&
           this.initializePageContent(novelEditorContent, editorDoc);
 
         // 페이지 내용 변경 사항을 감지해서 데이터베이스에 갱신합니다.
