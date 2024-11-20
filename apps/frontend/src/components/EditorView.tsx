@@ -7,7 +7,6 @@ import { SocketIOProvider } from "y-socket.io";
 import Editor from "./editor";
 import EditorLayout from "./layout/EditorLayout";
 import EditorTitle from "./editor/EditorTitle";
-import SaveStatus from "./editor/ui/SaveStatus";
 import ActiveUser from "./commons/activeUser";
 
 import usePageStore from "@/store/usePageStore";
@@ -67,13 +66,13 @@ export default function EditorView() {
       const json = editor.getJSON();
 
       setSaveStatus("unsaved");
-      updatePageMutation.mutate(
-        { id: currentPage, pageData: { title: pageTitle, content: json } },
-        {
-          onSuccess: () => setSaveStatus("saved"),
-          onError: () => setSaveStatus("unsaved"),
-        },
-      );
+      // updatePageMutation.mutate(
+      //   { id: currentPage, pageData: { title: pageTitle, content: json } },
+      //   {
+      //     onSuccess: () => setSaveStatus("saved"),
+      //     onError: () => setSaveStatus("unsaved"),
+      //   },
+      // );
     },
     500,
   );
@@ -85,15 +84,13 @@ export default function EditorView() {
   if (!ydoc || !provider) return null;
 
   return (
-    <EditorLayout>
-      <SaveStatus saveStatus={saveStatus} />
+    <EditorLayout saveStatus={saveStatus}>
       <EditorTitle
         key={currentPage}
         currentPage={currentPage}
         pageContent={pageContent}
       />
       <ActiveUser
-        className="px-12 py-4"
         users={users.filter(
           (user) => user.currentPageId === currentPage.toString(),
         )}

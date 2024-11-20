@@ -54,6 +54,13 @@ const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
         onContentError={({ disableCollaboration }) => {
           disableCollaboration();
         }}
+        // onCreate={({ editor }) => {
+        //   provider.on("sync", () => {
+        //     if (editor.isEmpty && initialContent) {
+        //       editor.commands.setContent(initialContent);
+        //     }
+        //   });
+        // }}
         extensions={[
           ...extensions,
           Collaboration.extend().configure({
