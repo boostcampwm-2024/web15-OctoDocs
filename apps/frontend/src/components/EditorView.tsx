@@ -55,7 +55,10 @@ export default function EditorView() {
   }, [currentPage]);
 
   const pageTitle = page?.title ?? "제목없음";
-  const pageContent = page?.content ?? {};
+  const pageContent =
+    !page?.content || Object.keys(page?.content).length === 0
+      ? { type: "doc", content: [{ type: "paragraph" }] }
+      : page.content;
 
   const updatePageMutation = useUpdatePage();
   const handleEditorUpdate = useDebouncedCallback(
