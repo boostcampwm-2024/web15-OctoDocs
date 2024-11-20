@@ -3,6 +3,7 @@ import { PageService } from '../page/page.service';
 import { EdgeService } from '../edge/edge.service';
 import { NodeService } from '../node/node.service';
 import { YjsService } from './yjs.service';
+
 import { NodeCacheService } from '../node-cache/node-cache.service';
 
 describe('PageService', () => {
@@ -261,15 +262,15 @@ describe('PageService', () => {
           useValue: {},
         },
         {
-          provide: PageService,
-          useValue: {},
-        },
-        {
           provide: NodeService,
           useValue: {},
         },
         {
           provide: EdgeService,
+          useValue: {},
+        },
+        {
+          provide: NodeCacheService,
           useValue: {},
         },
         {
