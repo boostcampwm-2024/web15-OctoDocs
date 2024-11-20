@@ -39,12 +39,7 @@ interface EditorProp {
   provider: SocketIOProvider;
 }
 
-const Editor = ({
-  initialContent,
-  onEditorUpdate,
-  ydoc,
-  provider,
-}: EditorProp) => {
+const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
@@ -57,13 +52,6 @@ const Editor = ({
         onContentError={({ disableCollaboration }) => {
           disableCollaboration();
         }}
-        // onCreate={({ editor }) => {
-        //   provider.on("sync", () => {
-        //     if (editor.isEmpty && initialContent) {
-        //       editor.commands.setContent(initialContent);
-        //     }
-        //   });
-        // }}
         extensions={[
           ...extensions,
           Collaboration.extend().configure({

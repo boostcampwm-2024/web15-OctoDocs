@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { EditorInstance } from "novel";
 import { useDebouncedCallback } from "use-debounce";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
@@ -11,7 +10,7 @@ import ActiveUser from "./commons/activeUser";
 
 import usePageStore from "@/store/usePageStore";
 import useUserStore from "@/store/useUserStore";
-import { usePage, useUpdatePage } from "@/hooks/usePages";
+import { usePage } from "@/hooks/usePages";
 
 export default function EditorView() {
   const { currentPage } = usePageStore();
@@ -53,29 +52,15 @@ export default function EditorView() {
     };
   }, [currentPage]);
 
-  const pageTitle = page?.title ?? "제목없음";
   const pageContent = page?.content ?? {};
 
-  const updatePageMutation = useUpdatePage();
-  const handleEditorUpdate = useDebouncedCallback(
-    async ({ editor }: { editor: EditorInstance }) => {
-      if (currentPage === null) {
-        return;
-      }
+  const handleEditorUpdate = useDebouncedCallback(async () => {
+    if (currentPage === null) {
+      return;
+    }
 
-      const json = editor.getJSON();
-
-      setSaveStatus("unsaved");
-      // updatePageMutation.mutate(
-      //   { id: currentPage, pageData: { title: pageTitle, content: json } },
-      //   {
-      //     onSuccess: () => setSaveStatus("saved"),
-      //     onError: () => setSaveStatus("unsaved"),
-      //   },
-      // );
-    },
-    500,
-  );
+    setSaveStatus("unsaved");
+  }, 500);
 
   if (isLoading || !page || currentPage === null) {
     return null;
@@ -97,7 +82,6 @@ export default function EditorView() {
       />
       <Editor
         key={ydoc.guid}
-        initialContent={pageContent}
         pageId={currentPage}
         ydoc={ydoc}
         provider={provider}
