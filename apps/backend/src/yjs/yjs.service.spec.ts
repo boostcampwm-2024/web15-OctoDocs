@@ -1,15 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PageService } from './page.service';
-import { PageRepository } from './page.repository';
-import { NodeRepository } from '../node/node.repository';
-import { Page } from './page.entity';
-import { Node } from '../node/node.entity';
-import { CreatePageDto } from './dtos/createPage.dto';
-import { UpdatePageDto } from './dtos/updatePage.dto';
-import { PageNotFoundException } from '../exception/page.exception';
-import { EdgeService } from 'src/edge/edge.service';
-import { NodeService } from 'src/node/node.service';
+import { PageService } from '../page/page.service';
+import { EdgeService } from '../edge/edge.service';
+import { NodeService } from '../node/node.service';
 import { YjsService } from './yjs.service';
+import { NodeCacheService } from '../node-cache/node-cache.service';
 
 describe('PageService', () => {
   const dummyNovelData = {
@@ -256,6 +250,7 @@ describe('PageService', () => {
   let pageService: PageService;
   let nodeService: NodeService;
   let edgeService: EdgeService;
+  let nodeCacheService: NodeCacheService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -277,6 +272,10 @@ describe('PageService', () => {
           provide: EdgeService,
           useValue: {},
         },
+        {
+          provide: NodeCacheService,
+          useValue: {},
+        },
       ],
     }).compile();
 
@@ -284,6 +283,7 @@ describe('PageService', () => {
     pageService = module.get<PageService>(PageService);
     nodeService = module.get<NodeService>(NodeService);
     edgeService = module.get<EdgeService>(EdgeService);
+    nodeCacheService = module.get<NodeCacheService>(NodeCacheService);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
@@ -291,12 +291,12 @@ describe('PageService', () => {
     expect(pageService).toBeDefined();
     expect(nodeService).toBeDefined();
     expect(edgeService).toBeDefined();
+    expect(nodeCacheService).toBeDefined();
   });
 
   it('모든 페이지 목록을 조회할 수 있다.', async () => {});
 
   describe('createPage', () => {
-    it('페이지를 성공적으로 생성한다.', async () => {
-    });
+    it('페이지를 성공적으로 생성한다.', async () => {});
   });
 });
