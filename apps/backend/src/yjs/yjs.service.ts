@@ -197,10 +197,10 @@ export class YjsService
       const edgeId = edge.id.toString(); // id를 string으로 변환
 
       // Y.Map에 데이터를 삽입
-      yMap.set(edgeId, {
+      yMap.set(`e${edge.fromNode.id}-${edge.toNode.id}`, {
         id: edgeId,
-        source: edge.fromNode.id,
-        target: edge.toNode.id,
+        source: edge.fromNode.id.toString(),
+        target: edge.toNode.id.toString(),
         sourceHandle: 'left',
         targetHandle: 'left',
       });
