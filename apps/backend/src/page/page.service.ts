@@ -14,13 +14,13 @@ export class PageService {
   ) {}
 
   async createPage(dto: CreatePageDto): Promise<Page> {
-    const { title, x, y } = dto;
+    const { title, x, y, emoji } = dto;
 
     // 노드부터 생성한다.
     const node = await this.nodeRepository.save({ title, x, y });
 
     // 페이지를 생성한다.
-    const page = await this.pageRepository.save({ title, content: {} });
+    const page = await this.pageRepository.save({ title, content: {}, emoji });
 
     // 페이지와 노드를 서로 연결하여 저장한다.
     node.page = page;
@@ -58,9 +58,12 @@ export class PageService {
       throw new PageNotFoundException();
     }
     // 페이지 정보를 갱신한다.
-    const { title, content } = dto;
+    const { title, content, emoji } = dto;
     page.title = title;
     page.content = content;
+    if (emoji !== undefined) {
+      page.emoji = emoji;
+    }
 
     return await this.pageRepository.save(page);
   }

@@ -14,6 +14,7 @@ export class PageRepository extends Repository<Page> {
       select: {
         id: true,
         title: true,
+        emoji: true,
       },
     });
   }
