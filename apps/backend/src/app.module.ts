@@ -9,12 +9,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Page } from './page/page.entity';
 import { Edge } from './edge/edge.entity';
 import { Node } from './node/node.entity';
-import { User } from './auth/user.entity';
+import { User } from './user/user.entity';
 import { YjsModule } from './yjs/yjs.module';
 import * as path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AuthModule } from './auth/auth.module';
     YjsModule,
     UploadModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
