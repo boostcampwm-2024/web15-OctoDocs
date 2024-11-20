@@ -91,7 +91,7 @@ export class YjsService
 
       // document name이 flow-room이라면 모든 노드들을 볼 수 있는 화면입니다.
       // 노드를 클릭해 페이지를 열었을 때만 해당 페이지 값을 가져와서 초기 데이터로 세팅해줍니다.
-      if (customDoc.name !== 'flow-room') {
+      if (customDoc.name?.startsWith('document-')) {
         const pageId = parseInt(customDoc.name.split('-')[1]);
         const findPage = await this.pageService.findPageById(pageId);
 
