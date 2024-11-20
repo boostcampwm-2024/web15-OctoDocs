@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Page } from './page/page.entity';
 import { Edge } from './edge/edge.entity';
 import { Node } from './node/node.entity';
-import { User } from './auth/entities/user.entity';
+import { User } from './auth/user.entity';
 import { YjsModule } from './yjs/yjs.module';
 import * as path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
