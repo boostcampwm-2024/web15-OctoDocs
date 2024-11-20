@@ -188,10 +188,10 @@ export class YjsService
           y: node.y,
         },
         selected: false, // 기본적으로 선택되지 않음
+        dragging: true,
       });
     });
   }
-
 
   // yXmlFragment에 content를 넣어준다.
   initializePageContent(content: JSON, yXmlFragment: Y.XmlFragment) {
