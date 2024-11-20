@@ -20,7 +20,7 @@ export default function Sidebar() {
         <div className="w-full px-4">
           <Tools />
         </div>
-        <ScrollWrapper className="scrollbar scrollbar-thumb-[#d9d9d9] scrollbar-track-transparent max-h-[612px] overflow-x-clip">
+        <ScrollWrapper className="scrollbar scrollbar-thumb-[#d9d9d9] scrollbar-track-transparent max-h-[604px] overflow-x-clip">
           <NoteList className="p-4 pb-0 pt-0" />
         </ScrollWrapper>
       </div>
