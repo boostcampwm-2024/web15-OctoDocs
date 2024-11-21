@@ -7,7 +7,7 @@ import useUserStore from "@/store/useUserStore";
 export interface AwarenessState {
   cursor: XYPosition | null;
   color: string;
-  clientId: number;
+  clientId: string;
 }
 
 interface CollaborativeCursorsProps {
@@ -25,6 +25,7 @@ export function useCollaborativeCursors({
     new Map(),
   );
   const { currentUser } = useUserStore();
+  const { color, clientId } = currentUser;
 
   useEffect(() => {
     const wsProvider = new SocketIOProvider(
@@ -46,15 +47,17 @@ export function useCollaborativeCursors({
 
     wsProvider.awareness.setLocalState({
       cursor: null,
-      color: currentUser.color,
-      clientId: currentUser.clientId,
+      color,
+      clientId,
     });
 
     wsProvider.awareness.on("change", () => {
       const states = new Map(
         Array.from(
           wsProvider.awareness.getStates() as Map<number, AwarenessState>,
-        ).filter(([, state]) => state.cursor !== null),
+        ).filter(
+          ([, state]) => state.clientId !== clientId && state.cursor !== null,
+        ),
       );
       setCursors(states);
     });
@@ -62,7 +65,7 @@ export function useCollaborativeCursors({
     return () => {
       wsProvider.destroy();
     };
-  }, [ydoc, roomName]);
+  }, [ydoc, roomName, color, clientId]);
 
   const updateCursorPosition = useCallback(
     (x: number | null, y: number | null) => {
@@ -75,11 +78,11 @@ export function useCollaborativeCursors({
 
       provider.current.awareness.setLocalState({
         cursor,
-        color: currentUser.color,
-        clientId: currentUser.clientId,
+        color,
+        clientId,
       });
     },
-    [flowInstance],
+    [flowInstance, color, clientId],
   );
 
   const handleMouseMove = useCallback(

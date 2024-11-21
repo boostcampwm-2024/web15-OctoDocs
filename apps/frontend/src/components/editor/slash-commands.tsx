@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { createSuggestionItems } from "novel/extensions";
 import { Command, renderItems } from "novel/extensions";
-// import { uploadFn } from "./image-upload";
+
+import { onUpload } from "@/api/imageUpload";
 
 export const suggestionItems = createSuggestionItems([
   {
@@ -135,11 +136,15 @@ export const suggestionItems = createSuggestionItems([
       input.accept = "image/*";
       input.onchange = async () => {
         if (input.files?.length) {
-          // const file = input.files[0];
-          // const pos = editor.view.state.selection.from;
-          // uploadFn(file, editor.view, pos);
+          const file = input.files[0];
+          const url = await onUpload(file);
+
+          editor.commands.setImage({
+            src: url as string,
+          });
         }
       };
+
       input.click();
     },
   },

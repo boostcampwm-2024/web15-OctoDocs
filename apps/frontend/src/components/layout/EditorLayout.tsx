@@ -1,31 +1,32 @@
-import { PanelRightClose, PanelLeftClose } from "lucide-react";
+import { cn } from "@/lib/utils";
 import usePageStore from "@/store/usePageStore";
+import EditorActionPanel from "../editor/EditorActionPanel";
 
 interface EditorLayoutProps {
+  saveStatus: "saved" | "unsaved";
   children: React.ReactNode;
 }
 
-const EditorLayout = ({ children }: EditorLayoutProps) => {
-  const { isPanelOpen, togglePanel } = usePageStore();
+const EditorLayout = ({ children, saveStatus }: EditorLayoutProps) => {
+  const { isPanelOpen, isMaximized } = usePageStore();
 
   return (
     <div
-      className={`absolute right-0 h-[720px] w-[520px] rounded-bl-lg rounded-br-lg rounded-tr-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out ${
-        isPanelOpen ? "transform-none" : "translate-x-full"
-      }`}
+      className={cn(
+        "absolute right-4 top-4 h-[720px] w-[520px] rounded-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out",
+        isPanelOpen ? "transform-none" : "translate-x-full",
+        isMaximized ? "right-0 top-0 h-screen w-screen" : "",
+      )}
     >
-      <div className="h-full overflow-auto">{children}</div>
-
-      <button
-        onClick={togglePanel}
-        className="absolute -left-8 top-0 z-50 flex h-8 w-8 !cursor-pointer items-center justify-center rounded-l border-b border-l border-t border-[#e0e6ee] bg-[#f5f5f5]"
-      >
-        {isPanelOpen ? (
-          <PanelRightClose className="h-4 w-4" />
-        ) : (
-          <PanelLeftClose className="h-4 w-4" />
+      <EditorActionPanel saveStatus={saveStatus} />
+      <div
+        className={cn(
+          "flex h-full flex-col gap-4 overflow-auto px-12 py-4",
+          isMaximized && "mx-auto mt-8 box-content w-[800px] px-0",
         )}
-      </button>
+      >
+        {children}
+      </div>
     </div>
   );
 };

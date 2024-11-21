@@ -6,18 +6,21 @@ export interface Page {
   id: number;
   title: string;
   content: JSONContent;
+  emoji: string | null;
 }
 
 export interface CreatePageRequest {
   title: string;
   content: JSONContent;
+  emoji: string | null;
   x: number;
   y: number;
 }
 
-export interface PageRequest {
+export interface UpdatePageRequest {
   title: string;
   content: JSONContent;
+  emoji: string | null;
 }
 
 export interface PageResponse {
@@ -63,9 +66,9 @@ export const deletePage = async (id: number) => {
   return res.data;
 };
 
-export const updatePage = async (id: number, pageData: PageRequest) => {
+export const updatePage = async (id: number, pageData: UpdatePageRequest) => {
   const url = `/api/page/${id}`;
 
-  const res = await Patch<null, PageRequest>(url, pageData);
+  const res = await Patch<null, UpdatePageRequest>(url, pageData);
   return res.data;
 };

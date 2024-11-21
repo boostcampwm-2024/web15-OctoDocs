@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CacheContainer } from 'node-ts-cache';
 import { MemoryStorage } from 'node-ts-cache-storage-memory';
 
+type CacheValue = { title: string; isHolding: boolean };
+
 @Injectable()
 export class NodeCacheService {
   private cache: CacheContainer;
@@ -12,13 +14,13 @@ export class NodeCacheService {
     this.cache = new CacheContainer(new MemoryStorage());
   }
 
-  async set(nodeId: number, title: string): Promise<void> {
+  async set(nodeId: number, value: CacheValue): Promise<void> {
     const config = { ttl: this.ttlTime };
-    await this.cache.setItem(nodeId.toString(), title, config);
+    await this.cache.setItem(nodeId.toString(), value, config);
   }
 
-  async get(nodeId: number): Promise<String | undefined> {
-    return await this.cache.getItem<String>(nodeId.toString());
+  async get(nodeId: number): Promise<CacheValue | undefined> {
+    return await this.cache.getItem<CacheValue>(nodeId.toString());
   }
 
   async has(nodeId: number): Promise<boolean> {
@@ -27,7 +29,15 @@ export class NodeCacheService {
   }
 
   async hasSameTitle(nodeId: number, title: string): Promise<boolean> {
-    const savedTitle = await this.get(nodeId);
-    return !!savedTitle && savedTitle === title;
+    const savedCacheValue = await this.get(nodeId);
+    return !!savedCacheValue && savedCacheValue.title === title;
+  }
+
+  async isHoldingStatusChanged(
+    nodeId: number,
+    isHolding: boolean,
+  ): Promise<boolean> {
+    const savedCacheValue = await this.get(nodeId);
+    return !!savedCacheValue && savedCacheValue.isHolding !== isHolding;
   }
 }

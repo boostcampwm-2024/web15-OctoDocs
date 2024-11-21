@@ -1,4 +1,4 @@
-import { IsString, IsJSON } from 'class-validator';
+import { IsString, IsJSON, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdatePageDto {
@@ -15,4 +15,13 @@ export class UpdatePageDto {
   })
   @IsJSON()
   content: JSON;
+
+  @ApiProperty({
+    example: '📝',
+    description: '페이지 이모지',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  emoji?: string;
 }

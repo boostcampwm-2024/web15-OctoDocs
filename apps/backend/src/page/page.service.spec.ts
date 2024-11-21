@@ -68,6 +68,7 @@ describe('PageService', () => {
         updatedAt: newDate,
         version: 1,
         node: null,
+        emoji: null,
       };
 
       // 노드 엔티티
@@ -121,6 +122,7 @@ describe('PageService', () => {
       const dto: UpdatePageDto = {
         title: 'Updated Title',
         content: {} as JSON,
+        emoji: '📝',
       };
       const originDate = new Date();
       const originPage: Page = {
@@ -131,6 +133,7 @@ describe('PageService', () => {
         createdAt: originDate,
         updatedAt: originDate,
         version: 1,
+        emoji: null,
       };
       const newDate = new Date();
       const newPage: Page = {
@@ -141,6 +144,7 @@ describe('PageService', () => {
         createdAt: newDate,
         updatedAt: newDate,
         version: 1,
+        emoji: '📝',
       };
 
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(originPage);
@@ -177,6 +181,7 @@ describe('PageService', () => {
         createdAt: newDate,
         updatedAt: newDate,
         version: 1,
+        emoji: null,
       };
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(expectedPage);
 

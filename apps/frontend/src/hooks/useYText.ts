@@ -16,8 +16,14 @@ function diffToDelta(diffResult: DiffResult) {
   );
 }
 
-export const useYText = (ydoc: Y.Doc, currentPage: number) => {
-  const yText = ydoc.getMap("title").get(`title_${currentPage}`) as Y.Text;
+type ReturnTypes = [string, (textNew: string) => void];
+
+export const useYText = (
+  ydoc: Y.Doc,
+  key: string,
+  currentPage: number,
+): ReturnTypes => {
+  const yText = ydoc.getMap(key).get(`${key}_${currentPage}`) as Y.Text;
 
   const [input, setInput] = useState(yText.toString());
 
@@ -30,5 +36,5 @@ export const useYText = (ydoc: Y.Doc, currentPage: number) => {
     setInput(yText.toString());
   });
 
-  return { input, setYText };
+  return [input, setYText];
 };

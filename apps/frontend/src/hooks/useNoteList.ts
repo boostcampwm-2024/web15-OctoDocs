@@ -1,11 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import usePageStore from "@/store/usePageStore";
-import { useDeletePage, usePages } from "./usePages";
+import { useDeletePage } from "./usePages";
+import useYDocStore from "@/store/useYDocStore";
+import { YNode } from "@/components/canvas";
+import { NoteNodeData } from "@/components/canvas/NoteNode";
 
 export const useNoteList = () => {
   const { setCurrentPage } = usePageStore();
-  const { pages } = usePages();
+
+  const [pages, setPages] = useState<NoteNodeData[]>();
+  const { ydoc } = useYDocStore();
+  const nodesMap = ydoc.getMap("nodes");
+
+  // TODO: 최적화 필요
+  useEffect(() => {
+    nodesMap.observe(() => {
+      const yNodes = Array.from(nodesMap.values()) as YNode[];
+      const data = yNodes.map((yNode) => yNode.data) as NoteNodeData[];
+      setPages(data);
+    });
+  }, []);
 
   const [noteIdToDelete, setNoteIdToDelete] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,7 +28,6 @@ export const useNoteList = () => {
   const deleteMutation = useDeletePage();
 
   const handleNoteClick = (id: number) => {
-    console.log("handleNoteClick", id);
     setCurrentPage(id);
   };
 

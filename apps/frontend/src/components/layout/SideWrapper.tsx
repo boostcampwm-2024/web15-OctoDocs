@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 const sideStyle: { readonly [key in Side]: string } = {
   left: "left-0",
   right: "right-0 ",
@@ -10,8 +12,17 @@ type Side = "left" | "right" | "top" | "bottom";
 type SideWrapperProps = {
   side: Side;
   children: React.ReactNode;
+  className?: string;
 };
 
-export default function SideWrapper({ side, children }: SideWrapperProps) {
-  return <div className={`absolute z-50 ${sideStyle[side]} `}>{children}</div>;
+export default function SideWrapper({
+  side,
+  children,
+  className,
+}: SideWrapperProps) {
+  return (
+    <div className={cn(`absolute z-40 ${sideStyle[side]} `, className)}>
+      {children}
+    </div>
+  );
 }

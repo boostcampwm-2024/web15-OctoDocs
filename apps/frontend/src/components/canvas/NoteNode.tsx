@@ -4,8 +4,9 @@ import ActiveUser from "../commons/activeUser";
 
 import usePageStore from "@/store/usePageStore";
 import useUserStore from "@/store/useUserStore";
+import Emoji from "../commons/emoji";
 
-export type NoteNodeData = { title: string; id: number };
+export type NoteNodeData = { title: string; id: number; emoji: string };
 export type NoteNodeType = Node<NoteNodeData, "note">;
 
 export function NoteNode({ data }: NodeProps<NoteNodeType>) {
@@ -50,7 +51,10 @@ export function NoteNode({ data }: NodeProps<NoteNodeType>) {
         position={Position.Bottom}
         isConnectable={true}
       />
-      {data.title}
+      <div className="flex gap-1">
+        <Emoji emoji={data.emoji} />
+        <div>{data.title}</div>
+      </div>
       <ActiveUser
         className="justify-end"
         users={users.filter(

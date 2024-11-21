@@ -5,6 +5,7 @@ import RemoveNoteModal from "./RemoveNoteModal";
 import { useNoteList } from "@/hooks/useNoteList";
 import { cn } from "@/lib/utils";
 import Button from "../commons/button";
+import Emoji from "../commons/emoji";
 
 interface NoteListProps {
   className?: string;
@@ -31,15 +32,16 @@ export default function NoteList({ className }: NoteListProps) {
         onConfirm={onConfirm}
         onCloseModal={onCloseModal}
       />
-      {pages.map(({ id, title }) => (
+      {pages.map(({ id, title, emoji }) => (
         <Button
           onClick={() => handleNoteClick(id)}
           key={id}
-          className="group flex flex-row justify-between rounded-sm px-3 py-1 hover:bg-neutral-100"
+          className="group flex flex-row justify-between gap-1 rounded-sm px-3 py-1 hover:bg-neutral-100"
         >
+          {emoji && <Emoji emoji={emoji} />}
           <div className="w-full truncate text-start">{title}</div>
           <span
-            className="hidden text-neutral-400 transition-colors hover:text-red-500 group-hover:block"
+            className="hidden text-neutral-400 transition-colors group-hover:block hover:text-red-500"
             onClick={(e) => {
               e.stopPropagation();
               openModal(id);

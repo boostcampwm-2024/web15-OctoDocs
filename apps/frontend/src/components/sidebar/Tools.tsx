@@ -10,13 +10,9 @@ export default function Tools() {
   const { pages } = usePages();
   const createMutation = useCreatePage();
 
-  if (!pages) {
-    return <div>로딩중...</div>;
-  }
-
   return (
     <Button
-      className="flex flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100"
+      className={`${!pages && "disabled"} flex w-full flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100`}
       onClick={() => {
         createMutation
           .mutateAsync({
@@ -32,6 +28,7 @@ export default function Tools() {
             },
             x: 0,
             y: 0,
+            emoji: null,
           })
           .then((res) => setCurrentPage(res.pageId));
       }}
