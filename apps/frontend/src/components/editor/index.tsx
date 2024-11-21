@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   EditorRoot,
   EditorCommand,
@@ -26,7 +26,9 @@ import { LinkSelector } from "./selectors/link-selector";
 import { MathSelector } from "./selectors/math-selector";
 import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
+
 import { uploadFn } from "@/lib/upload";
+import useUserStore from "@/store/useUserStore";
 
 const extensions = [...defaultExtensions, slashCommand];
 
@@ -45,6 +47,15 @@ const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
+
+  const { currentUser } = useUserStore();
+
+  useEffect(() => {
+    provider.awareness.setLocalStateField("user", {
+      name: currentUser.clientId,
+      color: currentUser.color,
+    });
+  }, [currentUser]);
 
   return (
     <EditorRoot>
@@ -86,7 +97,7 @@ const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
               <EditorCommandItem
                 value={item.title}
                 onCommand={(val) => item.command?.(val)}
-                className="flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:cursor-pointer hover:bg-accent aria-selected:bg-accent"
+                className="flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm aria-selected:bg-accent hover:cursor-pointer hover:bg-accent"
                 key={item.title}
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted bg-background">
