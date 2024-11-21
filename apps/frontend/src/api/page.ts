@@ -6,6 +6,7 @@ export interface Page {
   id: number;
   title: string;
   content: JSONContent;
+  emoji: string | null;
 }
 
 export interface CreatePageRequest {
