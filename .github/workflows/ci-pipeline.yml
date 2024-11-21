@@ -1,0 +1,110 @@
+name: OctoDocs CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - develop
+  push:
+    branches:
+      - develop
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-backend-deps.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "23"
+
+      # turbo 의존성 캐시 설정
+      - name: Cache Yarn dependencies for backend
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+      # turbo 의존성 설치
+      - name: Install backend dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: yarn install
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "23"
+
+      # 의존성 캐시 복원
+      - name: Restore Yarn dependencies for backend
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+      # 백엔드 린트 실행
+      - name: Run lint
+        run: yarn lint
+        continue-on-error: true
+
+      # 백엔드 린트 경고 포스트
+      - name: Post backend lint warning if any
+        if: failure()
+        run: echo "⚠️ lint 실행 도중 경고가 발생했습니다. 확인해주세요."
+
+  build:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "23"
+      # 루트 의존성 캐시 설정
+      - name: Cache Yarn dependencies for root
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+      # 빌드 실행
+      - name: Run build
+        run: yarn build
+  test:
+    runs-on: ubuntu-latest
+    needs: [setup, build]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "23"
+
+      # 의존성 캐시 복원
+      - name: Restore Yarn dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+
+      # 테스트 실행
+      - name: Run tests
+        run: yarn test
