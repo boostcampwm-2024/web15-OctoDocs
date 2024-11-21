@@ -15,16 +15,12 @@ import { NodeCacheService } from '../node-cache/node-cache.service';
 import {
   yXmlFragmentToProsemirrorJSON,
   prosemirrorJSONToYXmlFragment,
-  prosemirrorJSONToYDoc,
-  yDocToProsemirrorJSON,
 } from 'y-prosemirror';
 import { novelEditorSchema } from './yjs.schema';
-import { Schema } from 'prosemirror-model';
 import { EdgeService } from '../edge/edge.service';
 import { Node } from 'src/node/node.entity';
 import { Edge } from 'src/edge/edge.entity';
 import { YMapEdge } from './yjs.type';
-import { YMapNode } from './yjs.type';
 
 // Y.Doc에는 name 컬럼이 없어서 생성했습니다.
 class CustomDoc extends Y.Doc {
@@ -49,8 +45,10 @@ export class YjsService
     private readonly edgeService: EdgeService,
     private readonly nodeCacheService: NodeCacheService,
   ) {}
+
   @WebSocketServer()
   server: Server;
+
   insertProseMirrorDataToXmlFragment(xmlFragment: Y.XmlFragment, data: any[]) {
     // XML Fragment 초기화
     xmlFragment.delete(0, xmlFragment.length);
@@ -72,6 +70,7 @@ export class YjsService
       xmlFragment.push([yNode]);
     });
   }
+
   afterInit() {
     if (!this.server) {
       this.logger.error('서버 초기화 안됨..!');
@@ -131,37 +130,39 @@ export class YjsService
       this.initializeYEdgeMap(edges, edgesMap);
 
       // node의 변경 사항을 감지한다.
-      nodesMap.observe(() => {
+      nodesMap.observe(async () => {
         const nodes = Object.values(doc.getMap('nodes').toJSON());
 
         // 모든 노드에 대해 검사한다.
-        nodes.forEach((node: YMapNode) => {
-          const { title, id } = node.data;
+        for await (const node of nodes) {
+          const { title, id } = node.data; // TODO: 이모지 추가
           const { x, y } = node.position;
-          // 만약 캐쉬에 노드가 존재하지 않다면 갱신 후 캐쉬에 노드를 넣는다.
-          if (!this.nodeCacheService.has(id)) {
-            this.nodeService.updateNode(id, { title, x, y });
-            this.nodeCacheService.set(id, title);
-            return;
-          }
+          const isHolding = node.isHolding;
+          const updateCondition =
+            !(await this.nodeCacheService.has(id)) ||
+            !(await this.nodeCacheService.hasSameTitle(id, title)) ||
+            !(await this.nodeCacheService.isHoldingStatusChanged(
+              id,
+              isHolding,
+            ));
 
-          // 만약 캐쉬에 노드가 존재하고 title이 다르다면 갱신한다.
-          if (!this.nodeCacheService.hasSameTitle(id, title)) {
-            this.nodeService.updateNode(id, { title, x, y });
-            this.nodeCacheService.set(id, title);
-            return;
+          if (updateCondition) {
+            await this.nodeService.updateNode(id, { title, x, y });
+            await this.nodeCacheService.set(id, { title, isHolding });
           }
-          // 만약 캐쉬에 노드가 존재하고 title이 동일하다면 패스한다.
-        });
+        }
       });
+
       // edge의 변경 사항을 감지한다.
-      edgesMap.observe(() => {
-        const edges = Object.values(doc.getMap('edges').toJSON());
-        edges.forEach(async (edge: YMapEdge) => {
+      edgesMap.observe(async () => {
+        const edges: YMapEdge[] = Object.values(doc.getMap('edges').toJSON());
+
+        for await (const edge of edges) {
           const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
             parseInt(edge.source),
             parseInt(edge.target),
           );
+
           // 연결된 노드가 없을 때만 edge 생성
           if (!findEdge) {
             await this.edgeService.createEdge({
@@ -169,7 +170,7 @@ export class YjsService
               toNode: parseInt(edge.target),
             });
           }
-        });
+        }
       });
     });
   }
@@ -193,6 +194,7 @@ export class YjsService
         },
         selected: false, // 기본적으로 선택되지 않음
         dragging: true,
+        isHolding: false,
       });
     });
   }
@@ -212,6 +214,7 @@ export class YjsService
       });
     });
   }
+
   // yXmlFragment에 content를 넣어준다.
   initializePageContent(content: Object, yXmlFragment: Y.XmlFragment) {
     prosemirrorJSONToYXmlFragment(novelEditorSchema, content, yXmlFragment);

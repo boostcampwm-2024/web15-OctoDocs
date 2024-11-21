@@ -11,6 +11,7 @@ export type YMapNode = {
     y: number; // Y 좌표
   };
   selected: boolean;
+  isHolding: boolean;
 };
 
 // yMap에 저장되는 edge 형태

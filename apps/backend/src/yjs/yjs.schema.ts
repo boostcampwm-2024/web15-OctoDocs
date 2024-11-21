@@ -144,7 +144,35 @@ export const novelEditorSchema = new Schema({
         },
       ],
     },
-  },
 
+    image: {
+      inline: true,
+      attrs: {
+        src: {},
+        alt: { default: null },
+        title: { default: null },
+      },
+      group: 'inline',
+      draggable: true,
+      parseDOM: [
+        {
+          tag: 'img[src]',
+          getAttrs: (dom) => ({
+            src: (dom as HTMLElement).getAttribute('src'),
+            alt: (dom as HTMLElement).getAttribute('alt'),
+            title: (dom as HTMLElement).getAttribute('title'),
+          }),
+        },
+      ],
+      toDOM: (node) => [
+        'img',
+        {
+          src: node.attrs.src,
+          alt: node.attrs.alt,
+          title: node.attrs.title,
+        },
+      ],
+    },
+  },
   marks: {},
 });
