@@ -13,9 +13,9 @@ const EditorLayout = ({ children, saveStatus }: EditorLayoutProps) => {
   return (
     <div
       className={cn(
-        "absolute right-0 h-[720px] w-[520px] rounded-bl-lg rounded-br-lg rounded-tr-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out",
+        "absolute right-4 top-4 h-[720px] w-[520px] rounded-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out",
         isPanelOpen ? "transform-none" : "translate-x-full",
-        isMaximized ? "h-screen w-screen" : "w-[520px]",
+        isMaximized ? "right-0 top-0 h-screen w-screen" : "",
       )}
     >
       <EditorActionPanel saveStatus={saveStatus} />
