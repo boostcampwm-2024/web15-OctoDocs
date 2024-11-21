@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginRequiredException } from '../../exception/login.exception';
-import { InvalidTokenException } from 'src/exception/invalid.exception';
+import { InvalidTokenException } from '../../exception/invalid.exception';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -12,7 +12,7 @@ export class JwtAuthGuard implements CanActivate {
     const authorizationHeader = request.headers['authorization'];
 
     if (!authorizationHeader) {
-      console.log('Authorization header missing');
+      //   console.log('Authorization header missing');
       throw new LoginRequiredException();
     }
 
@@ -25,7 +25,7 @@ export class JwtAuthGuard implements CanActivate {
       request.user = decodedToken;
       return true;
     } catch (error) {
-      console.log('Invalid token');
+      //   console.log('Invalid token');
       throw new InvalidTokenException();
     }
   }

@@ -55,7 +55,7 @@ export class AuthController {
     };
   }
 
-  // Example 1: 로그인한 사용자만 접근할 수 있는 엔드포인트
+  // Example: 로그인한 사용자만 접근할 수 있는 엔드포인트
   // auth/profile
   @Get('profile')
   @UseGuards(JwtAuthGuard) // JWT 인증 검사
