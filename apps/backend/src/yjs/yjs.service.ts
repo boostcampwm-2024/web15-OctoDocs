@@ -187,6 +187,7 @@ export class YjsService
         data: {
           title: node.page.title,
           id: node.page.id,
+          emoji: node.page.emoji,
         },
         position: {
           x: node.x,

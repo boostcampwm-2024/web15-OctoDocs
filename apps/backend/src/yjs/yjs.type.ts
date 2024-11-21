@@ -5,6 +5,7 @@ export type YMapNode = {
   data: {
     title: string; // 제목
     id: number; // 페이지 아이디
+    emoji: string | null;
   };
   position: {
     x: number; // X 좌표

@@ -33,7 +33,7 @@ import { getHandlePosition } from "@/lib/getHandlePosition";
 
 const proOptions = { hideAttribution: true };
 
-interface YNode extends Node {
+export interface YNode extends Node {
   isHolding: boolean;
 }
 
@@ -62,15 +62,23 @@ function Flow({ className }: CanvasProps) {
   useEffect(() => {
     if (!pages) return;
 
-    const yMap = ydoc.getMap("title");
+    const yTitleMap = ydoc.getMap("title");
+    const yEmojiMap = ydoc.getMap("emoji");
 
     pages.forEach((page) => {
-      if (yMap.get(`title_${page.id}`)) return;
+      if (!yTitleMap.get(`title_${page.id}`)) {
+        const yText = new Y.Text();
+        yText.insert(0, page.title);
 
-      const yText = new Y.Text();
-      yText.insert(0, page.title);
+        yTitleMap.set(`title_${page.id}`, yText);
+      }
 
-      yMap.set(`title_${page.id}`, yText);
+      if (!yEmojiMap.get(`emoji_${page.id}`)) {
+        const yText = new Y.Text();
+        yText.insert(0, page.emoji || "");
+
+        yEmojiMap.set(`emoji_${page.id}`, yText);
+      }
     });
   }, [pages]);
 
@@ -178,7 +186,7 @@ function Flow({ className }: CanvasProps) {
       const newNode: YNode = {
         id: pageId,
         type: "note",
-        data: { title: page.title, id: page.id },
+        data: { title: page.title, id: page.id, emoji: page.emoji },
         position: existingNode?.position || {
           x: Math.random() * 500,
           y: Math.random() * 500,
