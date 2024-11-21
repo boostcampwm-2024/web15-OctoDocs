@@ -60,19 +60,6 @@ export const usePages = () => {
   return { pages, isError };
 };
 
-export const useUpdatePage = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, pageData }: { id: number; pageData: PageRequest }) =>
-      updatePage(id, pageData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pages"] });
-    },
-  });
-};
-
-export const useUpdateTitle = () => {};
-
 export const useOptimisticUpdatePage = ({ id }: { id: number }) => {
   const queryClient = useQueryClient();
 

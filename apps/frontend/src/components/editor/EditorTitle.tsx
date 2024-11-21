@@ -14,11 +14,13 @@ export default function EditorTitle({
 }: EditorTitleProps) {
   const { ydoc } = useYDocStore();
   const { input, setYText } = useYText(ydoc, currentPage);
+  // YText (emoji)
 
   const optimisticUpdatePageMutation = useOptimisticUpdatePage({
     id: currentPage ?? 0,
   });
 
+  // title 변경 -> invalidate page -> 새로운 pageContent + YText 타이틀로 update 요청
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setYText(e.target.value);
 
