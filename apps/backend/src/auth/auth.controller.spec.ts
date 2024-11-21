@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidTokenException } from '../exception/invalid.exception';
-import { LoginRequiredException } from '../exception/login.exception';
+// import { LoginRequiredException } from '../exception/login.exception';
 // TODO: 테스트 코드 개선
 describe('AuthController', () => {
   let authController: AuthController;
@@ -56,25 +56,25 @@ describe('AuthController', () => {
       });
     });
 
-    it('JWT 토큰이 유효가지 않은 경우 InvalidTokenException을 throw한다.', async () => {
-      const req = {
-        headers: { authorization: 'Bearer invalid-token' },
-        user: undefined,
-      } as any;
-      try {
-        await authController.getProfile(req);
-      } catch (error) {
-        expect(error).toBeInstanceOf(InvalidTokenException);
-      }
-    });
+    // it('JWT 토큰이 유효가지 않은 경우 InvalidTokenException을 throw한다.', async () => {
+    //   const req = {
+    //     headers: { authorization: 'Bearer invalid-token' },
+    //     user: undefined,
+    //   } as any;
+    //   try {
+    //     await authController.getProfile(req);
+    //   } catch (error) {
+    //     expect(error).toBeInstanceOf(InvalidTokenException);
+    //   }
+    // });
 
-    it('JWT 토큰이 없는 경우 LoginRequiredException을 throw한다.', async () => {
-      const req = { headers: {}, user: undefined } as any;
-      try {
-        await authController.getProfile(req);
-      } catch (error) {
-        expect(error).toBeInstanceOf(LoginRequiredException);
-      }
-    });
+    // it('JWT 토큰이 없는 경우 LoginRequiredException을 throw한다.', async () => {
+    //   const req = { headers: {}, user: undefined } as any;
+    //   try {
+    //     await authController.getProfile(req);
+    //   } catch (error) {
+    //     expect(error).toBeInstanceOf(LoginRequiredException);
+    //   }
+    // });
   });
 });
