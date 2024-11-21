@@ -34,7 +34,7 @@
 
 v.241115
 
-![octodocs-architecture](https://github.com/user-attachments/assets/1051f137-9369-437d-9e00-12b487095c9c)
+![octodocs-architecture](https://github.com/user-attachments/assets/18461bff-25ad-439a-ada0-73f4ea37e4d7)
 
 
 ## 🧸 팀원 소개
