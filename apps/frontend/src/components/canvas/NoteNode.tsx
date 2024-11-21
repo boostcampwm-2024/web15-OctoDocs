@@ -8,7 +8,7 @@ import useUserStore from "@/store/useUserStore";
 import Emoji from "../commons/emoji";
 import { useEffect, useState } from "react";
 
-export type NoteNodeData = { title: string; id: number; emoji?: string };
+export type NoteNodeData = { title: string; id: number; emoji: string };
 export type NoteNodeType = Node<NoteNodeData, "note">;
 
 export function NoteNode({ data }: NodeProps<NoteNodeType>) {

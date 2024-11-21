@@ -36,10 +36,10 @@ export default function NoteList({ className }: NoteListProps) {
         <Button
           onClick={() => handleNoteClick(id)}
           key={id}
-          className="group flex flex-row justify-between gap-1 rounded-sm px-3 py-1 hover:bg-neutral-100"
+          className="group flex flex-row items-center justify-between gap-1 rounded-sm px-3 py-1 hover:bg-neutral-100"
         >
-          {emoji && <Emoji emoji={emoji} />}
-          <div className="w-full truncate text-start">{title}</div>
+          <Emoji emoji={emoji} width="w-5" height="h-5" />
+          <div className="flex-1 truncate text-start">{title}</div>
           <span
             className="hidden text-neutral-400 transition-colors group-hover:block hover:text-red-500"
             onClick={(e) => {
@@ -47,7 +47,7 @@ export default function NoteList({ className }: NoteListProps) {
               openModal(id);
             }}
           >
-            <Trash2 width={20} height={20} />
+            <Trash2 width={18} height={18} />
           </span>
         </Button>
       ))}
