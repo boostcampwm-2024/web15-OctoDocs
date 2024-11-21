@@ -7,6 +7,7 @@ import Emoji from "@/components/commons/emoji";
 import useYDocStore from "@/store/useYDocStore";
 import { useYText } from "@/hooks/useYText";
 import { useOptimisticUpdatePage } from "@/hooks/usePages";
+import { cn } from "@/lib/utils";
 
 interface EditorTitleProps {
   currentPage: number;
@@ -44,11 +45,11 @@ export default function EditorTitle({
     });
   };
 
-  const handleEmojiClick = (emoji: Emoji) => {
-    setYEmoji(emoji.native);
+  const handleEmojiClick = ({ native }: Emoji) => {
+    setYEmoji(native);
 
     optimisticUpdatePageMutation.mutate({
-      pageData: { title, content: pageContent, emoji: emoji.native },
+      pageData: { title, content: pageContent, emoji: native },
     });
 
     setIsEmojiPickerOpen(false);
@@ -64,21 +65,46 @@ export default function EditorTitle({
     setIsEmojiPickerOpen(false);
   };
 
+  const handleRemoveIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    setYEmoji("");
+
+    optimisticUpdatePageMutation.mutate({
+      pageData: { title, content: pageContent, emoji: "" },
+    });
+
+    setIsEmojiPickerOpen(false);
+  };
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative">
-        <button onClick={handleTitleEmojiClick}>
-          <Emoji emoji={emoji} width="w-10" height="h-10" fontSize="text-6xl" />
-        </button>
-        <div
-          className={`top-18 absolute z-50 ${isEmojiPickerOpen ? "block" : "hidden"}`}
-        >
-          <Picker
-            theme="light"
-            previewPosition="none"
-            onEmojiSelect={handleEmojiClick}
-            onClickOutside={handleEmojiOutsideClick}
-          />
+      <div className="group">
+        <div className={cn("relative duration-200")}>
+          <button onClick={handleTitleEmojiClick}>
+            <Emoji
+              emoji={emoji}
+              width="w-16"
+              height="h-16"
+              fontSize="text-6xl"
+            />
+          </button>
+          <div
+            className={`top-18 absolute z-50 ${isEmojiPickerOpen ? "block" : "hidden"}`}
+          >
+            <button
+              onClick={handleRemoveIconClick}
+              className="absolute -top-8 right-0 z-10 rounded-md bg-neutral-50 p-1 px-2 text-sm hover:bg-neutral-200"
+            >
+              Remove
+            </button>
+            <Picker
+              theme="light"
+              previewPosition="none"
+              onEmojiSelect={handleEmojiClick}
+              onClickOutside={handleEmojiOutsideClick}
+            />
+          </div>
         </div>
       </div>
       <input
