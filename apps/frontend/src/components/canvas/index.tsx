@@ -17,18 +17,19 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { usePages } from "@/hooks/usePages";
-import { NoteNode } from "./NoteNode";
 import * as Y from "yjs";
+import ELK from "elkjs";
 import { SocketIOProvider } from "y-socket.io";
-import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+
+import { CollaborativeCursors } from "../CursorView";
+import { NoteNode } from "./NoteNode";
+
+import { usePages } from "@/hooks/usePages";
+import { cn } from "@/lib/utils";
 import useYDocStore from "@/store/useYDocStore";
 import { useCollaborativeCursors } from "@/hooks/useCursor";
-import { CollaborativeCursors } from "../CursorView";
 import { calculateBestHandles } from "@/lib/calculateBestHandles";
-
-import ELK from "elkjs";
 
 const elk = new ELK();
 
@@ -232,6 +233,12 @@ function Flow({ className }: CanvasProps) {
       };
     });
 
+    const nodesMap = ydoc.getMap("nodes");
+
+    updatedNodes.forEach((updateNode) => {
+      nodesMap.set(updateNode.id, updateNode);
+    });
+
     setNodes(updatedNodes);
   };
 
@@ -374,17 +381,8 @@ function Flow({ className }: CanvasProps) {
         selectNodesOnDrag={false}
       >
         <Controls />
-        <div
-          id="layout-button"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "10px",
-            zIndex: 999,
-            position: "relative",
-          }}
-        >
-          <button onClick={performLayout}>Layout</button>
+        <div className="fixed bottom-5 left-16 z-30 h-4 w-4 text-neutral-50 hover:cursor-pointer">
+          <button onClick={performLayout}>Sort</button>
         </div>
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
