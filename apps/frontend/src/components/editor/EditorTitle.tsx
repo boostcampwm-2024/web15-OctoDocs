@@ -25,7 +25,7 @@ export default function EditorTitle({
     setYText(e.target.value);
 
     optimisticUpdatePageMutation.mutate({
-      pageData: { title: e.target.value, content: pageContent },
+      pageData: { title: e.target.value, content: pageContent, emoji: null },
     });
   };
 

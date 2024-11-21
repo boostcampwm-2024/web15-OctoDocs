@@ -28,6 +28,7 @@ export default function Tools() {
             },
             x: 0,
             y: 0,
+            emoji: null,
           })
           .then((res) => setCurrentPage(res.pageId));
       }}
