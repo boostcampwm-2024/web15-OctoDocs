@@ -148,7 +148,7 @@ export class YjsService
 
           if (updateCondition) {
             await this.nodeService.updateNode(id, { title, x, y });
-            await this.nodeCacheService.set(id, title);
+            await this.nodeCacheService.set(id, { title, isHolding });
           }
         }
       });
