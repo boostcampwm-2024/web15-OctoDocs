@@ -17,16 +17,21 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { usePages } from "@/hooks/usePages";
-import { NoteNode } from "./NoteNode";
 import * as Y from "yjs";
+import ELK from "elkjs";
 import { SocketIOProvider } from "y-socket.io";
-import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
+
+import { CollaborativeCursors } from "../CursorView";
+import { NoteNode } from "./NoteNode";
+
+import { usePages } from "@/hooks/usePages";
+import { cn } from "@/lib/utils";
 import useYDocStore from "@/store/useYDocStore";
 import { useCollaborativeCursors } from "@/hooks/useCursor";
-import { CollaborativeCursors } from "../CursorView";
 import { calculateBestHandles } from "@/lib/calculateBestHandles";
+
+const elk = new ELK();
 
 const proOptions = { hideAttribution: true };
 
@@ -196,6 +201,47 @@ function Flow({ className }: CanvasProps) {
     });
   }, [pages, ydoc]);
 
+  const performLayout = async () => {
+    const graph = {
+      id: "root",
+      layoutOptions: {
+        "elk.algorithm": "force",
+      },
+      children: nodes.map((node) => ({
+        id: node.id,
+        width: 160, // 실제 노드 너비로 변경하기 (node.width)
+        height: 40, // 실제 노드 높이로 변경하기 (node.height)
+      })),
+      edges: edges.map((edge) => ({
+        id: edge.id,
+        sources: [edge.source],
+        targets: [edge.target],
+      })),
+    };
+
+    const layout = await elk.layout(graph);
+
+    const updatedNodes = nodes.map((node) => {
+      const layoutNode = layout!.children!.find((n) => n.id === node.id);
+
+      return {
+        ...node,
+        position: {
+          x: layoutNode!.x as number,
+          y: layoutNode!.y as number,
+        },
+      };
+    });
+
+    const nodesMap = ydoc.getMap("nodes");
+
+    updatedNodes.forEach((updateNode) => {
+      nodesMap.set(updateNode.id, updateNode);
+    });
+
+    setNodes(updatedNodes);
+  };
+
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
       if (!ydoc) return;
@@ -335,6 +381,9 @@ function Flow({ className }: CanvasProps) {
         selectNodesOnDrag={false}
       >
         <Controls />
+        <div className="fixed bottom-5 left-16 z-30 h-4 w-4 text-neutral-50 hover:cursor-pointer">
+          <button onClick={performLayout}>Sort</button>
+        </div>
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         <CollaborativeCursors cursors={cursors} />
