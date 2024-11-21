@@ -7,7 +7,7 @@ interface ActiveUserProps {
 }
 
 export default function ActiveUser({ users, className }: ActiveUserProps) {
-  const maxVisibleUsers = 5;
+  const maxVisibleUsers = 10;
   const hasMoreUsers = users.length > maxVisibleUsers;
   const visibleUsers = users.slice(0, maxVisibleUsers);
 
