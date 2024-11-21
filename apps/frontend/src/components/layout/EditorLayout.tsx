@@ -13,20 +13,21 @@ const EditorLayout = ({ children, saveStatus }: EditorLayoutProps) => {
   return (
     <div
       className={cn(
-        "absolute right-4 top-4 h-[720px] w-[520px] rounded-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out",
+        "absolute right-4 top-4 flex h-[720px] w-[520px] flex-col rounded-lg border bg-white shadow-lg transition-transform duration-100 ease-in-out",
         isPanelOpen ? "transform-none" : "translate-x-full",
         isMaximized ? "right-0 top-0 h-screen w-screen" : "",
       )}
     >
       <EditorActionPanel saveStatus={saveStatus} />
-      <div
-        className={cn(
-          "flex h-full flex-col gap-4 overflow-auto px-12 py-4",
-          isMaximized && "mx-auto mt-8 box-content w-[800px] px-0",
-        )}
-      >
-        {children}
-      </div>
+      {isMaximized ? (
+        <div className="flex-1 overflow-auto">
+          <div className="mx-auto w-[800px] py-4">{children}</div>
+        </div>
+      ) : (
+        <div className="flex flex-1 flex-col gap-4 overflow-auto px-12 py-4">
+          {children}
+        </div>
+      )}
     </div>
   );
 };
