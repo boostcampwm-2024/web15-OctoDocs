@@ -59,8 +59,8 @@ export function NoteNode({ data }: NodeProps<NoteNodeType>) {
         position={Position.Bottom}
         isConnectable={true}
       />
-      <div className="flex h-full w-full flex-col items-center">
-        <div className="flex w-full min-w-0 flex-1 flex-row justify-start gap-1">
+      <div className="flex h-full w-full flex-col justify-between">
+        <div className="flex w-full min-w-0 flex-row items-center justify-start gap-1">
           {data.emoji ? (
             <Emoji emoji={data.emoji} />
           ) : (
@@ -73,7 +73,7 @@ export function NoteNode({ data }: NodeProps<NoteNodeType>) {
           <div className="w-full truncate">{data.title}</div>
         </div>
         <ActiveUser
-          className="justify-end self-end"
+          className="self-end"
           users={activeUsers.filter(
             (user) => user.currentPageId === data.id.toString(),
           )}
