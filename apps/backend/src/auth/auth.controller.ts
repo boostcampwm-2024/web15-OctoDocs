@@ -1,10 +1,11 @@
 import { Controller, Get, UseGuards, Req, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RefreshTokenException } from '../exception/token.exception';
 import { ExpireException } from '../exception/expire.exception';
+import { TokenExpiredError } from 'jsonwebtoken';
 
 @Controller('auth')
 export class AuthController {
