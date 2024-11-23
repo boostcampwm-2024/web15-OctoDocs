@@ -53,6 +53,7 @@ describe('NodeService', () => {
       const dto: CreateNodeDto = { title: 'Node Title', x: 0, y: 0 };
       const node = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-node',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -167,6 +168,7 @@ describe('NodeService', () => {
     it('존재하는 노드를 아이디로 조회하여 반환한다.', async () => {
       const node = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-node',
         x: 0,
         y: 0,
         title: 'Node Title',

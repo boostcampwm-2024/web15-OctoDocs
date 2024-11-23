@@ -50,6 +50,7 @@ describe('EdgeService', () => {
       const dto: CreateEdgeDto = { fromNode: 3, toNode: 5 };
       const fromNode = {
         id: 3,
+        snowflakeId: 'generated-snowflake-id-to-node',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -59,6 +60,7 @@ describe('EdgeService', () => {
       } as Node;
       const toNode = {
         id: 5,
+        snowflakeId: 'generated-snowflake-id-from-node',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -112,6 +114,7 @@ describe('EdgeService', () => {
     it('존재하는 모든 엣지를 반환한다.', async () => {
       const node3 = {
         id: 3,
+        snowflakeId: 'generated-snowflake-id-node-3',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -121,6 +124,7 @@ describe('EdgeService', () => {
       } as Node;
       const node4 = {
         id: 4,
+        snowflakeId: 'generated-snowflake-id-node-4',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -130,6 +134,7 @@ describe('EdgeService', () => {
       } as Node;
       const node5 = {
         id: 5,
+        snowflakeId: 'generated-snowflake-id-node-5',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -139,6 +144,7 @@ describe('EdgeService', () => {
       } as Node;
       const node7 = {
         id: 7,
+        snowflakeId: 'generated-snowflake-id-node-7',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -150,16 +156,19 @@ describe('EdgeService', () => {
       const expectedEdgeList = [
         {
           id: 1,
+          snowflakeId: 'generated-snowflake-id-edge-1',
           fromNode: node3,
           toNode: node5,
         } as Edge,
         {
           id: 2,
+          snowflakeId: 'generated-snowflake-id-edge-2',
           fromNode: node3,
           toNode: node4,
         } as Edge,
         {
           id: 3,
+          snowflakeId: 'generated-snowflake-id-edge-3',
           fromNode: node3,
           toNode: node7,
         } as Edge,

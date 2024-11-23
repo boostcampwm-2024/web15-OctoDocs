@@ -62,6 +62,7 @@ describe('PageService', () => {
       // 페이지 엔티티
       const newPage: Page = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-page',
         title: 'new page',
         content: {} as JSON,
         createdAt: newDate,
@@ -74,6 +75,7 @@ describe('PageService', () => {
       // 노드 엔티티
       const newNode: Node = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-node',
         x: 0,
         y: 0,
         page: null,
@@ -127,6 +129,7 @@ describe('PageService', () => {
       const originDate = new Date();
       const originPage: Page = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-origin-page',
         title: 'origin title',
         content: {} as JSON,
         node: null,
@@ -138,6 +141,7 @@ describe('PageService', () => {
       const newDate = new Date();
       const newPage: Page = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-new-page',
         title: 'Updated Title',
         content: {} as JSON,
         node: null,
@@ -175,6 +179,7 @@ describe('PageService', () => {
       const newDate = new Date();
       const expectedPage: Page = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-page',
         title: 'title',
         content: {} as JSON,
         node: null,
@@ -204,16 +209,19 @@ describe('PageService', () => {
       const expectedPageList = [
         {
           id: 1,
+          snowflakeId: 'generated-snowflake-id-page-1',
           title: 'title1',
           node: null,
         },
         {
           id: 2,
+          snowflakeId: 'generated-snowflake-id-page-2',
           title: 'title2',
           node: null,
         },
         {
           id: 3,
+          snowflakeId: 'generated-snowflake-id-page-3',
           title: 'title3',
           node: null,
         },
