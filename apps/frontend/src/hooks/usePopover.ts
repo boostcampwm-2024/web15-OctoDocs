@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 
 export type Placement = "top" | "right" | "bottom" | "left";
+export type Alignment = "start" | "center" | "end";
 
 export interface Offset {
   x: number;
@@ -13,6 +14,7 @@ export interface PopoverContextType {
   triggerRef: React.RefObject<HTMLDivElement>;
   placement: Placement;
   offset: Offset;
+  align: Alignment;
 }
 
 export const PopoverContext = createContext<PopoverContextType | null>(null);

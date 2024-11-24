@@ -9,7 +9,7 @@ interface ContentProps {
 }
 
 export function Content({ children, className }: ContentProps) {
-  const { open, setOpen, triggerRef, placement, offset } = usePopover();
+  const { open, setOpen, triggerRef, placement, offset, align } = usePopover();
   const contentRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
@@ -22,10 +22,11 @@ export function Content({ children, className }: ContentProps) {
         contentRect,
         placement,
         offset,
+        align,
       );
       setPosition(newPosition);
     }
-  }, [open, placement, offset, triggerRef]);
+  }, [open, placement, offset, align, triggerRef]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
