@@ -12,7 +12,7 @@ interface PopoverProps {
 function Popover({
   children,
   placement = "bottom",
-  offset = { x: 0, y: 8 },
+  offset = { x: 0, y: 0 },
 }: PopoverProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
