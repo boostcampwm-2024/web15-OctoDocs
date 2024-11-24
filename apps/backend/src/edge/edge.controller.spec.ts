@@ -77,6 +77,7 @@ describe('EdgeController', () => {
     it('모든 엣지 목록을 반환한다.', async () => {
       const node3 = {
         id: 3,
+        snowflakeId: 'generated-snowflake-id-node-3',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -86,6 +87,7 @@ describe('EdgeController', () => {
       } as Node;
       const node4 = {
         id: 4,
+        snowflakeId: 'generated-snowflake-id-node-4',
         x: 0,
         y: 0,
         title: 'Node Title',
@@ -95,6 +97,7 @@ describe('EdgeController', () => {
       } as Node;
       const node5 = {
         id: 5,
+        snowflakeId: 'generated-snowflake-id-node-5',
         x: 0,
         y: 0,
         title: 'Node Title',

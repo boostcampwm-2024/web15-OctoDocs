@@ -129,7 +129,7 @@ describe('PageService', () => {
       const originDate = new Date();
       const originPage: Page = {
         id: 1,
-        snowflakeId: 'generated-snowflake-id-origin-page',
+        snowflakeId: 'generated-snowflake-id-page',
         title: 'origin title',
         content: {} as JSON,
         node: null,
@@ -141,7 +141,7 @@ describe('PageService', () => {
       const newDate = new Date();
       const newPage: Page = {
         id: 1,
-        snowflakeId: 'generated-snowflake-id-new-page',
+        snowflakeId: 'generated-snowflake-id-page',
         title: 'Updated Title',
         content: {} as JSON,
         node: null,
