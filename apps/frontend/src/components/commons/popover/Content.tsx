@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePopover } from "@/hooks/usePopover";
 import { cn } from "@/lib/utils";
 import { getPosition } from "@/lib/getPopoverPosition";
@@ -13,7 +13,7 @@ export function Content({ children, className }: ContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open && triggerRef.current && contentRef.current) {
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
