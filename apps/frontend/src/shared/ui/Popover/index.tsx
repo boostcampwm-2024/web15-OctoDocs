@@ -1,18 +1,24 @@
 import { useRef, useState } from "react";
-
-import { PopoverContext, Placement, Offset } from "@/shared/model/usePopover";
-import { Trigger } from "./Trigger";
 import { Content } from "./Content";
+import { Trigger } from "./Trigger";
+import {
+  PopoverContext,
+  Placement,
+  Offset,
+  Alignment,
+} from "@/shared/model/usePopover";
 
 interface PopoverProps {
   children: React.ReactNode;
   placement?: Placement;
   offset?: Partial<Offset>;
+  align?: Alignment;
 }
 
 function Popover({
   children,
   placement = "bottom",
+  align = "center",
   offset = { x: 0, y: 0 },
 }: PopoverProps) {
   const [open, setOpen] = useState(false);
@@ -31,6 +37,7 @@ function Popover({
         triggerRef,
         placement,
         offset: fullOffset,
+        align,
       }}
     >
       {children}

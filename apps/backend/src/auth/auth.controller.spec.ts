@@ -4,9 +4,12 @@ import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidTokenException } from '../exception/invalid.exception';
 // import { LoginRequiredException } from '../exception/login.exception';
+
 // TODO: 테스트 코드 개선
 describe('AuthController', () => {
   let authController: AuthController;
+  // let authService: AuthService;
+  let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -38,6 +41,8 @@ describe('AuthController', () => {
     }).compile();
 
     authController = module.get<AuthController>(AuthController);
+    // authService = module.get<AuthService>(AuthService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   it('컨트롤러 클래스가 정상적으로 인스턴스화된다.', () => {
@@ -76,5 +81,20 @@ describe('AuthController', () => {
     //     expect(error).toBeInstanceOf(LoginRequiredException);
     //   }
     // });
+  });
+
+  describe('refreshAccessToken', () => {
+    it('refresh token이 유효한 경우 access token을 성공적으로 발급한다.', async () => {
+      jest
+        .spyOn(jwtService, 'verify')
+        .mockReturnValue({ sub: 1, provider: 'naver' });
+      const req = { body: { refreshToken: 'valid-refresh-token' } } as any;
+
+      const result = await authController.refreshAccessToken(req);
+      expect(result).toEqual({
+        message: '새로운 Access Token 발급 성공',
+        accessToken: 'test-token',
+      });
+    });
   });
 });

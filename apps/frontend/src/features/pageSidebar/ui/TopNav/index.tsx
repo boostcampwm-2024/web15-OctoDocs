@@ -33,13 +33,15 @@ export function TopNav({ onExpand, isExpanded }: TopNavProps) {
         <Divider direction="vertical" className="h-3" />
         <WorkspaceNav workspaceTitle="프로젝트 Web15" />
       </div>
-      <button onClick={onExpand}>
-        {isExpanded ? (
-          <X color="#3F3F3F" />
-        ) : (
-          <Menu size={24} color="#3F3F3F" />
-        )}
-      </button>
+      <div className="flex h-7 w-7 items-center justify-center">
+        <button onClick={onExpand}>
+          {isExpanded ? (
+            <X color="#3F3F3F" />
+          ) : (
+            <Menu size={24} color="#3F3F3F" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }
