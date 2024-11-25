@@ -1,10 +1,10 @@
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
 import VerticalDivider from "@/components/commons/divider/VerticalDivider";
 import WorkspaceNav from "@/components/WorkspaceNav";
 import LogoBtn from "@/components/LogoBtn";
-import ProfileModal from "./ProfileModal";
-import { useState } from "react";
-import { Menu } from "lucide-react";
-import { X } from "lucide-react";
+import Login from "../login";
 
 interface TopNavProps {
   onExpand: () => void;
@@ -21,14 +21,9 @@ export default function TopNav({ onExpand, isExpanded }: TopNavProps) {
             setIsModalOpen(true);
           }}
         />
-        <ProfileModal
+        <Login
           isOpen={isModalOpen}
-          onCloseModal={() => {
-            setIsModalOpen(false);
-          }}
-          onConfirm={() => {
-            setIsModalOpen(false);
-          }}
+          onCloseModal={() => setIsModalOpen(false)}
         />
         <VerticalDivider className="h-3" />
         <WorkspaceNav workspaceTitle="프로젝트 Web15" />
