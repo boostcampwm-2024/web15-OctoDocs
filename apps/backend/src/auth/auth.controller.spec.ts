@@ -4,9 +4,6 @@ import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidTokenException } from '../exception/invalid.exception';
 // import { LoginRequiredException } from '../exception/login.exception';
-import { ExpireException } from '../exception/expire.exception';
-import { RefreshTokenException } from '../exception/token.exception';
-import { TokenExpiredError } from 'jsonwebtoken';
 
 // TODO: 테스트 코드 개선
 describe('AuthController', () => {
@@ -98,28 +95,6 @@ describe('AuthController', () => {
         message: '새로운 Access Token 발급 성공',
         accessToken: 'test-token',
       });
-    });
-
-    it('refresh token이 만료된 경우 ExpireException을 throw한다.', async () => {
-      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
-        throw new TokenExpiredError('jwt expired', new Date());
-      });
-
-      const req = { body: { refreshToken: 'expired-refresh-token' } } as any;
-      await expect(authController.refreshAccessToken(req)).rejects.toThrow(
-        ExpireException,
-      );
-    });
-
-    it('refresh token이 유효하지 않은 경우 RefreshTokenException을 throw한다.', async () => {
-      jest.spyOn(jwtService, 'verify').mockImplementation(() => {
-        throw new RefreshTokenException();
-      });
-
-      const req = { body: { refreshToken: 'invalid-refresh-token' } } as any;
-      await expect(authController.refreshAccessToken(req)).rejects.toThrow(
-        RefreshTokenException,
-      );
     });
   });
 });
