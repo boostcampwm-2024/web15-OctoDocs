@@ -5,7 +5,7 @@ import { useReactFlow } from "@xyflow/react";
 import Cursor from "@/components/commons/cursor";
 
 import useUserStore from "@/store/useUserStore";
-import { AwarenessState } from "../../hooks/useCollaborativeCursors";
+import { AwarenessState } from "../../model/useCollaborativeCursors";
 
 interface CollaborativeCursorsProps {
   cursors: Map<number, AwarenessState>;

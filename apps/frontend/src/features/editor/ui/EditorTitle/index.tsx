@@ -4,7 +4,7 @@ import { JSONContent } from "novel";
 import Emoji from "@/components/commons/emoji";
 
 import { cn } from "@/lib/utils";
-import { useEditorTitle } from "@/features/editor/hooks/useEditorTitle";
+import { useEditorTitle } from "@/features/editor/model/useEditorTitle";
 
 interface EditorTitleProps {
   currentPage: number;

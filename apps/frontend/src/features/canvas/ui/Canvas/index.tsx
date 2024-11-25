@@ -14,7 +14,7 @@ import { CollaborativeCursors } from "../CollaborativeCursors";
 import { NoteNode } from "../Node/NoteNode";
 
 import { cn } from "@/lib/utils";
-import { useCanvas } from "../../hooks/useCanvas";
+import { useCanvas } from "../../model/useCanvas";
 
 const proOptions = { hideAttribution: true };
 

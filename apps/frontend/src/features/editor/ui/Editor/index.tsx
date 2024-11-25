@@ -27,7 +27,7 @@ import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
 
 import { uploadFn } from "@/lib/upload";
-import { useEditor } from "@/features/editor/hooks/useEditor";
+import { useEditor } from "@/features/editor/model/useEditor";
 
 type EditorUpdateEvent = {
   editor: EditorInstance;

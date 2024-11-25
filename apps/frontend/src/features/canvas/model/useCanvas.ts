@@ -15,11 +15,11 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { usePages } from "@/hooks/usePages";
 import useYDocStore from "@/store/useYDocStore";
-import { calculateBestHandles } from "@/features/canvas/services/edge";
+import { calculateBestHandles } from "@/features/canvas/model/calculateHandles";
 import { createSocketIOProvider } from "@/lib/socketProvider";
 import { initializeYText } from "@/service/yjs";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
-import { getSortedNodes } from "../services/node";
+import { getSortedNodes } from "./sortNodes";
 
 export interface YNode extends Node {
   isHolding: boolean;
