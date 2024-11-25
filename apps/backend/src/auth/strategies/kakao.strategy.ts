@@ -26,6 +26,6 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
     if (!user) {
       user = await this.authService.signUp(createUserDto);
     }
-    return user; // req.user로 반환
+    return { snowflakeId: user.snowflakeId };
   }
 }

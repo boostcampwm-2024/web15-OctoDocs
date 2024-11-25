@@ -7,19 +7,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   VersionColumn,
-  Index,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
-import { Snowflake } from '@theinternetfolks/snowflake';
 
 @Entity()
 export class Page {
   @PrimaryGeneratedColumn('increment')
   id: number;
-
-  @Column({ unique: true })
-  @Index()
-  snowflakeId: string = Snowflake.generate();
 
   @Column()
   title: string;
