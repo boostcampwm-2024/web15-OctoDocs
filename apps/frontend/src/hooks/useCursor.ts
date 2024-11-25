@@ -3,6 +3,7 @@ import * as Y from "yjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SocketIOProvider } from "y-socket.io";
 import useUserStore from "@/store/useUserStore";
+import { createSocketIOProvider } from "@/lib/socketProvider";
 
 export interface AwarenessState {
   cursor: XYPosition | null;
@@ -28,21 +29,7 @@ export function useCollaborativeCursors({
   const { color, clientId } = currentUser;
 
   useEffect(() => {
-    const wsProvider = new SocketIOProvider(
-      import.meta.env.VITE_WS_URL,
-      `flow-room`,
-      ydoc,
-      {
-        autoConnect: true,
-        disableBc: false,
-      },
-      {
-        reconnectionDelayMax: 10000,
-        timeout: 5000,
-        transports: ["websocket", "polling"],
-      },
-    );
-
+    const wsProvider = createSocketIOProvider("flow-room", ydoc);
     provider.current = wsProvider;
 
     wsProvider.awareness.setLocalState({

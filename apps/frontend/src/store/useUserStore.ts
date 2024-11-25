@@ -3,6 +3,7 @@ import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 
 import { getRandomColor, getRandomHexString } from "@/lib/utils";
+import { createSocketIOProvider } from "@/lib/socketProvider";
 
 export interface User {
   clientId: string;
@@ -19,20 +20,7 @@ interface UserStore {
 }
 
 const useUserStore = create<UserStore>((set) => ({
-  provider: new SocketIOProvider(
-    import.meta.env.VITE_WS_URL,
-    `users`,
-    new Y.Doc(),
-    {
-      autoConnect: true,
-      disableBc: false,
-    },
-    {
-      reconnectionDelayMax: 10000,
-      timeout: 5000,
-      transports: ["websocket", "polling"],
-    },
-  ),
+  provider: createSocketIOProvider("users", new Y.Doc()),
   users: [],
   currentUser: {
     clientId: getRandomHexString(10),

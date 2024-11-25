@@ -11,6 +11,7 @@ import ActiveUser from "./commons/activeUser";
 import usePageStore from "@/store/usePageStore";
 import useUserStore from "@/store/useUserStore";
 import { usePage } from "@/hooks/usePages";
+import { createSocketIOProvider } from "@/lib/socketProvider";
 
 export default function EditorView() {
   const { currentPage } = usePageStore();
@@ -30,21 +31,7 @@ export default function EditorView() {
     const doc = new Y.Doc();
     setYDoc(doc);
 
-    const wsProvider = new SocketIOProvider(
-      import.meta.env.VITE_WS_URL,
-      `document-${currentPage}`,
-      doc,
-      {
-        autoConnect: true,
-        disableBc: false,
-      },
-      {
-        reconnectionDelayMax: 10000,
-        timeout: 5000,
-        transports: ["websocket", "polling"],
-      },
-    );
-
+    const wsProvider = createSocketIOProvider(`document-${currentPage}`, doc);
     setProvider(wsProvider);
 
     return () => {

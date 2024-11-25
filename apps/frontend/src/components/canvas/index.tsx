@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import useYDocStore from "@/store/useYDocStore";
 import { useCollaborativeCursors } from "@/hooks/useCursor";
 import { calculateBestHandles } from "@/lib/calculateBestHandles";
+import { createSocketIOProvider } from "@/lib/socketProvider";
 
 const elk = new ELK();
 
@@ -86,20 +87,7 @@ function Flow({ className }: CanvasProps) {
   useEffect(() => {
     if (!ydoc) return;
 
-    const wsProvider = new SocketIOProvider(
-      import.meta.env.VITE_WS_URL,
-      `flow-room`,
-      ydoc,
-      {
-        autoConnect: true,
-        disableBc: false,
-      },
-      {
-        reconnectionDelayMax: 10000,
-        timeout: 5000,
-        transports: ["websocket", "polling"],
-      },
-    );
+    const wsProvider = createSocketIOProvider("flow-room", ydoc);
 
     provider.current = wsProvider;
 
