@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { User } from '../user/user.entity';
-import { CreateUserDto } from './dto/createUser.dto';
+import { SignUpDto } from './dto/signUp.dto';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async findUser(dto: CreateUserDto): Promise<User | null> {
+  async findUser(dto: SignUpDto): Promise<User | null> {
     const { providerId, provider } = dto;
 
     const user = await this.userRepository.findOne({
@@ -17,7 +17,7 @@ export class AuthService {
     return user;
   }
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async signUp(dto: SignUpDto): Promise<User> {
     const user = this.userRepository.create(dto);
     return this.userRepository.save(user);
   }
