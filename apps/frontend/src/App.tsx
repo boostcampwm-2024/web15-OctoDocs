@@ -4,6 +4,7 @@ import Sidebar from "./components/sidebar";
 import EditorView from "./components/EditorView";
 import SideWrapper from "./components/layout/SideWrapper";
 import Canvas from "./components/canvas";
+import CanvasTools from "./components/canvasTools";
 
 import { useSyncedUsers } from "./hooks/useSyncedUsers";
 
@@ -19,8 +20,12 @@ function App() {
           <EditorView />
         </SideWrapper>
         <Canvas className="z-0 h-full w-full" />
-        <SideWrapper side="left" className="left-4 top-4">
+        <SideWrapper
+          side="left"
+          className="left-4 top-4 flex flex-row items-start gap-2"
+        >
           <Sidebar />
+          <CanvasTools />
         </SideWrapper>
       </div>
     </QueryClientProvider>
