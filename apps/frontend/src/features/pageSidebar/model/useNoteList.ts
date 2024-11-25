@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-import usePageStore from "@/store/usePageStore";
-import { useDeletePage } from "./usePages";
+import { useDeletePage } from "../api/usePages";
 import useYDocStore from "@/store/useYDocStore";
-import { YNode } from "@/features/canvas/hooks/useCanvas";
+import { YNode } from "@/features/canvas/model/useCanvas";
 import { NoteNodeData } from "@/features/canvas/ui/Node/NoteNode";
+import { usePageStore } from "./pageStore";
 
 export const useNoteList = () => {
   const { setCurrentPage } = usePageStore();

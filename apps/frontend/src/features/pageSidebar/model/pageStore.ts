@@ -10,7 +10,7 @@ interface PageStore {
   setIsPanelOpen: (isOpen: boolean) => void;
 }
 
-const usePageStore = create<PageStore>((set) => ({
+export const usePageStore = create<PageStore>((set) => ({
   currentPage: null,
   isPanelOpen: true,
   isMaximized: false,
@@ -26,5 +26,3 @@ const usePageStore = create<PageStore>((set) => ({
   toggleMaximized: () => set((state) => ({ isMaximized: !state.isMaximized })),
   setIsPanelOpen: (isPanelOpen: boolean) => set({ isPanelOpen }),
 }));
-
-export default usePageStore;

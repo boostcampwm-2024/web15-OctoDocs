@@ -1,17 +1,16 @@
 import { Trash2 } from "lucide-react";
 
-import RemoveNoteModal from "./RemoveNoteModal";
-
-import { useNoteList } from "@/hooks/useNoteList";
 import { cn } from "@/lib/utils";
-import Button from "../commons/button";
-import Emoji from "../commons/emoji";
+import Button from "@/components/commons/button";
+import Emoji from "@/components/commons/emoji";
+import { RemoveNoteModal } from "../RemoveNoteModal";
+import { useNoteList } from "../../model";
 
 interface NoteListProps {
   className?: string;
 }
 
-export default function NoteList({ className }: NoteListProps) {
+export function NoteList({ className }: NoteListProps) {
   const {
     pages,
     isModalOpen,

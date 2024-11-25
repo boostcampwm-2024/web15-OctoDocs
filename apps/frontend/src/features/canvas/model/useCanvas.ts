@@ -13,7 +13,7 @@ import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { usePages } from "@/hooks/usePages";
+import { usePages } from "@/features/pageSidebar/api/usePages";
 import useYDocStore from "@/store/useYDocStore";
 import { calculateBestHandles } from "@/features/canvas/model/calculateHandles";
 import { createSocketIOProvider } from "@/lib/socketProvider";

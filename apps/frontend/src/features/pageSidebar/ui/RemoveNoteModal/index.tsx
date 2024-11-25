@@ -1,5 +1,6 @@
-import Button from "../commons/button";
-import { Dialog } from "../commons/dialog";
+import Button from "@/components/commons/button";
+import { Dialog } from "@/components/commons/dialog";
+
 import WarningIcon from "@/../public/warning-icon.png";
 
 type RemoveNoteModalProps = {
@@ -8,7 +9,7 @@ type RemoveNoteModalProps = {
   onCloseModal: () => void;
 };
 
-export default function RemoveNoteModal({
+export function RemoveNoteModal({
   isOpen,
   onConfirm,
   onCloseModal,

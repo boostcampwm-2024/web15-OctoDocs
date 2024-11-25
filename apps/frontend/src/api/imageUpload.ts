@@ -1,4 +1,4 @@
-import { Post } from "@/lib/axios";
+import { Post } from "@/shared/api/axios";
 
 type UploadImageResponse = {
   message: string;

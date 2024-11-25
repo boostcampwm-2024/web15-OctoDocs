@@ -5,7 +5,7 @@ import Emoji from "@/components/commons/emoji";
 
 import useYDocStore from "@/store/useYDocStore";
 import { useYText } from "@/hooks/useYText";
-import { useOptimisticUpdatePage } from "@/hooks/usePages";
+import { useOptimisticUpdatePage } from "@/features/pageSidebar/api/usePages";
 
 interface Emoji {
   id: string;

@@ -1,11 +1,11 @@
 import { PencilLine } from "lucide-react";
 
-import { useCreatePage, usePages } from "@/hooks/usePages";
-import usePageStore from "@/store/usePageStore";
-import Button from "../commons/button";
+import Button from "@/components/commons/button";
 
-// TODO: 에디터 렌더링할 때 필요한 id 받아오는 방법 수정 해야할듯
-export default function Tools() {
+import { useCreatePage, usePages } from "@/features/pageSidebar/api/usePages";
+import { usePageStore } from "../../model/pageStore";
+
+export function Tools() {
   const { setCurrentPage } = usePageStore();
   const { pages } = usePages();
   const createMutation = useCreatePage();

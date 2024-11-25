@@ -10,10 +10,12 @@ import {
   createPage,
   deletePage,
   updatePage,
-  type UpdatePageRequest,
   getPage,
+} from "@/entities/page/api/pageApi";
+import {
   CreatePageRequest,
-} from "@/api/page";
+  UpdatePageRequest,
+} from "@/entities/page/model/pageTypes";
 
 export const usePage = (currentPage: number | null) => {
   const {

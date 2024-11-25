@@ -1,10 +1,9 @@
-import NoteList from "./NoteList";
-import TopNav from "./TopNav";
-import Tools from "./Tools";
 import { useState } from "react";
-import ScrollWrapper from "@/components/layout/ScrollWrapper";
 
-export default function Sidebar() {
+import ScrollWrapper from "@/components/layout/ScrollWrapper";
+import { NoteList, Tools, TopNav } from "@/features/pageSidebar/ui";
+
+export function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleExpand = () => {
@@ -20,7 +19,7 @@ export default function Sidebar() {
         <div className="w-full px-4">
           <Tools />
         </div>
-        <ScrollWrapper className="scrollbar scrollbar-thumb-[#d9d9d9] scrollbar-track-transparent max-h-[604px] overflow-x-clip">
+        <ScrollWrapper className="max-h-[604px] overflow-x-clip scrollbar scrollbar-track-transparent scrollbar-thumb-[#d9d9d9]">
           <NoteList className="p-4 pb-0 pt-0" />
         </ScrollWrapper>
       </div>

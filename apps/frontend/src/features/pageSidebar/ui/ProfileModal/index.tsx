@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import Button from "../commons/button";
-import { Dialog } from "../commons/dialog";
 import { Compact } from "@uiw/react-color";
+
+import { Dialog } from "@/components/commons/dialog";
+import Button from "@/components/commons/button";
+
 import useUserStore from "@/store/useUserStore";
 
 type RemoveNoteModalProps = {
@@ -10,7 +12,7 @@ type RemoveNoteModalProps = {
   onCloseModal: () => void;
 };
 
-export default function ProfileModal({
+export function ProfileModal({
   isOpen,
   onConfirm,
   onCloseModal,

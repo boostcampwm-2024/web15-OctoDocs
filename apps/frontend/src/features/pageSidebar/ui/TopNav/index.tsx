@@ -1,16 +1,16 @@
-import VerticalDivider from "@/components/commons/divider/VerticalDivider";
-import WorkspaceNav from "@/components/WorkspaceNav";
-import LogoBtn from "@/components/LogoBtn";
-import ProfileModal from "./ProfileModal";
 import { useState } from "react";
-import { Menu } from "lucide-react";
-import { X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+
+import VerticalDivider from "@/components/commons/divider/VerticalDivider";
+import { ProfileModal } from "../ProfileModal";
+import { WorkspaceNav } from "../WorkspaceNav";
+import { LogoBtn } from "../LogoBtn";
 
 interface TopNavProps {
   onExpand: () => void;
   isExpanded: boolean;
 }
-export default function TopNav({ onExpand, isExpanded }: TopNavProps) {
+export function TopNav({ onExpand, isExpanded }: TopNavProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
