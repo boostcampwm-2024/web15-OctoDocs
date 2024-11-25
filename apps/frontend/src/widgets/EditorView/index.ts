@@ -1,1 +1,1 @@
-export { EditorView } from "@/widgets/EditorView/ui/EditorView";
+export { EditorView } from "@/widgets/EditorView/ui";

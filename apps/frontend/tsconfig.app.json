@@ -27,5 +27,5 @@
       "@components/*": ["components/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/features/canvas/services/.ts"]
 }

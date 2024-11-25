@@ -1,9 +1,11 @@
+import { useMemo } from "react";
 import { Panel } from "@xyflow/react";
 import { useReactFlow } from "@xyflow/react";
-import { type AwarenessState } from "@/hooks/useCursor";
-import Cursor from "./cursor";
-import { useMemo } from "react";
+
+import Cursor from "@/components/commons/cursor";
+
 import useUserStore from "@/store/useUserStore";
+import { AwarenessState } from "../../hooks/useCollaborativeCursors";
 
 interface CollaborativeCursorsProps {
   cursors: Map<number, AwarenessState>;
@@ -11,9 +13,7 @@ interface CollaborativeCursorsProps {
 
 export function CollaborativeCursors({ cursors }: CollaborativeCursorsProps) {
   const { flowToScreenPosition } = useReactFlow();
-
   const { currentUser } = useUserStore();
-
   const validCursors = useMemo(
     () =>
       Array.from(cursors.values()).filter(

@@ -1,50 +1,31 @@
-import { useCallback, useMemo, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import {
-  ReactFlow,
-  MiniMap,
-  Controls,
-  Background,
   useNodesState,
   useEdgesState,
   addEdge,
-  BackgroundVariant,
-  ConnectionMode,
   type Node,
   NodeChange,
   Edge,
   EdgeChange,
   Connection,
-  ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import ELK from "elkjs";
 import { SocketIOProvider } from "y-socket.io";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { CollaborativeCursors } from "../CursorView";
-import { NoteNode } from "./NoteNode";
-
 import { usePages } from "@/hooks/usePages";
-import { cn } from "@/lib/utils";
 import useYDocStore from "@/store/useYDocStore";
-import { useCollaborativeCursors } from "@/hooks/useCursor";
-import { calculateBestHandles } from "@/lib/calculateBestHandles";
+import { calculateBestHandles } from "@/features/canvas/services/edge";
 import { createSocketIOProvider } from "@/lib/socketProvider";
 import { initializeYText } from "@/service/yjs";
-
-const elk = new ELK();
-
-const proOptions = { hideAttribution: true };
+import { useCollaborativeCursors } from "./useCollaborativeCursors";
+import { getSortedNodes } from "../services/node";
 
 export interface YNode extends Node {
   isHolding: boolean;
 }
 
-interface CanvasProps {
-  className?: string;
-}
-
-function Flow({ className }: CanvasProps) {
+export const useCanvas = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { pages } = usePages();
@@ -178,45 +159,15 @@ function Flow({ className }: CanvasProps) {
     });
   }, [pages, ydoc]);
 
-  const performLayout = async () => {
-    const graph = {
-      id: "root",
-      layoutOptions: {
-        "elk.algorithm": "force",
-      },
-      children: nodes.map((node) => ({
-        id: node.id,
-        width: 160, // 실제 노드 너비로 변경하기 (node.width)
-        height: 40, // 실제 노드 높이로 변경하기 (node.height)
-      })),
-      edges: edges.map((edge) => ({
-        id: edge.id,
-        sources: [edge.source],
-        targets: [edge.target],
-      })),
-    };
-
-    const layout = await elk.layout(graph);
-
-    const updatedNodes = nodes.map((node) => {
-      const layoutNode = layout!.children!.find((n) => n.id === node.id);
-
-      return {
-        ...node,
-        position: {
-          x: layoutNode!.x as number,
-          y: layoutNode!.y as number,
-        },
-      };
-    });
-
+  const sortNodes = async () => {
+    const sortedNodes = await getSortedNodes(nodes, edges);
     const nodesMap = ydoc.getMap("nodes");
 
-    updatedNodes.forEach((updateNode) => {
+    sortedNodes.forEach((updateNode) => {
       nodesMap.set(updateNode.id, updateNode);
     });
 
-    setNodes(updatedNodes);
+    setNodes(sortedNodes);
   };
 
   const handleNodesChange = useCallback(
@@ -338,41 +289,18 @@ function Flow({ className }: CanvasProps) {
     [ydoc],
   );
 
-  const nodeTypes = useMemo(() => ({ note: NoteNode }), []);
-
-  return (
-    <div className={cn("", className)} onMouseMove={handleMouseMove}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={handleEdgesChange}
-        onMouseLeave={handleMouseLeave}
-        onNodeDrag={handleNodeDrag}
-        onNodeDragStart={onNodeDragStart}
-        onNodeDragStop={onNodeDragStop}
-        onConnect={onConnect}
-        proOptions={proOptions}
-        nodeTypes={nodeTypes}
-        connectionMode={ConnectionMode.Loose}
-        selectNodesOnDrag={false}
-      >
-        <Controls />
-        <div className="fixed bottom-5 left-16 z-30 h-4 w-4 text-neutral-50 hover:cursor-pointer">
-          <button onClick={performLayout}>Sort</button>
-        </div>
-        <MiniMap />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-        <CollaborativeCursors cursors={cursors} />
-      </ReactFlow>
-    </div>
-  );
-}
-
-export default function Canvas(props: CanvasProps) {
-  return (
-    <ReactFlowProvider>
-      <Flow {...props} />
-    </ReactFlowProvider>
-  );
-}
+  return {
+    handleMouseMove,
+    nodes,
+    edges,
+    handleNodesChange,
+    handleEdgesChange,
+    handleMouseLeave,
+    handleNodeDrag,
+    onNodeDragStart,
+    onNodeDragStop,
+    onConnect,
+    sortNodes,
+    cursors,
+  };
+};
