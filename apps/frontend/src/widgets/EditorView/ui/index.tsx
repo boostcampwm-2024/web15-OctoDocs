@@ -13,7 +13,6 @@ export function EditorView() {
     ydoc,
     provider,
     saveStatus,
-    pageContent,
     handleEditorUpdate,
     users,
   } = useEditorView();
@@ -39,11 +38,7 @@ export function EditorView() {
           isMaximized && "mx-auto w-[800px] py-4",
         )}
       >
-        <EditorTitle
-          key={currentPage}
-          currentPage={currentPage}
-          pageContent={pageContent}
-        />
+        <EditorTitle key={currentPage} currentPage={currentPage} />
         <ActiveUser
           users={users.filter(
             (user) => user.currentPageId === currentPage.toString(),

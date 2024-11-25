@@ -61,30 +61,3 @@ export const usePages = () => {
 
   return { pages, isError };
 };
-
-export const useOptimisticUpdatePage = ({ id }: { id: number }) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ pageData }: { pageData: UpdatePageRequest }) =>
-      updatePage(id, pageData),
-    onMutate: async ({ pageData }: { pageData: UpdatePageRequest }) => {
-      await queryClient.cancelQueries({ queryKey: ["page", id] });
-
-      const snapshot = queryClient.getQueryData(["page", id]);
-
-      queryClient.setQueryData(["page", id], pageData);
-
-      return () => {
-        queryClient.setQueryData(["page", id], snapshot);
-      };
-    },
-    onError: (_err, _variables, rollback) => {
-      rollback?.();
-    },
-    onSettled: () => {
-      // queryClient.invalidateQueries({ queryKey: ["page", id] });
-      queryClient.invalidateQueries({ queryKey: ["pages"] });
-    },
-  });
-};

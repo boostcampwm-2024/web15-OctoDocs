@@ -34,8 +34,6 @@ export const useEditorView = () => {
     };
   }, [currentPage]);
 
-  const pageContent = page?.content ?? {};
-
   const handleEditorUpdate = useDebouncedCallback(async () => {
     if (currentPage === null) {
       return;
@@ -53,7 +51,6 @@ export const useEditorView = () => {
     ydoc,
     provider,
     saveStatus,
-    pageContent,
     handleEditorUpdate,
     users,
   };

@@ -1,5 +1,4 @@
 import Picker from "@emoji-mart/react";
-import { JSONContent } from "novel";
 
 import { useEditorTitle } from "@/features/editor/model/useEditorTitle";
 import Emoji from "@/shared/ui/Emoji";
@@ -8,7 +7,6 @@ import { cn } from "@/shared/lib";
 
 interface EditorTitleProps {
   currentPage: number;
-  pageContent: JSONContent;
 }
 
 interface Emoji {
@@ -20,7 +18,7 @@ interface Emoji {
   unified: string;
 }
 
-export function EditorTitle({ currentPage, pageContent }: EditorTitleProps) {
+export function EditorTitle({ currentPage }: EditorTitleProps) {
   const {
     emoji,
     title,
@@ -30,7 +28,7 @@ export function EditorTitle({ currentPage, pageContent }: EditorTitleProps) {
     handleEmojiClick,
     handleEmojiOutsideClick,
     handleTitleChange,
-  } = useEditorTitle(currentPage, pageContent);
+  } = useEditorTitle(currentPage);
 
   return (
     <div className="flex flex-col gap-3">

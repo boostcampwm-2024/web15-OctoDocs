@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { JSONContent } from "novel";
 
 import Emoji from "@/shared/ui/Emoji";
 
 import useYDocStore from "@/shared/model/ydocStore";
 import { useYText } from "@/shared/model/useYText";
-import { useOptimisticUpdatePage } from "@/features/pageSidebar/api/usePages";
 
 interface Emoji {
   id: string;
@@ -16,34 +14,18 @@ interface Emoji {
   unified: string;
 }
 
-export const useEditorTitle = (
-  currentPage: number,
-  pageContent: JSONContent,
-) => {
+export const useEditorTitle = (currentPage: number) => {
   const { ydoc } = useYDocStore();
   const [title, setYTitle] = useYText(ydoc, "title", currentPage);
   const [emoji, setYEmoji] = useYText(ydoc, "emoji", currentPage);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
-  const optimisticUpdatePageMutation = useOptimisticUpdatePage({
-    id: currentPage ?? 0,
-  });
-
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setYTitle(e.target.value);
-
-    optimisticUpdatePageMutation.mutate({
-      pageData: { title: e.target.value, content: pageContent, emoji },
-    });
   };
 
   const handleEmojiClick = ({ native }: Emoji) => {
     setYEmoji(native);
-
-    optimisticUpdatePageMutation.mutate({
-      pageData: { title, content: pageContent, emoji: native },
-    });
-
     setIsEmojiPickerOpen(false);
   };
 
@@ -61,11 +43,6 @@ export const useEditorTitle = (
     e.stopPropagation();
 
     setYEmoji("");
-
-    optimisticUpdatePageMutation.mutate({
-      pageData: { title, content: pageContent, emoji: "" },
-    });
-
     setIsEmojiPickerOpen(false);
   };
 
