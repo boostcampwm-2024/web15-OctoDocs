@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   EditorRoot,
   EditorCommand,
@@ -28,13 +27,12 @@ import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
 
 import { uploadFn } from "@/lib/upload";
-import useUserStore from "@/store/useUserStore";
-
-const extensions = [...defaultExtensions, slashCommand];
+import { useEditor } from "@/hooks/useEditor";
 
 type EditorUpdateEvent = {
   editor: EditorInstance;
 };
+
 interface EditorProp {
   pageId: number;
   initialContent?: JSONContent;
@@ -44,18 +42,16 @@ interface EditorProp {
 }
 
 const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
-  const [openNode, setOpenNode] = useState(false);
-  const [openColor, setOpenColor] = useState(false);
-  const [openLink, setOpenLink] = useState(false);
+  const {
+    openNode,
+    openColor,
+    openLink,
+    setOpenNode,
+    setOpenColor,
+    setOpenLink,
+  } = useEditor(provider);
 
-  const { currentUser } = useUserStore();
-
-  useEffect(() => {
-    provider.awareness.setLocalStateField("user", {
-      name: currentUser.clientId,
-      color: currentUser.color,
-    });
-  }, [currentUser]);
+  const extensions = [...defaultExtensions, slashCommand];
 
   return (
     <EditorRoot>
