@@ -9,13 +9,9 @@ import {
   getPages,
   createPage,
   deletePage,
-  updatePage,
   getPage,
 } from "@/entities/page/api/pageApi";
-import {
-  CreatePageRequest,
-  UpdatePageRequest,
-} from "@/entities/page/model/pageTypes";
+import { CreatePageRequest } from "@/entities/page/model/pageTypes";
 
 export const usePage = (currentPage: number | null) => {
   const {
