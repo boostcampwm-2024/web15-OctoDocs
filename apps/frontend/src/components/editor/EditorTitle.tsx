@@ -6,7 +6,7 @@ import Emoji from "@/components/commons/emoji";
 
 import useYDocStore from "@/store/useYDocStore";
 import { useYText } from "@/hooks/useYText";
-import { useOptimisticUpdatePage } from "@/hooks/usePages";
+// import { useOptimisticUpdatePage } from "@/hooks/usePages";
 import { cn } from "@/lib/utils";
 
 interface EditorTitleProps {
@@ -25,16 +25,16 @@ interface Emoji {
 
 export default function EditorTitle({
   currentPage,
-  pageContent,
+  // pageContent,
 }: EditorTitleProps) {
   const { ydoc } = useYDocStore();
   const [title, setYTitle] = useYText(ydoc, "title", currentPage);
   const [emoji, setYEmoji] = useYText(ydoc, "emoji", currentPage);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
-  const optimisticUpdatePageMutation = useOptimisticUpdatePage({
-    id: currentPage ?? 0,
-  });
+  // const optimisticUpdatePageMutation = useOptimisticUpdatePage({
+  //   id: currentPage ?? 0,
+  // });
 
   // title 변경 -> invalidate page -> 새로운 pageContent + YText 타이틀로 update 요청
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
