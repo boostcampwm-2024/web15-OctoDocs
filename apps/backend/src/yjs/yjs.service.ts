@@ -166,7 +166,7 @@ export class YjsService
   }
 
   // YMap에 노드 정보를 넣어준다.
-  initializeYNodeMap(nodes: Node[], yMap: Y.Map<Object>): void {
+  initializeYNodeMap(nodes: Node[], yMap: Y.Map<unknown>): void {
     nodes.forEach((node) => {
       const nodeId = node.id.toString(); // id를 string으로 변환
 
@@ -191,7 +191,7 @@ export class YjsService
   }
 
   // yMap에 edge 정보를 넣어준다.
-  initializeYEdgeMap(edges: Edge[], yMap: Y.Map<Object>): void {
+  initializeYEdgeMap(edges: Edge[], yMap: Y.Map<unknown>): void {
     edges.forEach((edge) => {
       const edgeId = edge.id.toString(); // id를 string으로 변환
 
@@ -207,7 +207,7 @@ export class YjsService
   }
 
   // yXmlFragment에 content를 넣어준다.
-  initializePageContent(content: Object, yXmlFragment: Y.XmlFragment) {
+  initializePageContent(content: object, yXmlFragment: Y.XmlFragment) {
     prosemirrorJSONToYXmlFragment(novelEditorSchema, content, yXmlFragment);
   }
 
