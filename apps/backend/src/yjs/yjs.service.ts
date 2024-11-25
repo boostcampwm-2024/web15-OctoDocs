@@ -11,7 +11,6 @@ import { YSocketIO } from 'y-socket.io/dist/server';
 import * as Y from 'yjs';
 import { NodeService } from '../node/node.service';
 import { PageService } from '../page/page.service';
-import { NodeCacheService } from '../node-cache/node-cache.service';
 import {
   yXmlFragmentToProsemirrorJSON,
   prosemirrorJSONToYXmlFragment,
@@ -43,7 +42,6 @@ export class YjsService
     private readonly nodeService: NodeService,
     private readonly pageService: PageService,
     private readonly edgeService: EdgeService,
-    private readonly nodeCacheService: NodeCacheService,
   ) {}
 
   @WebSocketServer()
@@ -102,51 +100,65 @@ export class YjsService
       const nodes = await this.nodeService.findNodes();
       const edges = await this.edgeService.findEdges();
       const nodesMap = doc.getMap('nodes');
+      const title = doc.getText('title');
+      const emoji = doc.getText('emoji');
       const edgesMap = doc.getMap('edges');
 
       this.initializeYNodeMap(nodes, nodesMap);
       this.initializeYEdgeMap(edges, edgesMap);
 
+      // title의 변경 사항을 감지한다.
+      title.observeDeep(async (event) => {
+        // path가 존재할 때만 페이지 갱신
+        event[0].path.toString().split('_')[1] &&
+          this.pageService.updatePage(
+            parseInt(event[0].path.toString().split('_')[1]),
+            {
+              title: event[0].target.toString(),
+            },
+          );
+      });
+      emoji.observeDeep((event) => {
+        // path가 존재할 때만 페이지 갱신
+        event[0].path.toString().split('_')[1] &&
+          this.pageService.updatePage(
+            parseInt(event[0].path.toString().split('_')[1]),
+            {
+              emoji: event[0].target.toString(),
+            },
+          );
+      });
       // node의 변경 사항을 감지한다.
-      nodesMap.observe(async () => {
-        const nodes = Object.values(doc.getMap('nodes').toJSON());
-
-        // 모든 노드에 대해 검사한다.
-        for await (const node of nodes) {
-          const { title, id } = node.data; // TODO: 이모지 추가
-          const { x, y } = node.position;
-          const isHolding = node.isHolding;
-          const updateCondition =
-            !(await this.nodeCacheService.has(id)) ||
-            !(await this.nodeCacheService.hasSameTitle(id, title)) ||
-            !(await this.nodeCacheService.isHoldingStatusChanged(
-              id,
-              isHolding,
-            ));
-
-          if (updateCondition) {
-            await this.nodeService.updateNode(id, { title, x, y });
-            await this.nodeCacheService.set(id, { title, isHolding });
+      nodesMap.observe(async (event) => {
+        for (const [key, change] of event.changes.keys) {
+          if (change.action === 'update') {
+            const node: any = nodesMap.get(key);
+            const { title, id } = node.data; // TODO: 이모지 추가
+            const { x, y } = node.position;
+            const isHolding = node.isHolding;
+            if (!isHolding) {
+              await this.nodeService.updateNode(id, { title, x, y });
+            }
           }
         }
       });
 
       // edge의 변경 사항을 감지한다.
-      edgesMap.observe(async () => {
-        const edges: YMapEdge[] = Object.values(doc.getMap('edges').toJSON());
-
-        for await (const edge of edges) {
-          const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
-            parseInt(edge.source),
-            parseInt(edge.target),
-          );
-
-          // 연결된 노드가 없을 때만 edge 생성
-          if (!findEdge) {
-            await this.edgeService.createEdge({
-              fromNode: parseInt(edge.source),
-              toNode: parseInt(edge.target),
-            });
+      edgesMap.observe(async (event) => {
+        for (const [key, change] of event.changes.keys) {
+          if (change.action === 'add') {
+            const edge = edgesMap.get(key) as YMapEdge;
+            const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
+              parseInt(edge.source),
+              parseInt(edge.target),
+            );
+            // 연결된 노드가 없을 때만 edge 생성
+            if (!findEdge) {
+              await this.edgeService.createEdge({
+                fromNode: parseInt(edge.source),
+                toNode: parseInt(edge.target),
+              });
+            }
           }
         }
       });

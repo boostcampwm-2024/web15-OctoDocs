@@ -48,9 +48,9 @@ export default function EditorTitle({
   const handleEmojiClick = ({ native }: Emoji) => {
     setYEmoji(native);
 
-    optimisticUpdatePageMutation.mutate({
-      pageData: { title, content: pageContent, emoji: native },
-    });
+    // optimisticUpdatePageMutation.mutate({
+    //   pageData: { title, content: pageContent, emoji: native },
+    // });
 
     setIsEmojiPickerOpen(false);
   };
@@ -70,9 +70,9 @@ export default function EditorTitle({
 
     setYEmoji("");
 
-    optimisticUpdatePageMutation.mutate({
-      pageData: { title, content: pageContent, emoji: "" },
-    });
+    // optimisticUpdatePageMutation.mutate({
+    //   pageData: { title, content: pageContent, emoji: "" },
+    // });
 
     setIsEmojiPickerOpen(false);
   };
