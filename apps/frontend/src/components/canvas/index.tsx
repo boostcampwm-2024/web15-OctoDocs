@@ -15,6 +15,7 @@ import {
   EdgeChange,
   Connection,
   ReactFlowProvider,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import * as Y from "yjs";
@@ -30,6 +31,7 @@ import { cn } from "@/lib/utils";
 import useYDocStore from "@/store/useYDocStore";
 import { useCollaborativeCursors } from "@/hooks/useCursor";
 import { calculateBestHandles } from "@/lib/calculateBestHandles";
+import usePageStore from "@/store/usePageStore";
 
 const elk = new ELK();
 
@@ -59,6 +61,27 @@ function Flow({ className }: CanvasProps) {
   const provider = useRef<SocketIOProvider>();
   const existingPageIds = useRef(new Set<string>());
   const holdingNodeRef = useRef<string | null>(null);
+
+  const currentPage = usePageStore((state) => state.currentPage);
+  const { fitView } = useReactFlow();
+
+  useEffect(() => {
+    if (currentPage) {
+      setTimeout(() => {
+        fitView({
+          nodes: [{ id: currentPage.toString() }],
+          duration: 500,
+          padding: 0.5,
+        });
+        const nodeElement = document.querySelector(
+          `[data-nodeid="${currentPage}"]`,
+        ) as HTMLInputElement;
+        if (nodeElement) {
+          nodeElement.focus();
+        }
+      }, 100);
+    }
+  }, [currentPage, fitView]);
 
   useEffect(() => {
     if (!pages) return;
