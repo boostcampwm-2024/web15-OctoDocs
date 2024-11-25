@@ -17,7 +17,6 @@ import {
   ReactFlowProvider,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import * as Y from "yjs";
 import ELK from "elkjs";
 import { SocketIOProvider } from "y-socket.io";
 import { useQueryClient } from "@tanstack/react-query";
@@ -31,6 +30,7 @@ import useYDocStore from "@/store/useYDocStore";
 import { useCollaborativeCursors } from "@/hooks/useCursor";
 import { calculateBestHandles } from "@/lib/calculateBestHandles";
 import { createSocketIOProvider } from "@/lib/socketProvider";
+import { initializeYText } from "@/service/yjs";
 
 const elk = new ELK();
 
@@ -68,19 +68,8 @@ function Flow({ className }: CanvasProps) {
     const yEmojiMap = ydoc.getMap("emoji");
 
     pages.forEach((page) => {
-      if (!yTitleMap.get(`title_${page.id}`)) {
-        const yText = new Y.Text();
-        yText.insert(0, page.title);
-
-        yTitleMap.set(`title_${page.id}`, yText);
-      }
-
-      if (!yEmojiMap.get(`emoji_${page.id}`)) {
-        const yText = new Y.Text();
-        yText.insert(0, page.emoji || "");
-
-        yEmojiMap.set(`emoji_${page.id}`, yText);
-      }
+      initializeYText(yTitleMap, `title_${page.id}`, page.title);
+      initializeYText(yEmojiMap, `emoji_${page.id}`, page.emoji || "");
     });
   }, [pages]);
 
