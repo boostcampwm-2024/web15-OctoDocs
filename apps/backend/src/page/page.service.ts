@@ -58,13 +58,19 @@ export class PageService {
       throw new PageNotFoundException();
     }
     // 페이지 정보를 갱신한다.
-    const { title, content, emoji } = dto;
-    page.title = title;
-    page.content = content;
-    if (emoji !== undefined) {
-      page.emoji = emoji;
+    if (dto.title !== undefined) {
+      page.title = dto.title;
     }
-
+  
+    if (dto.content !== undefined) {
+      page.content = dto.content;
+    }
+  
+    if (dto.emoji !== undefined) {
+      page.emoji = dto.emoji;
+    }
+  
+    // 변경된 페이지를 저장
     return await this.pageRepository.save(page);
   }
 
