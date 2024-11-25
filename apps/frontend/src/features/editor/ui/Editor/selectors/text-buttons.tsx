@@ -8,7 +8,7 @@ import {
 import { EditorBubbleItem, useEditor } from "novel";
 
 import { Button } from "@/features/editor/ui/Editor/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib";
 
 export const TextButtons = () => {
   const { editor } = useEditor();

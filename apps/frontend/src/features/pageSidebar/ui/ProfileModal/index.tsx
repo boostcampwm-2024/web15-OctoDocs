@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Compact } from "@uiw/react-color";
 
-import { Dialog } from "@/components/commons/dialog";
-import Button from "@/components/commons/button";
-
-import useUserStore from "@/store/useUserStore";
+import { Dialog } from "@/shared/ui/Dialog";
+import Button from "@/shared/ui/Button";
+import { useUserStore } from "@/entities/user/model";
 
 type RemoveNoteModalProps = {
   isOpen: boolean;

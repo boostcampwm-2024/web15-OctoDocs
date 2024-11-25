@@ -1,6 +1,6 @@
 import { PencilLine } from "lucide-react";
 
-import Button from "@/components/commons/button";
+import Button from "@/shared/ui/Button";
 
 import { useCreatePage, usePages } from "@/features/pageSidebar/api/usePages";
 import { usePageStore } from "../../model/pageStore";

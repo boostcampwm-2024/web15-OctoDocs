@@ -1,1 +1,1 @@
-export { CanvasView } from "@/widgets/CanvasView/ui";
+export { CanvasView } from "./ui";

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { JSONContent } from "novel";
 
-import Emoji from "@/components/commons/emoji";
+import Emoji from "@/shared/ui/Emoji";
 
-import useYDocStore from "@/store/useYDocStore";
-import { useYText } from "@/hooks/useYText";
+import useYDocStore from "@/shared/model/ydocStore";
+import { useYText } from "@/shared/model/useYText";
 import { useOptimisticUpdatePage } from "@/features/pageSidebar/api/usePages";
 
 interface Emoji {

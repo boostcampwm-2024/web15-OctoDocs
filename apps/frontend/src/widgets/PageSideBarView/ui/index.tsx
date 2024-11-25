@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import ScrollWrapper from "@/components/layout/ScrollWrapper";
 import { NoteList, Tools, TopNav } from "@/features/pageSidebar/ui";
+import { ScrollWrapper } from "@/shared/ui";
 
-export function Sidebar() {
+export function PageSideBarView() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleExpand = () => {

@@ -5,7 +5,7 @@ import {
   PanelRightClose,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib";
 import SaveStatus from "../SaveStatus";
 import { usePageStore } from "@/features/pageSidebar/model";
 

@@ -1,10 +1,10 @@
 import Picker from "@emoji-mart/react";
 import { JSONContent } from "novel";
 
-import Emoji from "@/components/commons/emoji";
-
-import { cn } from "@/lib/utils";
 import { useEditorTitle } from "@/features/editor/model/useEditorTitle";
+import Emoji from "@/shared/ui/Emoji";
+
+import { cn } from "@/shared/lib";
 
 interface EditorTitleProps {
   currentPage: number;

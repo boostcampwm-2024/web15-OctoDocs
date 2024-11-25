@@ -1,4 +1,4 @@
-import logo from "/logo.png?url";
+import logo from "/icons/logo.png?url";
 
 interface LogoBtnProps {
   onClick?: () => void;

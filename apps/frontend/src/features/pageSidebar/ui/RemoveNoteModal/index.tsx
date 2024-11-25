@@ -1,7 +1,7 @@
-import Button from "@/components/commons/button";
-import { Dialog } from "@/components/commons/dialog";
+import Button from "@/shared/ui/Button";
+import { Dialog } from "@/shared/ui/Dialog";
 
-import WarningIcon from "@/../public/warning-icon.png";
+import WarningIcon from "/icons/warning-icon.png";
 
 type RemoveNoteModalProps = {
   isOpen: boolean;

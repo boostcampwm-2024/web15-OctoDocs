@@ -1,5 +1,6 @@
-import { Canvas } from "@/features/canvas";
 import { ReactFlowProvider } from "@xyflow/react";
+
+import { Canvas } from "@/features/canvas";
 
 export function CanvasView() {
   return (

@@ -13,8 +13,8 @@ import "@xyflow/react/dist/style.css";
 import { CollaborativeCursors } from "../CollaborativeCursors";
 import { NoteNode } from "../Node/NoteNode";
 
-import { cn } from "@/lib/utils";
 import { useCanvas } from "../../model/useCanvas";
+import { cn } from "@/shared/lib";
 
 const proOptions = { hideAttribution: true };
 

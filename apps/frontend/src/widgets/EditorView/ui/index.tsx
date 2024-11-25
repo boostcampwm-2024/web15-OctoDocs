@@ -1,7 +1,6 @@
-import ActiveUser from "@/components/commons/activeUser";
+import ActiveUser from "@/shared/ui/ActiveUser";
 import { Editor, EditorActionPanel, EditorTitle } from "@/features/editor";
-
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib";
 import { useEditorView } from "../hooks/useEditorView";
 
 export function EditorView() {

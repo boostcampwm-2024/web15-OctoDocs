@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SocketIOProvider } from "y-socket.io";
 
-import useUserStore from "@/store/useUserStore";
+import { useUserStore } from "@/entities/user/model";
 
 export const useEditor = (provider: SocketIOProvider) => {
   const [openNode, setOpenNode] = useState(false);

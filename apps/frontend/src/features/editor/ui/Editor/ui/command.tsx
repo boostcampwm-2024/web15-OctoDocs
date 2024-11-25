@@ -4,7 +4,7 @@ import * as React from "react";
 import type { DialogProps } from "@radix-ui/react-dialog";
 import { Command as CommandPrimitive } from "cmdk";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib";
 import { Dialog, DialogContent } from "@/features/editor/ui/Editor/ui/dialog";
 import Magic from "@/features/editor/ui/Editor/ui/icons/magic";
 

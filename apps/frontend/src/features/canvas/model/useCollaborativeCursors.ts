@@ -3,8 +3,8 @@ import { SocketIOProvider } from "y-socket.io";
 import * as Y from "yjs";
 import { useReactFlow, type XYPosition } from "@xyflow/react";
 
-import useUserStore from "@/store/useUserStore";
-import { createSocketIOProvider } from "@/lib/socketProvider";
+import { createSocketIOProvider } from "@/shared/api/socketProvider";
+import { useUserStore } from "@/entities/user/model";
 
 export interface AwarenessState {
   cursor: XYPosition | null;

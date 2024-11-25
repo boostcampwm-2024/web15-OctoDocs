@@ -1,8 +1,8 @@
 import { Trash2 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import Button from "@/components/commons/button";
-import Emoji from "@/components/commons/emoji";
+import { cn } from "@/shared/lib";
+import Button from "@/shared/ui/Button";
+import Emoji from "@/shared/ui/Emoji";
 import { RemoveNoteModal } from "../RemoveNoteModal";
 import { useNoteList } from "../../model";
 

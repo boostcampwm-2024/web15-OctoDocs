@@ -1,4 +1,4 @@
-import { Get, Post, Delete, Patch } from "@/shared/api/axios";
+import { Get, Post, Delete, Patch } from "@/shared/api";
 import {
   CreatePageRequest,
   CreatePageResponse,

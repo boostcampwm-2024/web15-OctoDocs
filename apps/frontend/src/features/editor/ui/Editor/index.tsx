@@ -26,8 +26,8 @@ import { MathSelector } from "./selectors/math-selector";
 import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
 
-import { uploadFn } from "@/lib/upload";
 import { useEditor } from "@/features/editor/model/useEditor";
+import { uploadFn } from "../../model/upload";
 
 type EditorUpdateEvent = {
   editor: EditorInstance;

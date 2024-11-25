@@ -5,7 +5,7 @@ import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
 
 import { Button } from "@/features/editor/ui/Editor/ui/button";
 import { PopoverContent } from "@/features/editor/ui/Editor/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib";
 
 export function isValidUrl(url: string) {
   try {

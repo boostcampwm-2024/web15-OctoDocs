@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useDeletePage } from "../api/usePages";
-import useYDocStore from "@/store/useYDocStore";
+import useYDocStore from "@/shared/model/ydocStore";
 import { YNode } from "@/features/canvas/model/useCanvas";
 import { NoteNodeData } from "@/features/canvas/ui/Node/NoteNode";
 import { usePageStore } from "./pageStore";

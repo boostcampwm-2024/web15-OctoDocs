@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
-import VerticalDivider from "@/components/commons/divider/VerticalDivider";
 import { ProfileModal } from "../ProfileModal";
 import { WorkspaceNav } from "../WorkspaceNav";
 import { LogoBtn } from "../LogoBtn";
+import { Divider } from "@/shared/ui";
 
 interface TopNavProps {
   onExpand: () => void;
@@ -30,7 +30,7 @@ export function TopNav({ onExpand, isExpanded }: TopNavProps) {
             setIsModalOpen(false);
           }}
         />
-        <VerticalDivider className="h-3" />
+        <Divider direction="vertical" className="h-3" />
         <WorkspaceNav workspaceTitle="프로젝트 Web15" />
       </div>
       <button onClick={onExpand}>

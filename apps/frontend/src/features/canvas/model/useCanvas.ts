@@ -14,10 +14,10 @@ import { SocketIOProvider } from "y-socket.io";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { usePages } from "@/features/pageSidebar/api/usePages";
-import useYDocStore from "@/store/useYDocStore";
+import useYDocStore from "@/shared/model/ydocStore";
 import { calculateBestHandles } from "@/features/canvas/model/calculateHandles";
-import { createSocketIOProvider } from "@/lib/socketProvider";
-import { initializeYText } from "@/service/yjs";
+import { createSocketIOProvider } from "@/shared/api/socketProvider";
+import { initializeYText } from "@/shared/model/yjs";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
 import { getSortedNodes } from "./sortNodes";
 
