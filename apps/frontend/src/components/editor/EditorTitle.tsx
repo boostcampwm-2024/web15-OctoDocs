@@ -40,9 +40,9 @@ export default function EditorTitle({
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setYTitle(e.target.value);
 
-    optimisticUpdatePageMutation.mutate({
-      pageData: { title: e.target.value, content: pageContent, emoji },
-    });
+    // optimisticUpdatePageMutation.mutate({
+    //   pageData: { title: e.target.value, content: pageContent, emoji },
+    // });
   };
 
   const handleEmojiClick = ({ native }: Emoji) => {
