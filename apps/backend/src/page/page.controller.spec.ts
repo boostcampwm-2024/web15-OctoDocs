@@ -52,6 +52,7 @@ describe('PageController', () => {
       const newDate = new Date();
       jest.spyOn(pageService, 'createPage').mockResolvedValue({
         id: 1,
+        snowflakeId: 'generated-snowflake-id-page',
         title: 'New Page',
         content: {} as JSON,
         createdAt: newDate,
@@ -136,6 +137,7 @@ describe('PageController', () => {
     it('id에 해당하는 페이지의 상세 정보를 반환한다.', async () => {
       const expectedPage: Page = {
         id: 1,
+        snowflakeId: 'generated-snowflake-id-page',
         title: 'title',
         content: {} as JSON,
         node: null,

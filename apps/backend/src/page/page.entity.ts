@@ -7,13 +7,19 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   VersionColumn,
+  Index,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
+import { Snowflake } from '@theinternetfolks/snowflake';
 
 @Entity()
 export class Page {
   @PrimaryGeneratedColumn('increment')
   id: number;
+
+  @Column({ unique: true })
+  @Index()
+  snowflakeId: string = Snowflake.generate();
 
   @Column()
   title: string;
@@ -32,13 +38,6 @@ export class Page {
 
   @Column({ nullable: true })
   emoji: string | null;
-
-  // TODO:추가적인 메타데이터 컬럼들(user 기능 추가할때)
-  // @Column('created_by')
-  // createdBy: string;
-
-  // @Column('updated_by')
-  // updatedBy: string;
 
   @OneToOne(() => Node, (node) => node.page, {
     onDelete: 'CASCADE',
