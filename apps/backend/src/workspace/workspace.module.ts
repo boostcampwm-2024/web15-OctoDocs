@@ -11,7 +11,8 @@ import { UserModule } from '../user/user.module';
     TypeOrmModule.forFeature([Workspace]),
     forwardRef(() => UserModule),
   ],
+  controllers: [WorkspaceController],
   providers: [WorkspaceService, WorkspaceRepository],
-  controllers: [WorkspaceController, WorkspaceRepository],
+  exports: [WorkspaceService, WorkspaceRepository],
 })
 export class WorkspaceModule {}
