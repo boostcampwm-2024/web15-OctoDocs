@@ -4,7 +4,7 @@ import { JSONContent } from "novel";
 import Emoji from "@/components/commons/emoji";
 
 import { cn } from "@/lib/utils";
-import { useEditorTitle } from "@/hooks/useEditorTitle";
+import { useEditorTitle } from "@/features/editor/hooks/useEditorTitle";
 
 interface EditorTitleProps {
   currentPage: number;
@@ -20,10 +20,7 @@ interface Emoji {
   unified: string;
 }
 
-export default function EditorTitle({
-  currentPage,
-  pageContent,
-}: EditorTitleProps) {
+export function EditorTitle({ currentPage, pageContent }: EditorTitleProps) {
   const {
     emoji,
     title,

@@ -3,8 +3,8 @@ import { Check, Trash } from "lucide-react";
 import { useEditor } from "novel";
 import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
 
-import { Button } from "@/components/editor/ui/button";
-import { PopoverContent } from "@/components/editor/ui/popover";
+import { Button } from "@/features/editor/ui/Editor/ui/button";
+import { PopoverContent } from "@/features/editor/ui/Editor/ui/popover";
 import { cn } from "@/lib/utils";
 
 export function isValidUrl(url: string) {
@@ -76,7 +76,7 @@ export const LinkSelector = ({ open, onOpenChange }: LinkSelectorProps) => {
             ref={inputRef}
             type="text"
             placeholder="Paste a link"
-            className="bg-background flex-1 p-1 text-sm outline-none"
+            className="flex-1 bg-background p-1 text-sm outline-none"
             defaultValue={editor.getAttributes("link").href || ""}
           />
           {editor.getAttributes("link").href ? (

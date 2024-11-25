@@ -27,7 +27,7 @@ import { TextButtons } from "./selectors/text-buttons";
 import { ColorSelector } from "./selectors/color-selector";
 
 import { uploadFn } from "@/lib/upload";
-import { useEditor } from "@/hooks/useEditor";
+import { useEditor } from "@/features/editor/hooks/useEditor";
 
 type EditorUpdateEvent = {
   editor: EditorInstance;
@@ -41,7 +41,7 @@ interface EditorProp {
   provider: SocketIOProvider;
 }
 
-const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
+export function Editor({ onEditorUpdate, ydoc, provider }: EditorProp) {
   const {
     openNode,
     openColor,
@@ -129,6 +129,4 @@ const Editor = ({ onEditorUpdate, ydoc, provider }: EditorProp) => {
       </EditorContent>
     </EditorRoot>
   );
-};
-
-export default Editor;
+}

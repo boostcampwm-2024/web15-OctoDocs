@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import Sidebar from "./components/sidebar";
-import EditorView from "./components/EditorView";
 import SideWrapper from "./components/layout/SideWrapper";
 import Canvas from "./components/canvas";
 
 import { useSyncedUsers } from "./hooks/useSyncedUsers";
+import { EditorView } from "./widgets/EditorView";
 
 const queryClient = new QueryClient();
 

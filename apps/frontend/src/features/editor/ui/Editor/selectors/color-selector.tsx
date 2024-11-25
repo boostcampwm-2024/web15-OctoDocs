@@ -1,12 +1,12 @@
 import { Check, ChevronDown } from "lucide-react";
 import { EditorBubbleItem, useEditor } from "novel";
 
-import { Button } from "@/components/editor/ui/button";
+import { Button } from "@/features/editor/ui/Editor/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/editor/ui/popover";
+} from "@/features/editor/ui/Editor/ui/popover";
 
 export interface BubbleColorMenuItem {
   name: string;
@@ -131,7 +131,7 @@ export const ColorSelector = ({ open, onOpenChange }: ColorSelectorProps) => {
         align="start"
       >
         <div className="flex flex-col">
-          <div className="text-muted-foreground my-1 px-2 text-sm font-semibold">
+          <div className="my-1 px-2 text-sm font-semibold text-muted-foreground">
             Color
           </div>
           {TEXT_COLORS.map(({ name, color }) => (
@@ -150,7 +150,7 @@ export const ColorSelector = ({ open, onOpenChange }: ColorSelectorProps) => {
 
                 onOpenChange(false);
               }}
-              className="hover:bg-accent flex cursor-pointer items-center justify-between px-2 py-1 text-sm"
+              className="flex cursor-pointer items-center justify-between px-2 py-1 text-sm hover:bg-accent"
             >
               <div className="flex items-center gap-2">
                 <div
@@ -165,7 +165,7 @@ export const ColorSelector = ({ open, onOpenChange }: ColorSelectorProps) => {
           ))}
         </div>
         <div>
-          <div className="text-muted-foreground my-1 px-2 text-sm font-semibold">
+          <div className="my-1 px-2 text-sm font-semibold text-muted-foreground">
             Background
           </div>
           {HIGHLIGHT_COLORS.map(({ name, color }) => (
@@ -178,7 +178,7 @@ export const ColorSelector = ({ open, onOpenChange }: ColorSelectorProps) => {
                 }
                 onOpenChange(false);
               }}
-              className="hover:bg-accent flex cursor-pointer items-center justify-between px-2 py-1 text-sm"
+              className="flex cursor-pointer items-center justify-between px-2 py-1 text-sm hover:bg-accent"
             >
               <div className="flex items-center gap-2">
                 <div

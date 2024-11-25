@@ -5,17 +5,15 @@ import {
   PanelRightClose,
 } from "lucide-react";
 
-import SaveStatus from "./ui/SaveStatus";
 import usePageStore from "@/store/usePageStore";
 import { cn } from "@/lib/utils";
+import SaveStatus from "../SaveStatus";
 
 interface EditorActionPanelProps {
   saveStatus: "saved" | "unsaved";
 }
 
-export default function EditorActionPanel({
-  saveStatus,
-}: EditorActionPanelProps) {
+export function EditorActionPanel({ saveStatus }: EditorActionPanelProps) {
   const { isPanelOpen, togglePanel, isMaximized, toggleMaximized } =
     usePageStore();
 

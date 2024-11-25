@@ -9,7 +9,7 @@ import { usePage } from "@/hooks/usePages";
 import { createSocketIOProvider } from "@/lib/socketProvider";
 
 export const useEditorView = () => {
-  const { currentPage } = usePageStore();
+  const { currentPage, isPanelOpen, isMaximized } = usePageStore();
   const { page, isLoading } = usePage(currentPage);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
   const [ydoc, setYDoc] = useState<Y.Doc | null>(null);
@@ -45,9 +45,11 @@ export const useEditorView = () => {
   }, 500);
 
   return {
+    currentPage,
+    isPanelOpen,
+    isMaximized,
     isLoading,
     page,
-    currentPage,
     ydoc,
     provider,
     saveStatus,
