@@ -1,0 +1,14 @@
+FROM backend:latest AS backend_build
+
+FROM nginx:alpine
+
+# 필요한 설정 파일 복사
+COPY services/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf
+
+# 빌드된 프론트엔드 파일 복사
+COPY --from=backend_build /app/public /usr/share/nginx/html
+
+# SSL 설정 및 권한 조정
+RUN mkdir -p /etc/nginx/ssl && \
+    chown -R nginx:nginx /etc/nginx/ssl && \
+    chmod 700 /etc/nginx/ssl
