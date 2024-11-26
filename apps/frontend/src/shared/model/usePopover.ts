@@ -15,6 +15,7 @@ export interface PopoverContextType {
   placement: Placement;
   offset: Offset;
   align: Alignment;
+  close: () => void;
 }
 
 export const PopoverContext = createContext<PopoverContextType | null>(null);

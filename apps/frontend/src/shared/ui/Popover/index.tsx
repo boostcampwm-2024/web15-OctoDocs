@@ -29,6 +29,8 @@ function Popover({
     y: offset.y ?? 0,
   };
 
+  const close = () => setOpen(false);
+
   return (
     <PopoverContext.Provider
       value={{
@@ -38,6 +40,7 @@ function Popover({
         placement,
         offset: fullOffset,
         align,
+        close,
       }}
     >
       {children}
