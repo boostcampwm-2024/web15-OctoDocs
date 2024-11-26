@@ -26,6 +26,6 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     if (!user) {
       user = await this.authService.signUp(createUserDto);
     }
-    return { snowflakeId: user.snowflakeId };
+    return user;
   }
 }
