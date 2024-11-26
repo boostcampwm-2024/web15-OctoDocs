@@ -56,6 +56,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const toNode = {
         id: 5,
@@ -65,6 +66,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const edge = {
         id: 1,
@@ -118,6 +120,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const node4 = {
         id: 4,
@@ -127,6 +130,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const node5 = {
         id: 5,
@@ -136,6 +140,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const node7 = {
         id: 7,
@@ -145,6 +150,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
 
       const expectedEdgeList = [
