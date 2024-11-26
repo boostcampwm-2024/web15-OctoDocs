@@ -43,6 +43,7 @@
     "passport-naver": "^1.0.6",
     "path": "^0.12.7",
     "pg": "^8.13.1",
+    "prosemirror-view": "^1.37.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "socket.io": "^4.8.1",
