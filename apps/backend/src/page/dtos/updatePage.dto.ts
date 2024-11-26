@@ -7,14 +7,16 @@ export class UpdatePageDto {
     description: '페이지 제목.',
   })
   @IsString()
-  title: string;
+  @IsOptional()
+  title?: string;
 
   @ApiProperty({
     example: "{'doc' : 'type'}",
     description: '페이지 내용 JSON 형태',
   })
   @IsJSON()
-  content: JSON;
+  @IsOptional()
+  content?: JSON;
 
   @ApiProperty({
     example: '📝',

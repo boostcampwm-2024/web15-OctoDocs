@@ -3,6 +3,9 @@
 .env*
 *.local
 .turbo
+.crt
+.key
+!Dockerfile.local
 
 # compiled output
 */dist

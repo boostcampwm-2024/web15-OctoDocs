@@ -10,6 +10,6 @@ import { NodeModule } from 'src/node/node.module';
   imports: [TypeOrmModule.forFeature([Edge]), forwardRef(() => NodeModule)],
   controllers: [EdgeController],
   providers: [EdgeService, EdgeRepository],
-  exports: [EdgeService]
+  exports: [EdgeService],
 })
 export class EdgeModule {}

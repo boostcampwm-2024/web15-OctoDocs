@@ -59,12 +59,13 @@ export class EdgeService {
     }
     return edges;
   }
-  async findEdgeByFromNodeAndToNode(fromNodeId: number, toNodeId: number){
+  async findEdgeByFromNodeAndToNode(fromNodeId: number, toNodeId: number) {
     return this.edgeRepository.findOne({
       where: {
         fromNode: { id: fromNodeId },
         toNode: { id: toNodeId },
       },
       relations: ['fromNode', 'toNode'],
-    });  }
+    });
+  }
 }

@@ -24,13 +24,17 @@ import { UserModule } from './user/user.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: path.join(__dirname, '..', '.env'), // * nest 디렉터리 기준
+      envFilePath: path.join(__dirname, '..', '..', '..', '.env'), // * nest 디렉터리 기준
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [Node, Page, Edge, User],
         logging: true,
