@@ -6,11 +6,23 @@ import { CanvasView } from "@/widgets/CanvasView";
 import { EditorView } from "@/widgets/EditorView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
 import { CanvasToolsView } from "@/widgets/CanvasToolsView";
+import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { useEffect } from "react";
+import * as Y from "yjs";
+import useYDocStore from "@/shared/model/ydocStore";
 
 const queryClient = new QueryClient();
 
 function App() {
   useSyncedUsers();
+
+  const workspace = useWorkspace();
+  const { setYDoc } = useYDocStore();
+
+  useEffect(() => {
+    const doc = new Y.Doc({ guid: workspace });
+    setYDoc(doc);
+  }, [workspace, setYDoc]);
 
   return (
     <QueryClientProvider client={queryClient}>

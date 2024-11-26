@@ -21,6 +21,8 @@ import { createSocketIOProvider } from "@/shared/api/socketProvider";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
 import { getSortedNodes } from "./sortNodes";
 import { usePageStore } from "@/features/pageSidebar/model/pageStore";
+import { useWorkspace } from "@/shared/lib/useWorkspace";
+
 export interface YNode extends Node {
   isHolding: boolean;
 }
@@ -32,10 +34,12 @@ export const useCanvas = () => {
   const queryClient = useQueryClient();
   const { ydoc } = useYDocStore();
 
+  const workspace = useWorkspace();
+
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({
       ydoc,
-      roomName: "flow-room",
+      roomName: `flow-room-${workspace}`,
     });
 
   const provider = useRef<SocketIOProvider>();
