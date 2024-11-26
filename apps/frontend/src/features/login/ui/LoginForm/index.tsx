@@ -8,14 +8,14 @@ export function LoginForm() {
       <div className="flex flex-col items-center gap-2">
         <a
           className="flex h-12 w-64 items-center justify-center gap-2 rounded-lg bg-[#FEE500] bg-cover bg-no-repeat text-[rgba(0,0,0,0.85)]"
-          href=""
+          href="/api/auth/kakao"
         >
           <img className="w-4" src={KakaoLogo}></img>
           카카오 로그인
         </a>
         <a
           className="flex h-12 w-64 items-center justify-center gap-2 rounded-lg bg-[#03C75A] bg-cover bg-no-repeat text-[#ffffff]"
-          href=""
+          href="/api/auth/naver"
         >
           <img className="w-4" src={NaverLogo}></img>
           네이버 로그인
