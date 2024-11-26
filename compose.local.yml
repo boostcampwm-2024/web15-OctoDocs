@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+    postgres:
+        image: postgres:16-alpine
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - backend
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    backend:
+        build:
+            context: .
+            dockerfile: ./services/backend/Dockerfile.local
+        image: backend:latest
+        env_file:
+            - .env
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - backend
+            - frontend
+
+    nginx:
+        build:
+            context: .
+            dockerfile: ./services/nginx/Dockerfile.local
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - backend
+        networks:
+            - frontend
+        volumes:
+            - type: bind
+              source: ./services/nginx/ssl
+              target: /etc/nginx/ssl
+              bind:
+                  create_host_path: true
+                  propagation: rprivate
+
+networks:
+    backend:
+        internal: true
+    frontend:
+
+volumes:
+    postgres_data:

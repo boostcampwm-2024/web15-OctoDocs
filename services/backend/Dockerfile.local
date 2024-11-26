@@ -1,0 +1,38 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /
+
+# 모노레포 관련 파일 복사
+COPY package.json yarn.lock ./
+COPY turbo.json ./
+COPY apps/backend/package.json ./apps/backend/
+COPY apps/frontend/package.json ./apps/frontend/
+
+# 의존성 설치
+RUN yarn install --frozen-lockfile
+
+# 소스 코드 복사
+COPY apps/backend/ ./apps/backend/
+COPY apps/frontend/ ./apps/frontend/
+
+# 프론트엔드와 백엔드 모두 빌드
+RUN yarn build
+
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# 프로덕션 의존성만 설치하기 위한 파일들 복사
+COPY --from=builder package.json yarn.lock ./
+COPY --from=builder apps/backend/package.json ./apps/backend/
+
+# 프로덕션 의존성만 설치
+RUN yarn install --production --frozen-lockfile
+
+# 빌드된 결과물 복사
+COPY --from=builder apps/backend/dist ./apps/backend/dist
+COPY --from=builder apps/frontend/dist ./public/
+
+EXPOSE 3000 1234
+
+CMD ["yarn", "start"]
