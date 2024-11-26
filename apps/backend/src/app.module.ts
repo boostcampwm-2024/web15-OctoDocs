@@ -10,6 +10,8 @@ import { Page } from './page/page.entity';
 import { Edge } from './edge/edge.entity';
 import { Node } from './node/node.entity';
 import { User } from './user/user.entity';
+import { Workspace } from './workspace/workspace.entity';
+import { Role } from './role/role.entity';
 import { YjsModule } from './yjs/yjs.module';
 import * as path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -34,7 +36,7 @@ import { RoleModule } from './role/role.module';
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         database: configService.get('DB_NAME'),
-        entities: [Node, Page, Edge, User],
+        entities: [Node, Page, Edge, User, Workspace, Role],
         logging: true,
         synchronize: true,
       }),

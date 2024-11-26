@@ -24,8 +24,10 @@ export class Role {
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'CASCADE' })
   user: User;
 
-  @Column({ type: 'enum', enum: ['owner', 'guest'] })
-  role: 'owner' | 'guest';
+  // 'owner' 또는 'guest'
+  // 저 중 하나로 제한 필요함 -> service에서 관리해야됨
+  @Column()
+  role: string;
 
   @CreateDateColumn()
   createdAt: Date;

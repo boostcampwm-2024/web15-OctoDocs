@@ -5,9 +5,13 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Snowflake } from '@theinternetfolks/snowflake';
+import { Edge } from '../edge/edge.entity';
+import { Page } from '../page/page.entity';
+import { Node } from '../node/node.entity';
 
 @Entity()
 export class Workspace {
@@ -37,4 +41,13 @@ export class Workspace {
 
   @Column({ nullable: true })
   thumbnailUrl: string;
+
+  @OneToMany(() => Edge, (edge) => edge.workspace)
+  edges: Edge[];
+
+  @OneToMany(() => Page, (page) => page.workspace)
+  pages: Page[];
+
+  @OneToMany(() => Node, (node) => node.workspace)
+  nodes: Node[];
 }

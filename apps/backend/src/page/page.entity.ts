@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
   CreateDateColumn,
@@ -9,6 +10,7 @@ import {
   VersionColumn,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
+import { Workspace } from '../workspace/workspace.entity';
 
 @Entity()
 export class Page {
@@ -38,4 +40,10 @@ export class Page {
   })
   @JoinColumn()
   node: Node;
+
+  @ManyToOne(() => Workspace, (workspace) => workspace.pages, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'workspace_id' })
+  workspace: Workspace;
 }
