@@ -1,8 +1,12 @@
-import { Controller, Get, UseGuards, Req, Post } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Res, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Response } from 'express';
+
+const HOUR = 60 * 60 * 1000;
+const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 @Controller('auth')
 export class AuthController {
@@ -20,19 +24,21 @@ export class AuthController {
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverCallback(@Req() req) {
+  async naverCallback(@Req() req, @Res() res: Response) {
     // 네이버 인증 후 사용자 정보 반환
     const user = req.user;
     // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
     const payload = { sub: user.id, provider: user.provider };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    return {
-      message: '네이버 로그인 성공',
-      user,
-      accessToken,
-      refreshToken,
-    };
+
+    // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
+    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: HOUR });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: WEEK,
+    });
+    res.redirect(302, '/');
   }
 
   @Get('kakao')
@@ -44,23 +50,25 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoCallback(@Req() req) {
+  async kakaoCallback(@Req() req, @Res() res: Response) {
     // 카카오 인증 후 사용자 정보 반환
     const user = req.user;
     // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
     const payload = { sub: user.id, provider: user.provider };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    return {
-      message: '카카오 로그인 성공',
-      user,
-      accessToken,
-      refreshToken,
-    };
+
+    // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
+    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: HOUR });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: WEEK,
+    });
+    res.redirect(302, '/');
   }
 
   @Post('refresh')
-  async refreshAccessToken(@Req() req) {
+  async refreshAccessToken(@Req() req, @Res() res: Response) {
     const { refreshToken } = req.body;
 
     const decoded = this.jwtService.verify(refreshToken, {
@@ -68,10 +76,13 @@ export class AuthController {
     });
     const payload = { sub: decoded.sub, provider: decoded.provider };
     const newAccessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    return {
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      maxAge: HOUR,
+    });
+    return res.json({
       message: '새로운 Access Token 발급 성공',
-      accessToken: newAccessToken,
-    };
+    });
   }
 
   // Example: 로그인한 사용자만 접근할 수 있는 엔드포인트
