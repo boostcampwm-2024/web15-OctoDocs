@@ -17,6 +17,7 @@ import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
     AuthModule,
     UserModule,
     WorkspaceModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
