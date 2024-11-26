@@ -58,20 +58,10 @@ export class PageService {
       throw new PageNotFoundException();
     }
     // 페이지 정보를 갱신한다.
-    if (dto.title !== undefined) {
-      page.title = dto.title;
-    }
-
-    if (dto.content !== undefined) {
-      page.content = dto.content;
-    }
-
-    if (dto.emoji !== undefined) {
-      page.emoji = dto.emoji;
-    }
+    const newPage = Object.assign({}, page, dto);
 
     // 변경된 페이지를 저장
-    return await this.pageRepository.save(page);
+    return await this.pageRepository.save(newPage);
   }
 
   async findPageById(id: number): Promise<Page> {
