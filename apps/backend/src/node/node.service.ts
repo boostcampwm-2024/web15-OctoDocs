@@ -115,7 +115,8 @@ export class NodeService {
         y: true,
         page: {
           id: true,
-          title: true, // content 제외하고 title만 선택
+          title: true,
+          emoji: true,
         },
       },
     });
