@@ -100,7 +100,7 @@ export class YjsService
       const nodes = await this.nodeService.findNodes();
       const edges = await this.edgeService.findEdges();
       const nodesMap = doc.getMap('nodes');
-      const title = doc.getText('title');
+      const title = doc.getMap('title');
       const emoji = doc.getText('emoji');
       const edgesMap = doc.getMap('edges');
 
@@ -130,6 +130,7 @@ export class YjsService
       });
       // node의 변경 사항을 감지한다.
       nodesMap.observe(async (event) => {
+        console.log('노드 개수', event.changes.keys);
         for (const [key, change] of event.changes.keys) {
           if (change.action === 'update') {
             const node: any = nodesMap.get(key);
@@ -166,7 +167,7 @@ export class YjsService
   }
 
   // YMap에 노드 정보를 넣어준다.
-  initializeYNodeMap(nodes: Node[], yMap: Y.Map<unknown>): void {
+  initializeYNodeMap(nodes: Node[], yMap: Y.Map<Object>): void {
     nodes.forEach((node) => {
       const nodeId = node.id.toString(); // id를 string으로 변환
 
@@ -187,11 +188,26 @@ export class YjsService
         dragging: true,
         isHolding: false,
       });
+
+      // Y.Text title에 데이터 삽입
+      const pageId = node.page.id.toString(); // id를 string으로 변환
+      const yTitleText = new Y.Text();
+      yTitleText.insert(0, node.page.title);
+      // Y.Map에 데이터를 삽입
+      yMap.set(`title_${pageId}`, yTitleText);
+
+      // Y.Text emoji에 데이터 삽입
+      const yEmojiText = new Y.Text();
+      const emoji = node.page.emoji ?? '📄';
+      console.log(node.page);
+      yEmojiText.insert(0, emoji);
+      // Y.Map에 데이터를 삽입
+      yMap.set(`emoji_${pageId}`, yEmojiText);
     });
   }
 
   // yMap에 edge 정보를 넣어준다.
-  initializeYEdgeMap(edges: Edge[], yMap: Y.Map<unknown>): void {
+  initializeYEdgeMap(edges: Edge[], yMap: Y.Map<Object>): void {
     edges.forEach((edge) => {
       const edgeId = edge.id.toString(); // id를 string으로 변환
 
@@ -207,7 +223,7 @@ export class YjsService
   }
 
   // yXmlFragment에 content를 넣어준다.
-  initializePageContent(content: object, yXmlFragment: Y.XmlFragment) {
+  initializePageContent(content: Object, yXmlFragment: Y.XmlFragment) {
     prosemirrorJSONToYXmlFragment(novelEditorSchema, content, yXmlFragment);
   }
 
