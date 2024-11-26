@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
@@ -25,11 +25,13 @@ export class AuthController {
     const user = req.user;
     // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
     const payload = { sub: user.id, provider: user.provider };
-    const token = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     return {
       message: '네이버 로그인 성공',
       user,
-      accessToken: token,
+      accessToken,
+      refreshToken,
     };
   }
 
@@ -47,11 +49,28 @@ export class AuthController {
     const user = req.user;
     // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
     const payload = { sub: user.id, provider: user.provider };
-    const token = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     return {
       message: '카카오 로그인 성공',
       user,
-      accessToken: token,
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  @Post('refresh')
+  async refreshAccessToken(@Req() req) {
+    const { refreshToken } = req.body;
+
+    const decoded = this.jwtService.verify(refreshToken, {
+      secret: process.env.JWT_SECRET,
+    });
+    const payload = { sub: decoded.sub, provider: decoded.provider };
+    const newAccessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    return {
+      message: '새로운 Access Token 발급 성공',
+      accessToken: newAccessToken,
     };
   }
 

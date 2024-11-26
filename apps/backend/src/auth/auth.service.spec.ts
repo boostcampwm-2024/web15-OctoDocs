@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UserRepository } from '../user/user.repository';
-import { CreateUserDto } from './dto/createUser.dto';
+import { SignUpDto } from './dto/signUp.dto';
 import { User } from '../user/user.entity';
 
 describe('AuthService', () => {
@@ -33,7 +33,7 @@ describe('AuthService', () => {
 
   describe('findUser', () => {
     it('id에 해당하는 사용자를 찾아 성공적으로 반환한다.', async () => {
-      const dto: CreateUserDto = {
+      const dto: SignUpDto = {
         providerId: 'test-provider-id',
         provider: 'naver',
         email: 'test@naver.com',
@@ -47,7 +47,7 @@ describe('AuthService', () => {
 
     it('id에 해당하는 사용자가 없을 경우 null을 return한다.', async () => {
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
-      const dto: CreateUserDto = {
+      const dto: SignUpDto = {
         providerId: 'unknown-id',
         provider: 'naver',
         email: 'unknown@naver.com',
@@ -58,9 +58,9 @@ describe('AuthService', () => {
     });
   });
 
-  describe('createUser', () => {
+  describe('signUp', () => {
     it('사용자를 성공적으로 생성한다', async () => {
-      const dto: CreateUserDto = {
+      const dto: SignUpDto = {
         providerId: 'new-provider-id',
         provider: 'naver',
         email: 'new@naver.com',
@@ -69,7 +69,7 @@ describe('AuthService', () => {
       jest.spyOn(userRepository, 'create').mockReturnValue(user);
       jest.spyOn(userRepository, 'save').mockResolvedValue(user);
 
-      const result = await authService.createUser(dto);
+      const result = await authService.signUp(dto);
       expect(result).toEqual(user);
       expect(userRepository.create).toHaveBeenCalledWith(dto);
       expect(userRepository.save).toHaveBeenCalledWith(user);
