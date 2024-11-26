@@ -8,6 +8,7 @@ import {
   Edge,
   EdgeChange,
   Connection,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
@@ -19,7 +20,7 @@ import { calculateBestHandles } from "@/features/canvas/model/calculateHandles";
 import { createSocketIOProvider } from "@/shared/api/socketProvider";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
 import { getSortedNodes } from "./sortNodes";
-
+import { usePageStore } from "@/features/pageSidebar/model/pageStore";
 export interface YNode extends Node {
   isHolding: boolean;
 }
@@ -40,6 +41,27 @@ export const useCanvas = () => {
   const provider = useRef<SocketIOProvider>();
   const existingPageIds = useRef(new Set<string>());
   const holdingNodeRef = useRef<string | null>(null);
+
+  const currentPage = usePageStore((state) => state.currentPage);
+  const { fitView } = useReactFlow();
+
+  useEffect(() => {
+    if (currentPage) {
+      setTimeout(() => {
+        fitView({
+          nodes: [{ id: currentPage.toString() }],
+          duration: 500,
+          padding: 0.5,
+        });
+        const nodeElement = document.querySelector(
+          `[data-nodeid="${currentPage}"]`,
+        ) as HTMLInputElement;
+        if (nodeElement) {
+          nodeElement.focus();
+        }
+      }, 100);
+    }
+  }, [currentPage, fitView]);
 
   useEffect(() => {
     const yTitleMap = ydoc.getMap("title");
