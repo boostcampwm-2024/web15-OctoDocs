@@ -69,7 +69,7 @@ export class AuthController {
 
   @Post('refresh')
   async refreshAccessToken(@Req() req, @Res() res: Response) {
-    const { refreshToken } = req.body;
+    const { refreshToken } = req.cookie('refreshToken');
 
     const decoded = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_SECRET,
