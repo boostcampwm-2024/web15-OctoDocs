@@ -59,6 +59,7 @@ describe('NodeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const page = { id: 1, title: 'Test Page', content: null } as Page;
 
@@ -173,6 +174,7 @@ describe('NodeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       jest.spyOn(nodeRepository, 'findOne').mockResolvedValue(node);
 
