@@ -39,8 +39,7 @@ import { TasksService } from './tasks/tasks.service';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        // type: 'sqlite',
-        // database: 'db.sqlite',
+        type: 'postgres',
         host: configService.get('DB_HOST'),
         port: configService.get('DB_PORT'),
         username: configService.get('DB_USER'),

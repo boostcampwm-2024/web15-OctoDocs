@@ -17,6 +17,14 @@ services:
             timeout: 5s
             retries: 5
 
+    redis:
+        image: redis:latest
+        environment:
+            REDIS_HOST: ${REDIS_HOST}
+            REDIS_PORT: ${REDIS_PORT}
+        networks:
+            - backend
+
     backend:
         build:
             context: .
