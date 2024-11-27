@@ -25,17 +25,13 @@ export class TokenService {
   // 후에 DB 로직 (지금은 refreshToken이 DB로 관리 X)
   // 추가될 때를 위해 일단 비동기 선언
   async refreshAccessToken(refreshToken: string): Promise<string> {
-    try {
-      // refreshToken을 검증한다
-      const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_SECRET,
-      });
+    // refreshToken을 검증한다
+    const decoded = this.jwtService.verify(refreshToken, {
+      secret: process.env.JWT_SECRET,
+    });
 
-      // 새로운 accessToken을 발급한다
-      return this.generateAccessToken({ sub: decoded.sub });
-    } catch (error) {
-      throw new Error('Invalid refresh token');
-    }
+    // 새로운 accessToken을 발급한다
+    return this.generateAccessToken({ sub: decoded.sub });
   }
 
   setAccessTokenCookie(response: Response, accessToken: string): void {
