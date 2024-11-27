@@ -81,6 +81,10 @@ export class PageService {
     return await this.pageRepository.save(newPage);
   }
 
+  async updateBulkPage(pages: UpdatePageDto[]) {
+    await this.pageRepository.bulkUpdate(pages);
+  }
+
   async findPageById(id: number): Promise<Page> {
     // 페이지를 조회한다.
     const page = await this.pageRepository.findOneBy({ id });

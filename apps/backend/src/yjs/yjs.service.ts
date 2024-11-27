@@ -20,6 +20,7 @@ import { EdgeService } from '../edge/edge.service';
 import { Node } from 'src/node/node.entity';
 import { Edge } from 'src/edge/edge.entity';
 import { YMapEdge } from './yjs.type';
+import { RedisService } from '../redis/redis.service';
 
 // Y.Doc에는 name 컬럼이 없어서 생성했습니다.
 class CustomDoc extends Y.Doc {
@@ -42,6 +43,7 @@ export class YjsService
     private readonly nodeService: NodeService,
     private readonly pageService: PageService,
     private readonly edgeService: EdgeService,
+    private readonly redisService: RedisService,
   ) {}
 
   @WebSocketServer()
@@ -85,12 +87,21 @@ export class YjsService
         editorDoc.observeDeep(() => {
           const document = editorDoc.doc as CustomDoc;
           const pageId = parseInt(document.name.split('-')[1]);
-          this.pageService.updatePage(
-            pageId,
-            JSON.parse(
-              JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
-            ),
+          // this.pageService.updatePage(
+          //   pageId,
+          //   JSON.parse(
+          //     JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+          //   ),
+          // );
+
+          this.redisService.setField(
+            pageId.toString(),
+            'content',
+            JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
           );
+          this.redisService.get(pageId.toString()).then((data) => {
+            console.log(data);
+          });
         });
         return;
       }
@@ -113,11 +124,16 @@ export class YjsService
       title.observeDeep(async (event) => {
         // path가 존재할 때만 페이지 갱신
         event[0].path.toString().split('_')[1] &&
-          this.pageService.updatePage(
-            parseInt(event[0].path.toString().split('_')[1]),
-            {
-              title: event[0].target.toString(),
-            },
+          // this.pageService.updatePage(
+          //   parseInt(event[0].path.toString().split('_')[1]),
+          //   {
+          //     title: event[0].target.toString(),
+          //   },
+          // );
+          this.redisService.setField(
+            event[0].path.toString().split('_')[1],
+            'title',
+            event[0].target.toString(),
           );
       });
       emoji.observeDeep((event) => {

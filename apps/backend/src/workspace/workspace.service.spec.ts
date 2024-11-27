@@ -54,6 +54,8 @@ describe('WorkspaceService', () => {
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(service).toBeDefined();
+    expect(workspaceRepository).toBeDefined();
+    expect(userRepository).toBeDefined();
   });
 
   describe('createWorkspace', () => {

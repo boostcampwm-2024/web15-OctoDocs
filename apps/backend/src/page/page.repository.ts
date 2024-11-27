@@ -19,4 +19,13 @@ export class PageRepository extends Repository<Page> {
       },
     });
   }
+
+  async bulkUpdate(pages) {
+    await this.createQueryBuilder()
+      .insert()
+      .into(Page)
+      .values(pages)
+      .orUpdate(['title', 'content'], ['id'])
+      .execute();
+  }
 }

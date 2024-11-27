@@ -3,6 +3,7 @@ import { PageService } from '../page/page.service';
 import { EdgeService } from '../edge/edge.service';
 import { NodeService } from '../node/node.service';
 import { YjsService } from './yjs.service';
+import { RedisService } from '../redis/redis.service';
 
 describe('PageService', () => {
   // const dummyNovelData = {
@@ -264,6 +265,10 @@ describe('PageService', () => {
         },
         {
           provide: EdgeService,
+          useValue: {},
+        },
+        {
+          provide: RedisService,
           useValue: {},
         },
       ],

@@ -49,6 +49,11 @@ describe('WorkspaceService', () => {
     roleRepository = module.get<RoleRepository>(RoleRepository);
     userRepository = module.get<UserRepository>(UserRepository);
   });
+  
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+    expect(workspaceService).toBeDefined();
+  });
 
   describe('createWorkspace', () => {
     it('워크스페이스를 성공적으로 생성한다.', async () => {
@@ -116,5 +121,5 @@ describe('WorkspaceService', () => {
         WorkspaceNotFoundException,
       );
     });
-  });
+
 });
