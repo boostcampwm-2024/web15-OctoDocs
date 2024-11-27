@@ -183,7 +183,7 @@ describe('PageController', () => {
         workspaceId,
       );
       expect(result).toEqual({
-        message: PageResponseMessage.PAGE_LIST_RETURNED,
+        message: PageResponseMessage.PAGES_RETURNED,
         pages: expectedPages,
       });
     });

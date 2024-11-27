@@ -58,10 +58,10 @@ export class EdgeController {
   async findPagesByWorkspace(
     @Param('workspaceId') workspaceId: string, // Snowflake ID
   ): Promise<FindEdgesResponseDto> {
-    const nodes = await this.edgeService.findEdgesByWorkspace(workspaceId);
+    const edges = await this.edgeService.findEdgesByWorkspace(workspaceId);
     return {
       message: EdgeResponseMessage.EDGES_RETURNED,
-      nodes,
+      edges,
     };
   }
 }

@@ -58,8 +58,6 @@ describe('PageService', () => {
     expect(service).toBeDefined();
   });
 
-  it('모든 페이지 목록을 조회할 수 있다.', async () => {});
-
   describe('createPage', () => {
     it('페이지를 성공적으로 생성한다.', async () => {
       const newDate1 = new Date();
@@ -112,21 +110,16 @@ describe('PageService', () => {
         workspace: workspace1,
       };
 
-      // Mock workspaceRepository
       jest
         .spyOn(workspaceRepository, 'findOneBy')
         .mockResolvedValue(workspace1);
 
-      // Mock nodeRepository
       jest.spyOn(nodeRepository, 'save').mockResolvedValue(newNode);
 
-      // Mock pageRepository
       jest.spyOn(pageRepository, 'save').mockResolvedValue(newPage);
 
-      // 페이지 생성
       const createdPage: Page = await service.createPage(newPageDto);
 
-      // 검증
       expect(createdPage).toEqual(newPage);
       expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
         snowflakeId: 'snowflake-id-1',
@@ -292,10 +285,7 @@ describe('PageService', () => {
         { id: page1.id, title: page1.title, emoji: page1.emoji },
       ] as Partial<Page>[];
 
-      // Mock workspaceRepository
       jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(workspace);
-
-      // Mock pageRepository
       jest
         .spyOn(pageRepository, 'findPagesByWorkspace')
         .mockResolvedValue(expectedPageList);

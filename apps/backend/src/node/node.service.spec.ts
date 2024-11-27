@@ -5,14 +5,17 @@ import { PageRepository } from '../page/page.repository';
 import { NodeNotFoundException } from '../exception/node.exception';
 import { Node } from './node.entity';
 import { Page } from '../page/page.entity';
+import { Workspace } from '../workspace/workspace.entity';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { MoveNodeDto } from './dtos/moveNode.dto';
+import { WorkspaceRepository } from '../workspace/workspace.repository';
 
 describe('NodeService', () => {
   let service: NodeService;
   let nodeRepository: jest.Mocked<NodeRepository>;
   let pageRepository: jest.Mocked<PageRepository>;
+  let workspaceRepository: WorkspaceRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,10 +30,18 @@ describe('NodeService', () => {
             findOneBy: jest.fn(),
             findOne: jest.fn(),
             update: jest.fn(),
+            findNodesByWorkspace: jest.fn(),
           },
         },
         {
           provide: PageRepository,
+          useValue: {
+            save: jest.fn(),
+            findOneBy: jest.fn(),
+          },
+        },
+        {
+          provide: WorkspaceRepository,
           useValue: {
             save: jest.fn(),
             findOneBy: jest.fn(),
@@ -42,6 +53,7 @@ describe('NodeService', () => {
     service = module.get<NodeService>(NodeService);
     nodeRepository = module.get(NodeRepository);
     pageRepository = module.get(PageRepository);
+    workspaceRepository = module.get<WorkspaceRepository>(WorkspaceRepository);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
@@ -243,4 +255,6 @@ describe('NodeService', () => {
       );
     });
   });
+
+  describe('findNodesByWorkspace', () => {});
 });

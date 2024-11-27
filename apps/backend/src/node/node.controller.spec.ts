@@ -25,6 +25,7 @@ describe('NodeController', () => {
             findNodeById: jest.fn(),
             getCoordinates: jest.fn(),
             moveNode: jest.fn(),
+            findNodesByWorkspace: jest.fn(),
           },
         },
       ],
@@ -148,4 +149,6 @@ describe('NodeController', () => {
       );
     });
   });
+
+  describe('findNodesByWorkspace', () => {});
 });
