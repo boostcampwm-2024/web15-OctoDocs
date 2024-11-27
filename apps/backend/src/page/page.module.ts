@@ -5,9 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Page } from './page.entity';
 import { PageRepository } from './page.repository';
 import { NodeModule } from '../node/node.module';
+import { WorkspaceModule } from '../workspace/workspace.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Page]), forwardRef(() => NodeModule)],
+  imports: [
+    TypeOrmModule.forFeature([Page]),
+    forwardRef(() => NodeModule),
+    WorkspaceModule,
+  ],
   controllers: [PageController],
   providers: [PageService, PageRepository],
   exports: [PageService, PageRepository],

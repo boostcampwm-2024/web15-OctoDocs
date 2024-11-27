@@ -1,26 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { NodeRepository } from '../node/node.repository';
+import { WorkspaceRepository } from '../workspace/workspace.repository';
 import { PageRepository } from './page.repository';
 import { Page } from './page.entity';
 import { CreatePageDto } from './dtos/createPage.dto';
 import { UpdatePageDto } from './dtos/updatePage.dto';
 import { PageNotFoundException } from '../exception/page.exception';
+import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 
 @Injectable()
 export class PageService {
   constructor(
     private readonly pageRepository: PageRepository,
     private readonly nodeRepository: NodeRepository,
+    private readonly workspaceRepository: WorkspaceRepository,
   ) {}
 
   async createPage(dto: CreatePageDto): Promise<Page> {
-    const { title, x, y, emoji } = dto;
+    const { title, content, workspaceId, x, y, emoji } = dto;
+
+    // 워크스페이스 DB에서 해당 워크스페이스의 내부 id를 찾는다
+    const workspace = await this.workspaceRepository.findOneBy({
+      snowflakeId: workspaceId,
+    });
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundException();
+    }
 
     // 노드부터 생성한다.
-    const node = await this.nodeRepository.save({ title, x, y });
+    const node = await this.nodeRepository.save({ title, x, y, workspace });
 
     // 페이지를 생성한다.
-    const page = await this.pageRepository.save({ title, content: {}, emoji });
+    const page = await this.pageRepository.save({
+      title,
+      content,
+      emoji,
+      workspace,
+    });
 
     // 페이지와 노드를 서로 연결하여 저장한다.
     node.page = page;

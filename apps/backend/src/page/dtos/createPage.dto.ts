@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsJSON, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsJSON,
+  IsOptional,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreatePageDto {
   @ApiProperty({
@@ -15,6 +21,14 @@ export class CreatePageDto {
   })
   @IsJSON()
   content: JSON;
+
+  @ApiProperty({
+    example: 'snowflake-id-example',
+    description: '페이지가 만들어지는 워크스페이스의 (외부) id입니다.',
+  })
+  @IsString()
+  @IsNotEmpty()
+  workspaceId: string; // Snowflake ID
 
   @ApiProperty({
     example: '14',
