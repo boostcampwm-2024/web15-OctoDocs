@@ -22,4 +22,14 @@ export class PageRepository extends Repository<Page> {
   async findPagesByWorkspace(workspaceId: number): Promise<Page[]> {
     return this.find({ where: { workspace: { id: workspaceId } } });
   }
+
+  async bulkUpdate(pages) {
+    await this.manager
+      .createQueryBuilder(Page, 'page')
+      .insert()
+      .into(Page, ['id', 'title', 'content', 'version'])
+      .values(pages)
+      .orUpdate(['title', 'content'], ['id'])
+      .execute();
+  }
 }

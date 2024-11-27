@@ -15,15 +15,24 @@ export class TasksService {
   async handleCron() {
     console.log(await this.redisService.getAllKeys());
     const keys = await this.redisService.getAllKeys();
+    const pages = [];
+
     for await (const key of keys) {
       const { title, content } = await this.redisService.get(key);
       console.log('title,', title);
       console.log('content,', content);
       const jsonContent = JSON.parse(content);
-      this.pageService.updatePage(parseInt(key), {
+      pages.push({
+        id: key,
         title,
         content: jsonContent,
+        version: 1,
       });
+      //   this.pageService.updatePage(parseInt(key), {
+      //     title,
+      //     content: jsonContent,
+      //   });
     }
+    this.pageService.updateBulkPage(pages);
   }
 }
