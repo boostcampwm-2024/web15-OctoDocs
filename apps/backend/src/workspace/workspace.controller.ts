@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { WorkspaceService } from './workspace.service';
@@ -22,8 +23,9 @@ import { CreateWorkspaceInviteUrlDto } from './dtos/createWorkspaceInviteUrl.dto
 export enum WorkspaceResponseMessage {
   WORKSPACE_CREATED = '워크스페이스를 생성했습니다.',
   WORKSPACE_DELETED = '워크스페이스를 삭제했습니다.',
-  WORKSPACES_RETURNED = '사용자가 참여하고 있는 모든 워크스페이스들을 가져왔습니다',
-  WORKSPACE_INVITED = '워크스페이스 게스트 초대 링크가 생성되었습니다',
+  WORKSPACES_RETURNED = '사용자가 참여하고 있는 모든 워크스페이스들을 가져왔습니다.',
+  WORKSPACE_INVITED = '워크스페이스 게스트 초대 링크가 생성되었습니다.',
+  WORKSPACE_JOINED = '워크스페이스에 게스트로 등록되었습니다.',
 }
 
 @Controller('workspace')
@@ -106,8 +108,24 @@ export class WorkspaceController {
     const inviteUrl = await this.workspaceService.generateInviteUrl(userId, id);
 
     return {
-      message: '초대 URL이 생성되었습니다.',
+      message: WorkspaceResponseMessage.WORKSPACE_INVITED,
       inviteUrl,
     };
+  }
+
+  @ApiResponse({
+    type: MessageResponseDto,
+  })
+  @ApiOperation({
+    summary: '워크스페이스초대 링크에 접속해 권한을 업데이트합니다.',
+  })
+  @Get('/join')
+  @UseGuards(JwtAuthGuard) // 로그인 인증
+  @HttpCode(HttpStatus.OK)
+  async joinWorkspace(@Request() req, @Query('token') token: string) {
+    const userId = req.user.sub; // 인증된 사용자 ID
+    await this.workspaceService.processInviteToken(userId, token);
+
+    return { message: WorkspaceResponseMessage.WORKSPACE_INVITED };
   }
 }

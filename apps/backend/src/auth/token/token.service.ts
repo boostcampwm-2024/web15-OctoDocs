@@ -32,6 +32,12 @@ export class TokenService {
     });
   }
 
+  verifyInviteToken(token: string): { workspaceId: string; role: string } {
+    return this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET,
+    });
+  }
+
   // 후에 DB 로직 (지금은 refreshToken이 DB로 관리 X)
   // 추가될 때를 위해 일단 비동기 선언
   async refreshAccessToken(refreshToken: string): Promise<string> {

@@ -121,4 +121,28 @@ export class WorkspaceService {
     // TODO: 하드코딩 -> 바꿔야할듯?
     return `https://octodocs.local/api/workspace/join?token=${token}`;
   }
+
+  async processInviteToken(userId: number, token: string): Promise<void> {
+    // 토큰 검증 및 디코딩
+    const decodedToken = this.tokenService.verifyInviteToken(token);
+    const { workspaceId, role } = decodedToken;
+
+    // 현재 사용자를 초대받은 역할로 등록
+    const existingRole = await this.roleRepository.findOneBy({
+      workspaceId: parseInt(workspaceId),
+      userId,
+    });
+
+    // 이미 워크스페이스에 등록된 경우
+    if (existingRole) {
+      throw new Error('이미 워크스페이스에 가입된 사용자입니다.');
+    }
+
+    // 새로운 역할 생성
+    await this.roleRepository.save({
+      workspaceId: parseInt(workspaceId),
+      userId: userId,
+      role: role,
+    });
+  }
 }
