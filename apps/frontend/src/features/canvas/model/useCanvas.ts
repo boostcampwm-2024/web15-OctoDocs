@@ -9,6 +9,7 @@ import {
   EdgeChange,
   Connection,
   useReactFlow,
+  useViewport,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
@@ -28,6 +29,7 @@ export interface YNode extends Node {
 }
 
 export const useCanvas = () => {
+  const { zoom } = useViewport();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { pages } = usePages();
@@ -56,13 +58,8 @@ export const useCanvas = () => {
           nodes: [{ id: currentPage.toString() }],
           duration: 500,
           padding: 0.5,
+          maxZoom: zoom,
         });
-        const nodeElement = document.querySelector(
-          `[data-nodeid="${currentPage}"]`,
-        ) as HTMLInputElement;
-        if (nodeElement) {
-          nodeElement.focus();
-        }
       }, 100);
     }
   }, [currentPage, fitView]);
