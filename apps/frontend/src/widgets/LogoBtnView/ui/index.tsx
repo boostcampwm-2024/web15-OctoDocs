@@ -1,8 +1,10 @@
-import { LoginForm } from "@/features/login/ui";
+import { LoginForm, UserInfo, useGetUser } from "@/features/auth";
 import { LogoBtn } from "@/features/pageSidebar/ui";
 import { Popover } from "@/shared/ui";
 
 export function LogoBtnView() {
+  const getUserQuery = useGetUser();
+
   return (
     <div className="flex flex-row items-center gap-2">
       <Popover align="start" offset={{ x: -7, y: 16 }}>
@@ -10,7 +12,7 @@ export function LogoBtnView() {
           <LogoBtn />
         </Popover.Trigger>
         <Popover.Content className="rounded-lg border border-neutral-200 bg-white p-8 shadow-md">
-          <LoginForm />
+          {getUserQuery.data ? <UserInfo /> : <LoginForm />}
         </Popover.Content>
       </Popover>
     </div>
