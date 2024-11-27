@@ -32,12 +32,25 @@ services:
         image: backend:latest
         env_file:
             - .env
+        volumes:
+            - .env:/app/.env
+            # 소스 코드 마운트
+            - ./apps/backend:/app/apps/backend
+            - ./apps/frontend:/app/apps/frontend
+            # 의존성 캐시를 위한 볼륨
+            - backend_node_modules:/app/node_modules
+            - backend_app_node_modules:/app/apps/backend/node_modules
+            - frontend_app_node_modules:/app/apps/frontend/node_modules
         depends_on:
             postgres:
                 condition: service_healthy
         networks:
             - backend
             - frontend
+        ports:
+            - "5173:5173" # Vite dev server
+            - "3000:3000" # 백엔드 API 포트
+            - "1234:1234" # WebSocket 포트
 
     nginx:
         build:
@@ -57,6 +70,7 @@ services:
               bind:
                   create_host_path: true
                   propagation: rprivate
+            - ./services/nginx/conf.d:/etc/nginx/conf.d
 
 networks:
     backend:
@@ -65,3 +79,6 @@ networks:
 
 volumes:
     postgres_data:
+    backend_node_modules:
+    backend_app_node_modules:
+    frontend_app_node_modules:

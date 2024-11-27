@@ -3,8 +3,8 @@
 .env*
 *.local
 .turbo
-.crt
-.key
+*.crt
+*.key
 !Dockerfile.local
 
 # compiled output

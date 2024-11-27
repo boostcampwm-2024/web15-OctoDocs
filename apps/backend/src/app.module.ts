@@ -33,7 +33,7 @@ import { TasksService } from './tasks/tasks.service';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: path.join(__dirname, '..', '..', '..', '.env'), // * nest 디렉터리 기준
+      envFilePath: '/app/.env', // * docker 내부 디렉터리 기준
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
