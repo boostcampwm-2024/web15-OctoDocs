@@ -52,3 +52,5 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 db.sqlite
+services/nginx/ssl/localhost.crt
+services/nginx/ssl/localhost.key

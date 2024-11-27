@@ -1,18 +1,32 @@
-import { Controller, Get, UseGuards, Req, Res, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Req,
+  Res,
+  Post,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Response } from 'express';
+import { MessageResponseDto } from './dtos/messageResponse.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { TokenService } from './token/token.service';
 
-const HOUR = 60 * 60 * 1000;
-const WEEK = 7 * 24 * 60 * 60 * 1000;
+const HALF_YEAR = 6 * 30 * 24 * 60 * 60 * 1000;
+
+export enum AuthResponseMessage {
+  AUTH_LOGGED_OUT = '로그아웃하였습니다.',
+}
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
   ) {}
 
   @Get('naver')
@@ -27,17 +41,30 @@ export class AuthController {
   async naverCallback(@Req() req, @Res() res: Response) {
     // 네이버 인증 후 사용자 정보 반환
     const user = req.user;
-    // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
-    const payload = { sub: user.id, provider: user.provider };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    // primary Key인 id 포함 payload 생성함
+    // TODO: 여기서 권한 추가해야함
+    const payload = { sub: user.id };
+    const accessToken = this.tokenService.generateAccessToken(payload);
+    const refreshToken = this.tokenService.generateRefreshToken(payload);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
-    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: HOUR });
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict', // CSRF 방지
+      maxAge: HALF_YEAR,
+      expires: new Date(Date.now() + HALF_YEAR),
+    });
+
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      maxAge: WEEK,
+      secure: true,
+      sameSite: 'strict', // CSRF 방지
+      maxAge: HALF_YEAR,
+      expires: new Date(Date.now() + HALF_YEAR),
     });
+
     res.redirect(302, '/');
   }
 
@@ -51,37 +78,53 @@ export class AuthController {
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
   async kakaoCallback(@Req() req, @Res() res: Response) {
-    // 카카오 인증 후 사용자 정보 반환
+    /// 카카오 인증 후 사용자 정보 반환
     const user = req.user;
-    // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
-    const payload = { sub: user.id, provider: user.provider };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    // primary Key인 id 포함 payload 생성함
+    // TODO: 여기서 권한 추가해야함
+    const payload = { sub: user.id };
+    const accessToken = this.tokenService.generateAccessToken(payload);
+    const refreshToken = this.tokenService.generateRefreshToken(payload);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
-    res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: HOUR });
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict', // CSRF 방지
+      maxAge: HALF_YEAR,
+      expires: new Date(Date.now() + HALF_YEAR),
+    });
+
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      maxAge: WEEK,
+      secure: true,
+      sameSite: 'strict', // CSRF 방지
+      maxAge: HALF_YEAR,
+      expires: new Date(Date.now() + HALF_YEAR),
     });
+
     res.redirect(302, '/');
   }
 
-  @Post('refresh')
-  async refreshAccessToken(@Req() req, @Res() res: Response) {
-    const { refreshToken } = req.cookie('refreshToken');
-
-    const decoded = this.jwtService.verify(refreshToken, {
-      secret: process.env.JWT_SECRET,
-    });
-    const payload = { sub: decoded.sub, provider: decoded.provider };
-    const newAccessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    res.cookie('accessToken', newAccessToken, {
+  @ApiResponse({ type: MessageResponseDto })
+  @ApiOperation({ summary: '사용자가 로그아웃합니다.' })
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  logout(@Res() res: Response) {
+    // 쿠키 삭제 (옵션이 일치해야 삭제됨)
+    res.clearCookie('access_token', {
       httpOnly: true,
-      maxAge: HOUR,
+      secure: true,
+      sameSite: 'strict',
+    });
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
     });
     return res.json({
-      message: '새로운 Access Token 발급 성공',
+      message: AuthResponseMessage.AUTH_LOGGED_OUT,
     });
   }
 

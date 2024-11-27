@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UserRepository } from '../user/user.repository';
-import { SignUpDto } from './dto/signUp.dto';
+import { SignUpDto } from './dtos/signUp.dto';
 import { User } from '../user/user.entity';
 
 describe('AuthService', () => {
