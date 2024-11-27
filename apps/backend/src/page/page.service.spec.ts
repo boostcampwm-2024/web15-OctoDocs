@@ -4,14 +4,18 @@ import { PageRepository } from './page.repository';
 import { NodeRepository } from '../node/node.repository';
 import { Page } from './page.entity';
 import { Node } from '../node/node.entity';
+import { Workspace } from '../workspace/workspace.entity';
 import { CreatePageDto } from './dtos/createPage.dto';
 import { UpdatePageDto } from './dtos/updatePage.dto';
 import { PageNotFoundException } from '../exception/page.exception';
+import { WorkspaceRepository } from '../workspace/workspace.repository';
+import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 
 describe('PageService', () => {
   let service: PageService;
   let pageRepository: PageRepository;
   let nodeRepository: NodeRepository;
+  let workspaceRepository: WorkspaceRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,12 +28,18 @@ describe('PageService', () => {
             save: jest.fn(),
             delete: jest.fn(),
             findOneBy: jest.fn(),
-            findAll: jest.fn(),
-            findPageList: jest.fn(),
+            findPagesByWorkspace: jest.fn(),
           },
         },
         {
           provide: NodeRepository,
+          useValue: {
+            save: jest.fn(),
+            findOneBy: jest.fn(),
+          },
+        },
+        {
+          provide: WorkspaceRepository,
           useValue: {
             save: jest.fn(),
             findOneBy: jest.fn(),
@@ -41,6 +51,7 @@ describe('PageService', () => {
     service = module.get<PageService>(PageService);
     pageRepository = module.get<PageRepository>(PageRepository);
     nodeRepository = module.get<NodeRepository>(NodeRepository);
+    workspaceRepository = module.get<WorkspaceRepository>(WorkspaceRepository);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
@@ -51,25 +62,43 @@ describe('PageService', () => {
 
   describe('createPage', () => {
     it('페이지를 성공적으로 생성한다.', async () => {
+      const newDate1 = new Date();
+      const workspace1: Workspace = {
+        id: 1,
+        snowflakeId: 'snowflake-id-1',
+        owner: null,
+        title: 'workspace1',
+        description: null,
+        visibility: 'private',
+        createdAt: newDate1,
+        updatedAt: newDate1,
+        thumbnailUrl: null,
+        edges: [],
+        pages: [],
+        nodes: [],
+      };
+
       // 페이지 dto
       const newPageDto: CreatePageDto = {
         title: 'new page',
         content: {} as JSON,
+        workspaceId: 'snowflake-id-1',
         x: 1,
         y: 1,
       };
-      const newDate = new Date();
+
+      const newDate2 = new Date();
       // 페이지 엔티티
       const newPage: Page = {
         id: 1,
         title: 'new page',
         content: {} as JSON,
-        createdAt: newDate,
-        updatedAt: newDate,
+        createdAt: newDate2,
+        updatedAt: newDate2,
         version: 1,
         node: null,
         emoji: null,
-        workspace: null,
+        workspace: workspace1,
       };
 
       // 노드 엔티티
@@ -80,18 +109,43 @@ describe('PageService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
-        workspace: null,
+        workspace: workspace1,
       };
 
-      // 레포지토리 모킹
-      jest.spyOn(pageRepository, 'save').mockResolvedValue(newPage);
+      // Mock workspaceRepository
+      jest
+        .spyOn(workspaceRepository, 'findOneBy')
+        .mockResolvedValue(workspace1);
+
+      // Mock nodeRepository
       jest.spyOn(nodeRepository, 'save').mockResolvedValue(newNode);
+
+      // Mock pageRepository
+      jest.spyOn(pageRepository, 'save').mockResolvedValue(newPage);
 
       // 페이지 생성
       const createdPage: Page = await service.createPage(newPageDto);
+
+      // 검증
       expect(createdPage).toEqual(newPage);
+      expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+        snowflakeId: 'snowflake-id-1',
+      });
+      expect(nodeRepository.save).toHaveBeenCalledWith({
+        title: 'new page',
+        x: 1,
+        y: 1,
+        workspace: workspace1,
+      });
+      expect(pageRepository.save).toHaveBeenCalledWith({
+        title: 'new page',
+        content: {} as JSON,
+        emoji: undefined,
+        workspace: workspace1,
+      });
     });
   });
+
   describe('createLinkedPage', () => {
     it('', () => {});
   });
@@ -204,37 +258,96 @@ describe('PageService', () => {
     });
   });
 
-  describe('findPages', () => {
-    it('존재하는 모든 페이지를 content 없이 반환한다.', async () => {
-      const expectedPageList = [
-        {
-          id: 1,
-          title: 'title1',
-          node: null,
-        },
-        {
-          id: 2,
-          title: 'title2',
-          node: null,
-        },
-        {
-          id: 3,
-          title: 'title3',
-          node: null,
-        },
-      ] as Page[];
+  describe('findPagesByWorkspace', () => {
+    it('특정 워크스페이스에 존재하는 페이지들을 content 없이 반환한다.', async () => {
+      const workspaceId = '123456789012345678'; // Snowflake ID
+      const workspace: Workspace = {
+        id: 1,
+        snowflakeId: workspaceId,
+        owner: null,
+        title: 'Test Workspace',
+        description: null,
+        visibility: 'private',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        thumbnailUrl: null,
+        edges: [],
+        pages: [],
+        nodes: [],
+      };
 
+      const page1: Page = {
+        id: 1,
+        title: 'Page 1',
+        content: {} as JSON,
+        node: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        version: 1,
+        emoji: '📄',
+        workspace,
+      };
+
+      const expectedPageList = [
+        { id: page1.id, title: page1.title, emoji: page1.emoji },
+      ] as Partial<Page>[];
+
+      // Mock workspaceRepository
+      jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(workspace);
+
+      // Mock pageRepository
       jest
-        .spyOn(pageRepository, 'findPageList')
+        .spyOn(pageRepository, 'findPagesByWorkspace')
         .mockResolvedValue(expectedPageList);
-      const result = await service.findPages();
+
+      const result = await service.findPagesByWorkspace(workspaceId);
+
       expect(result).toEqual(expectedPageList);
+      expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+        snowflakeId: workspaceId,
+      });
+      expect(pageRepository.findPagesByWorkspace).toHaveBeenCalledWith(
+        workspace.id,
+      );
     });
 
-    it('페이지가 존재하지 않을 경우, 빈 배열을 반환한다.', async () => {
-      jest.spyOn(pageRepository, 'findPageList').mockResolvedValue([]);
-      const result = await service.findPages();
+    it('워크스페이스가 존재하지 않을 경우, WorkspaceNotFoundException을 던진다.', async () => {
+      const workspaceId = '123456789012345678';
+
+      jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(null);
+
+      await expect(service.findPagesByWorkspace(workspaceId)).rejects.toThrow(
+        WorkspaceNotFoundException,
+      );
+
+      expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+        snowflakeId: workspaceId,
+      });
+      expect(pageRepository.findPagesByWorkspace).not.toHaveBeenCalled();
+    });
+
+    it('워크스페이스에 페이지가 없을 경우, 빈 배열을 반환한다.', async () => {
+      const workspaceId = '123456789012345678';
+      const workspace = {
+        id: 1,
+        snowflakeId: workspaceId,
+      };
+
+      jest
+        .spyOn(workspaceRepository, 'findOneBy')
+        .mockResolvedValue(workspace as Workspace);
+
+      jest.spyOn(pageRepository, 'findPagesByWorkspace').mockResolvedValue([]);
+
+      const result = await service.findPagesByWorkspace(workspaceId);
+
       expect(result).toEqual([]);
+      expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+        snowflakeId: workspaceId,
+      });
+      expect(pageRepository.findPagesByWorkspace).toHaveBeenCalledWith(
+        workspace.id,
+      );
     });
   });
 });

@@ -6,6 +6,7 @@ import { UpdatePageDto } from './dtos/updatePage.dto';
 import { PageResponseMessage } from './page.controller';
 import { PageNotFoundException } from '../exception/page.exception';
 import { Page } from './page.entity';
+import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 
 describe('PageController', () => {
   let controller: PageController;
@@ -23,7 +24,7 @@ describe('PageController', () => {
             deletePage: jest.fn(),
             updatePage: jest.fn(),
             findPageById: jest.fn(),
-            findPages: jest.fn(),
+            findPagesByWorkspace: jest.fn(),
           },
         },
       ],
@@ -38,17 +39,20 @@ describe('PageController', () => {
   });
 
   describe('createPage', () => {
-    it('페이지가 성공적으로 만들어진다', async () => {
+    it('페이지가 성공적으로 만들어진다.', async () => {
       const dto: CreatePageDto = {
         title: 'New Page',
         content: {} as JSON,
+        workspaceId: 'workspace-id',
         x: 1,
         y: 2,
       };
+
       const expectedResponse = {
         message: PageResponseMessage.PAGE_CREATED,
         pageId: 1,
       };
+
       const newDate = new Date();
       jest.spyOn(pageService, 'createPage').mockResolvedValue({
         id: 1,
@@ -61,10 +65,31 @@ describe('PageController', () => {
         emoji: null,
         workspace: null,
       });
+
       const result = await controller.createPage(dto);
 
       expect(pageService.createPage).toHaveBeenCalledWith(dto);
       expect(result).toEqual(expectedResponse);
+    });
+
+    it('워크스페이스가 존재하지 않을 경우 WorkspaceNotFoundException을 throw한다.', async () => {
+      const dto: CreatePageDto = {
+        title: 'New Page',
+        content: {} as JSON,
+        workspaceId: 'invalid-workspace-id',
+        x: 1,
+        y: 2,
+      };
+
+      jest
+        .spyOn(pageService, 'createPage')
+        .mockRejectedValue(new WorkspaceNotFoundException());
+
+      await expect(controller.createPage(dto)).rejects.toThrow(
+        WorkspaceNotFoundException,
+      );
+
+      expect(pageService.createPage).toHaveBeenCalledWith(dto);
     });
   });
 
@@ -117,22 +142,6 @@ describe('PageController', () => {
     });
   });
 
-  describe('findPages', () => {
-    it('모든 페이지 목록을 content 없이 반환한다.', async () => {
-      const expectedPages = [
-        { id: 1, title: 'Page1' },
-        { id: 2, title: 'Page2' },
-      ] as Page[];
-
-      jest.spyOn(pageService, 'findPages').mockResolvedValue(expectedPages);
-
-      await expect(controller.findPages()).resolves.toEqual({
-        message: PageResponseMessage.PAGE_LIST_RETURNED,
-        pages: expectedPages,
-      });
-    });
-  });
-
   describe('findPageById', () => {
     it('id에 해당하는 페이지의 상세 정보를 반환한다.', async () => {
       const expectedPage: Page = {
@@ -153,6 +162,46 @@ describe('PageController', () => {
         message: PageResponseMessage.PAGE_RETURNED,
         page: expectedPage,
       });
+    });
+  });
+
+  describe('findPagesByWorkspace', () => {
+    it('특정 워크스페이스에 존재하는 페이지들을 반환한다.', async () => {
+      const workspaceId = 'workspace-id';
+      const expectedPages = [
+        { id: 1, title: 'Page 1', emoji: '📄' },
+        { id: 2, title: 'Page 2', emoji: '✏️' },
+      ] as Partial<Page>[];
+
+      jest
+        .spyOn(pageService, 'findPagesByWorkspace')
+        .mockResolvedValue(expectedPages);
+
+      const result = await controller.findPagesByWorkspace(workspaceId);
+
+      expect(pageService.findPagesByWorkspace).toHaveBeenCalledWith(
+        workspaceId,
+      );
+      expect(result).toEqual({
+        message: PageResponseMessage.PAGE_LIST_RETURNED,
+        pages: expectedPages,
+      });
+    });
+
+    it('워크스페이스가 존재하지 않을 경우 WorkspaceNotFoundException을 throw한다.', async () => {
+      const workspaceId = 'invalid-workspace-id';
+
+      jest
+        .spyOn(pageService, 'findPagesByWorkspace')
+        .mockRejectedValue(new WorkspaceNotFoundException());
+
+      await expect(
+        controller.findPagesByWorkspace(workspaceId),
+      ).rejects.toThrow(WorkspaceNotFoundException);
+
+      expect(pageService.findPagesByWorkspace).toHaveBeenCalledWith(
+        workspaceId,
+      );
     });
   });
 });

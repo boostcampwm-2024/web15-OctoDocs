@@ -9,17 +9,14 @@ export class PageRepository extends Repository<Page> {
     super(Page, dataSource.createEntityManager());
   }
 
-  async findPageList(): Promise<Page[]> {
-    return await this.find({
+  async findPagesByWorkspace(workspaceId: number): Promise<Partial<Page>[]> {
+    return this.find({
+      where: { workspace: { id: workspaceId } },
       select: {
         id: true,
         title: true,
         emoji: true,
       },
     });
-  }
-
-  async findPagesByWorkspace(workspaceId: number): Promise<Page[]> {
-    return this.find({ where: { workspace: { id: workspaceId } } });
   }
 }

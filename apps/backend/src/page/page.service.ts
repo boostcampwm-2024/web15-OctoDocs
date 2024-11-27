@@ -92,7 +92,16 @@ export class PageService {
     return page;
   }
 
-  async findPages(): Promise<Partial<Page>[]> {
-    return await this.pageRepository.findPageList();
+  async findPagesByWorkspace(workspaceId: string): Promise<Partial<Page>[]> {
+    // 워크스페이스 DB에서 해당 워크스페이스의 내부 id를 찾는다
+    const workspace = await this.workspaceRepository.findOneBy({
+      snowflakeId: workspaceId,
+    });
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundException();
+    }
+
+    return await this.pageRepository.findPagesByWorkspace(workspace.id);
   }
 }

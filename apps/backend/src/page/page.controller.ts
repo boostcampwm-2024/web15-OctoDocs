@@ -87,13 +87,16 @@ export class PageController {
   @ApiResponse({
     type: FindPagesResponseDto,
   })
-  @ApiOperation({ summary: '모든 페이지를 가져옵니다.' })
-  @Get()
+  @ApiOperation({ summary: '특정 워크스페이스의 모든 페이지를 가져옵니다.' })
+  @Get('/workspace/:workspaceId')
   @HttpCode(HttpStatus.OK)
-  async findPages(): Promise<FindPagesResponseDto> {
+  async findPagesByWorkspace(
+    @Param('workspaceId') workspaceId: string, // Snowflake ID
+  ): Promise<FindPagesResponseDto> {
+    const pages = await this.pageService.findPagesByWorkspace(workspaceId);
     return {
       message: PageResponseMessage.PAGE_LIST_RETURNED,
-      pages: await this.pageService.findPages(),
+      pages,
     };
   }
 
