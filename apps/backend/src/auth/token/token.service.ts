@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
-const HOUR = 2 * 60 * 60;
-const THREE_MONTHS = 3 * 30 * 24 * 60 * 60;
+const HOUR = 60 * 60;
+const FIVE_MONTHS = 3 * 30 * 24 * 60 * 60;
 
 @Injectable()
 export class TokenService {
@@ -17,7 +17,7 @@ export class TokenService {
 
   generateRefreshToken(payload: any): string {
     return this.jwtService.sign(payload, {
-      expiresIn: THREE_MONTHS,
+      expiresIn: FIVE_MONTHS,
     });
   }
 
