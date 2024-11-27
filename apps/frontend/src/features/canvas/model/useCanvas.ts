@@ -283,6 +283,17 @@ export const useCanvas = () => {
               }
             });
           }
+        } else if (change.type === "dimensions" && change.dimensions) {
+          const currentNode = nodes.find((n) => n.id === change.id);
+          if (currentNode && currentNode.type === "group") {
+            nodesMap.set(change.id, {
+              ...currentNode,
+              dimensions: change.dimensions,
+              selected: false,
+              isHolding: holdingNodeRef.current === change.id,
+            });
+          }
+          onNodesChange([change]);
         } else {
           onNodesChange([change]);
         }
