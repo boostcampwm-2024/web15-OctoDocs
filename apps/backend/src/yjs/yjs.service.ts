@@ -97,8 +97,10 @@ export class YjsService
 
       // 만약 페이지가 아닌 모든 노드들을 볼 수 있는 document라면 node, edge 초기 데이터를 세팅해줍니다.
       // node, edge, page content 가져오기
-      const nodes = await this.nodeService.findNodes();
-      const edges = await this.edgeService.findEdges();
+
+      // TODO: 서비스 함수 workspaceId 입력해야하도록 수정되었습니다!!
+      const nodes = await this.nodeService.findNodesByWorkspace('temp');
+      const edges = await this.edgeService.findEdgesByWorkspace('temp');
       const nodesMap = doc.getMap('nodes');
       const title = doc.getMap('title');
       const emoji = doc.getMap('emoji');

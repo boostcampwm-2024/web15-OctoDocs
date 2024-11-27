@@ -39,7 +39,7 @@ export class WorkspaceService {
     });
 
     // 해당 워크스페이스 owner 저장
-    this.roleRepository.create({
+    this.roleRepository.save({
       userId: owner.id,
       workspaceId: newWorkspace.id,
       role: 'owner',
