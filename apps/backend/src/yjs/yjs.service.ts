@@ -20,6 +20,7 @@ import { EdgeService } from '../edge/edge.service';
 import { Node } from 'src/node/node.entity';
 import { Edge } from 'src/edge/edge.entity';
 import { YMapEdge } from './yjs.type';
+import { RedisService } from '../redis/redis.service';
 
 // Y.Doc에는 name 컬럼이 없어서 생성했습니다.
 class CustomDoc extends Y.Doc {
@@ -42,6 +43,7 @@ export class YjsService
     private readonly nodeService: NodeService,
     private readonly pageService: PageService,
     private readonly edgeService: EdgeService,
+    private readonly redisService: RedisService,
   ) {}
 
   @WebSocketServer()
@@ -85,12 +87,21 @@ export class YjsService
         editorDoc.observeDeep(() => {
           const document = editorDoc.doc as CustomDoc;
           const pageId = parseInt(document.name.split('-')[1]);
-          this.pageService.updatePage(
-            pageId,
-            JSON.parse(
-              JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
-            ),
+          // this.pageService.updatePage(
+          //   pageId,
+          //   JSON.parse(
+          //     JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+          //   ),
+          // );
+
+          this.redisService.setField(
+            pageId.toString(),
+            'content',
+            JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
           );
+          this.redisService.get(pageId.toString()).then((data) => {
+            console.log(data);
+          });
         });
         return;
       }
@@ -101,21 +112,26 @@ export class YjsService
       const edges = await this.edgeService.findEdges();
       const nodesMap = doc.getMap('nodes');
       const title = doc.getMap('title');
-      const emoji = doc.getText('emoji');
+      const emoji = doc.getMap('emoji');
       const edgesMap = doc.getMap('edges');
 
-      this.initializeYNodeMap(nodes, nodesMap);
+      this.initializeYNodeMap(nodes, nodesMap, title, emoji);
       this.initializeYEdgeMap(edges, edgesMap);
 
       // title의 변경 사항을 감지한다.
       title.observeDeep(async (event) => {
         // path가 존재할 때만 페이지 갱신
         event[0].path.toString().split('_')[1] &&
-          this.pageService.updatePage(
-            parseInt(event[0].path.toString().split('_')[1]),
-            {
-              title: event[0].target.toString(),
-            },
+          // this.pageService.updatePage(
+          //   parseInt(event[0].path.toString().split('_')[1]),
+          //   {
+          //     title: event[0].target.toString(),
+          //   },
+          // );
+          this.redisService.setField(
+            event[0].path.toString().split('_')[1],
+            'title',
+            event[0].target.toString(),
           );
       });
       emoji.observeDeep((event) => {
@@ -130,6 +146,7 @@ export class YjsService
       });
       // node의 변경 사항을 감지한다.
       nodesMap.observe(async (event) => {
+        console.log('nodesmap', nodesMap.toJSON());
         console.log('노드 개수', event.changes.keys);
         for (const [key, change] of event.changes.keys) {
           if (change.action === 'update') {
@@ -167,12 +184,17 @@ export class YjsService
   }
 
   // YMap에 노드 정보를 넣어준다.
-  initializeYNodeMap(nodes: Node[], yMap: Y.Map<unknown>): void {
+  initializeYNodeMap(
+    nodes: Node[],
+    yNodeMap: Y.Map<unknown>,
+    yTitleMap: Y.Map<unknown>,
+    yEmojiMap: Y.Map<unknown>,
+  ): void {
     nodes.forEach((node) => {
       const nodeId = node.id.toString(); // id를 string으로 변환
 
       // Y.Map에 데이터를 삽입
-      yMap.set(nodeId, {
+      yNodeMap.set(nodeId, {
         id: nodeId,
         type: 'note',
         data: {
@@ -194,15 +216,14 @@ export class YjsService
       const yTitleText = new Y.Text();
       yTitleText.insert(0, node.page.title);
       // Y.Map에 데이터를 삽입
-      yMap.set(`title_${pageId}`, yTitleText);
+      yTitleMap.set(`title_${pageId}`, yTitleText);
 
       // Y.Text emoji에 데이터 삽입
       const yEmojiText = new Y.Text();
       const emoji = node.page.emoji ?? '📄';
-      console.log(node.page);
       yEmojiText.insert(0, emoji);
       // Y.Map에 데이터를 삽입
-      yMap.set(`emoji_${pageId}`, yEmojiText);
+      yEmojiMap.set(`emoji_${pageId}`, yEmojiText);
     });
   }
 

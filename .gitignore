@@ -3,8 +3,8 @@
 .env*
 *.local
 .turbo
-.crt
-.key
+*.crt
+*.key
 !Dockerfile.local
 
 # compiled output
@@ -52,3 +52,6 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 db.sqlite
+
+*.crt
+*.key
