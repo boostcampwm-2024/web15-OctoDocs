@@ -22,9 +22,12 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { RoleModule } from './role/role.module';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksService } from './tasks/tasks.service';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', '..', 'frontend', 'dist'),
     }),
@@ -36,7 +39,8 @@ import { RedisModule } from './redis/redis.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
+        // type: 'sqlite',
+        // database: 'db.sqlite',
         host: configService.get('DB_HOST'),
         port: configService.get('DB_PORT'),
         username: configService.get('DB_USER'),
@@ -59,6 +63,6 @@ import { RedisModule } from './redis/redis.module';
     RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService, RedisService],
+  providers: [AppService, RedisService, TasksService],
 })
 export class AppModule {}
