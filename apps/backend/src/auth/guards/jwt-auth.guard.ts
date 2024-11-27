@@ -21,6 +21,8 @@ export class JwtAuthGuard implements CanActivate {
 
     // 쿠키가 아예 없는 경우는 로그인 안 된 상태로 간주
     if (!cookies || !cookies.accessToken || !cookies.refreshToken) {
+      // 관련된 쿠키 비워주기
+      this.tokenService.clearCookies(response);
       throw new LoginRequiredException();
     }
 
@@ -44,13 +46,7 @@ export class JwtAuthGuard implements CanActivate {
             await this.tokenService.refreshAccessToken(refreshToken);
 
           // 쿠키 업데이트
-          response.cookie('accessToken', newAccessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 1000, // 1시간 (ms 단위)
-            expires: new Date(Date.now() + 60 * 60 * 1000), // 1시간 후 (Date 객체로 설정)
-          });
+          this.tokenService.setAccessTokenCookie(response, newAccessToken);
 
           // 요청 객체에 사용자 정보 추가
           const decodedNewToken = this.jwtService.verify(newAccessToken, {

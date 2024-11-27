@@ -7,8 +7,6 @@ import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TokenService } from './token/token.service';
 
-const HALF_YEAR = 6 * 30 * 24 * 60 * 60 * 1000;
-
 export enum AuthResponseMessage {
   AUTH_LOGGED_OUT = '로그아웃하였습니다.',
 }
@@ -40,21 +38,8 @@ export class AuthController {
     const refreshToken = this.tokenService.generateRefreshToken(payload);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict', // CSRF 방지
-      maxAge: HALF_YEAR,
-      expires: new Date(Date.now() + HALF_YEAR),
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict', // CSRF 방지
-      maxAge: HALF_YEAR,
-      expires: new Date(Date.now() + HALF_YEAR),
-    });
+    this.tokenService.setAccessTokenCookie(res, accessToken);
+    this.tokenService.setRefreshTokenCookie(res, refreshToken);
 
     res.redirect(302, '/');
   }
@@ -79,21 +64,8 @@ export class AuthController {
     const refreshToken = this.tokenService.generateRefreshToken(payload);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict', // CSRF 방지
-      maxAge: HALF_YEAR,
-      expires: new Date(Date.now() + HALF_YEAR),
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict', // CSRF 방지
-      maxAge: HALF_YEAR,
-      expires: new Date(Date.now() + HALF_YEAR),
-    });
+    this.tokenService.setAccessTokenCookie(res, accessToken);
+    this.tokenService.setRefreshTokenCookie(res, refreshToken);
 
     res.redirect(302, '/');
   }
@@ -103,16 +75,7 @@ export class AuthController {
   @Post('logout')
   logout(@Res() res: Response) {
     // 쿠키 삭제 (옵션이 일치해야 삭제됨)
-    res.clearCookie('access_token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-    });
-    res.clearCookie('refresh_token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-    });
+    this.tokenService.clearCookies(res);
     return res.status(200).json({
       message: AuthResponseMessage.AUTH_LOGGED_OUT,
     });

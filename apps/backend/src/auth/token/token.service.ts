@@ -4,6 +4,7 @@ import { Response } from 'express';
 
 const HOUR = 60 * 60;
 const FIVE_MONTHS = 5 * 30 * 24 * 60 * 60;
+const MS_HALF_YEAR = 6 * 30 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class TokenService {
@@ -27,7 +28,7 @@ export class TokenService {
     try {
       // refreshToken을 검증한다
       const decoded = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: process.env.JWT_SECRET,
       });
 
       // 새로운 accessToken을 발급한다
@@ -35,6 +36,26 @@ export class TokenService {
     } catch (error) {
       throw new Error('Invalid refresh token');
     }
+  }
+
+  setAccessTokenCookie(response: Response, accessToken: string): void {
+    response.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: MS_HALF_YEAR,
+      expires: new Date(Date.now() + MS_HALF_YEAR),
+    });
+  }
+
+  setRefreshTokenCookie(response: Response, refreshToken: string): void {
+    response.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: MS_HALF_YEAR,
+      expires: new Date(Date.now() + MS_HALF_YEAR),
+    });
   }
 
   clearCookies(response: Response) {
