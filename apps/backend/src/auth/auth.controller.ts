@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  Req,
-  Res,
-  Post,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Res, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -110,7 +101,6 @@ export class AuthController {
   @ApiResponse({ type: MessageResponseDto })
   @ApiOperation({ summary: '사용자가 로그아웃합니다.' })
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
   logout(@Res() res: Response) {
     // 쿠키 삭제 (옵션이 일치해야 삭제됨)
     res.clearCookie('access_token', {
@@ -123,7 +113,7 @@ export class AuthController {
       secure: true,
       sameSite: 'strict',
     });
-    return res.json({
+    return res.status(200).json({
       message: AuthResponseMessage.AUTH_LOGGED_OUT,
     });
   }
