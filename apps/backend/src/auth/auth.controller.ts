@@ -73,6 +73,7 @@ export class AuthController {
   @ApiResponse({ type: MessageResponseDto })
   @ApiOperation({ summary: '사용자가 로그아웃합니다.' })
   @Post('logout')
+  @UseGuards(JwtAuthGuard) // JWT 인증 검사
   logout(@Res() res: Response) {
     // 쿠키 삭제 (옵션이 일치해야 삭제됨)
     this.tokenService.clearCookies(res);
