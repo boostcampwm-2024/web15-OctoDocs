@@ -38,6 +38,7 @@
     "@types/multer": "^1.4.12",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "cookie-parser": "^1.4.7",
     "lib0": "^0.2.98",
     "passport": "^0.7.0",
     "passport-kakao": "^1.0.1",
