@@ -30,5 +30,7 @@ describe('WorkspaceService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(workspaceRepository).toBeDefined();
+    expect(userRepository).toBeDefined();
   });
 });

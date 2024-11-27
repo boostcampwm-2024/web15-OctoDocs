@@ -20,9 +20,14 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { RoleModule } from './role/role.module';
+import { RedisService } from './redis/redis.service';
+import { RedisModule } from './redis/redis.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksService } from './tasks/tasks.service';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', '..', 'frontend', 'dist'),
     }),
@@ -54,8 +59,9 @@ import { RoleModule } from './role/role.module';
     UserModule,
     WorkspaceModule,
     RoleModule,
+    RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RedisService, TasksService],
 })
 export class AppModule {}
