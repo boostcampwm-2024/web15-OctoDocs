@@ -69,7 +69,7 @@ export class WorkspaceController {
     await this.workspaceService.deleteWorkspace(userId, id);
 
     return {
-      message: WorkspaceResponseMessage.WORKSPACE_CREATED,
+      message: WorkspaceResponseMessage.WORKSPACE_DELETED,
     };
   }
 

@@ -1,125 +1,129 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { WorkspaceController } from './workspace.controller';
 import { WorkspaceService } from './workspace.service';
-import { WorkspaceRepository } from './workspace.repository';
-import { RoleRepository } from '../role/role.repository';
-import { UserRepository } from '../user/user.repository';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
-import { WorkspaceNotFoundException } from '../exception/workspace.exception';
-import { User } from '../user/user.entity';
-import { Workspace } from './workspace.entity';
-import { Role } from '../role/role.entity';
+import { WorkspaceResponseMessage } from './workspace.controller';
+import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exception';
+import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
 
-describe('WorkspaceService', () => {
+describe('WorkspaceController', () => {
+  let controller: WorkspaceController;
   let service: WorkspaceService;
-  let workspaceRepository: WorkspaceRepository;
-  let roleRepository: RoleRepository;
-  let userRepository: UserRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      controllers: [WorkspaceController],
       providers: [
-        WorkspaceService,
         {
-          provide: WorkspaceRepository,
+          provide: WorkspaceService,
           useValue: {
-            save: jest.fn(),
-            delete: jest.fn(),
-            findOneBy: jest.fn(),
-          },
-        },
-        {
-          provide: RoleRepository,
-          useValue: {
-            findOneBy: jest.fn(),
-            find: jest.fn(),
-            save: jest.fn(),
-          },
-        },
-        {
-          provide: UserRepository,
-          useValue: {
-            findOneBy: jest.fn(),
+            createWorkspace: jest.fn(),
+            deleteWorkspace: jest.fn(),
+            getUserWorkspaces: jest.fn(),
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: jest.fn(() => true), // JwtAuthGuard를 무조건 통과하게 설정
+      })
+      .compile();
 
+    controller = module.get<WorkspaceController>(WorkspaceController);
     service = module.get<WorkspaceService>(WorkspaceService);
-    workspaceRepository = module.get<WorkspaceRepository>(WorkspaceRepository);
-    roleRepository = module.get<RoleRepository>(RoleRepository);
-    userRepository = module.get<UserRepository>(UserRepository);
   });
-  
-  it('should be defined', () => {
+
+  it('컨트롤러 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(controller).toBeDefined();
-    expect(workspaceService).toBeDefined();
   });
 
   describe('createWorkspace', () => {
-    it('워크스페이스를 성공적으로 생성한다.', async () => {
-      const user = { id: 1 } as User;
+    it('워크스페이스가 성공적으로 생성된다.', async () => {
+      const req = { user: { sub: 1 } };
       const dto: CreateWorkspaceDto = {
         title: 'New Workspace',
         description: 'Description',
         visibility: 'private',
         thumbnailUrl: 'http://example.com/image.png',
       };
+      const mockWorkspace = { snowflakeId: 'snowflake-id-1' };
 
-      const mockWorkspace = {
-        id: 1,
-        snowflakeId: 'snowflake-id-1',
-      };
-
-      jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
       jest
-        .spyOn(workspaceRepository, 'save')
+        .spyOn(service, 'createWorkspace')
         .mockResolvedValue(mockWorkspace as any);
 
-      const result = await service.createWorkspace(user.id, dto);
+      const result = await controller.createWorkspace(req, dto);
 
-      expect(userRepository.findOneBy).toHaveBeenCalledWith({ id: user.id });
-      expect(workspaceRepository.save).toHaveBeenCalledWith({
-        owner: user,
-        title: dto.title,
-        description: dto.description,
-        visibility: dto.visibility,
-        thumbnailUrl: dto.thumbnailUrl,
+      expect(service.createWorkspace).toHaveBeenCalledWith(req.user.sub, dto);
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_CREATED,
+        workspaceId: mockWorkspace.snowflakeId,
       });
-      expect(result).toEqual(mockWorkspace);
     });
   });
 
   describe('deleteWorkspace', () => {
     it('워크스페이스를 성공적으로 삭제한다.', async () => {
-      const userId = 1;
+      const req = { user: { sub: 1 } };
       const workspaceId = 'snowflake-id-1';
-      const mockWorkspace = { id: 1, snowflakeId: workspaceId } as Workspace;
+
+      jest.spyOn(service, 'deleteWorkspace').mockResolvedValue();
+
+      const result = await controller.deleteWorkspace(req, workspaceId);
+
+      expect(service.deleteWorkspace).toHaveBeenCalledWith(
+        req.user.sub,
+        workspaceId,
+      );
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_DELETED,
+      });
+    });
+
+    it('워크스페이스 삭제 권한이 없을 경우 예외를 던진다.', async () => {
+      const req = { user: { sub: 1 } };
+      const workspaceId = 'snowflake-id-1';
 
       jest
-        .spyOn(workspaceRepository, 'findOneBy')
-        .mockResolvedValue(mockWorkspace);
-      jest.spyOn(roleRepository, 'findOneBy').mockResolvedValue({
-        workspaceId: 1,
-        userId: userId,
-        role: 'owner',
-      } as Role);
+        .spyOn(service, 'deleteWorkspace')
+        .mockRejectedValue(new NotWorkspaceOwnerException());
 
-      await service.deleteWorkspace(userId, workspaceId);
-
-      expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
-        snowflakeId: workspaceId,
-      });
-      expect(workspaceRepository.delete).toHaveBeenCalledWith(mockWorkspace.id);
+      await expect(
+        controller.deleteWorkspace(req, workspaceId),
+      ).rejects.toThrow(NotWorkspaceOwnerException);
     });
+  });
 
-    it('워크스페이스를 찾지 못했을 경우 예외를 던진다.', async () => {
-      const workspaceId = 'invalid-id';
+  describe('getUserWorkspaces', () => {
+    it('사용자가 참여 중인 워크스페이스 목록을 반환한다.', async () => {
+      const req = { user: { sub: 1 } };
+      const mockWorkspaces = [
+        {
+          workspaceId: 'snowflake-id-1',
+          title: 'Workspace 1',
+          description: 'Description 1',
+          thumbnailUrl: 'http://example.com/image1.png',
+          role: 'owner',
+        },
+        {
+          workspaceId: 'snowflake-id-2',
+          title: 'Workspace 2',
+          description: null,
+          thumbnailUrl: null,
+          role: 'guest',
+        },
+      ] as UserWorkspaceDto[];
 
-      jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(null);
+      jest
+        .spyOn(service, 'getUserWorkspaces')
+        .mockResolvedValue(mockWorkspaces);
 
-      await expect(service.deleteWorkspace(1, workspaceId)).rejects.toThrow(
-        WorkspaceNotFoundException,
-      );
+      const result = await controller.getUserWorkspaces(req);
+
+      expect(service.getUserWorkspaces).toHaveBeenCalledWith(req.user.sub);
+      expect(result).toEqual(mockWorkspaces);
     });
-
+  });
 });
