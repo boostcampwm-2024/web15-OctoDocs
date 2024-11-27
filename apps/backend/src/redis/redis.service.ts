@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
-
+type RedisPage = {
+  title: string;
+  content: string;
+};
 @Injectable()
 export class RedisService {
   private readonly redisClient: Redis;
@@ -12,11 +15,16 @@ export class RedisService {
     });
   }
 
+  async getAllKeys() {
+    return await this.redisClient.keys('*');
+  }
+
   async get(key: string) {
     const data = await this.redisClient.hgetall(key);
+    console.log(data);
     return Object.fromEntries(
       Object.entries(data).map(([field, value]) => [field, value]),
-    );
+    ) as RedisPage;
   }
 
   async set(key: string, value: object) {
