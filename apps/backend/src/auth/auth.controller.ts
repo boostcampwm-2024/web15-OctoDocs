@@ -1,14 +1,21 @@
-import { Controller, Get, UseGuards, Req, Post } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Res, Post } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Response } from 'express';
+import { MessageResponseDto } from './dtos/messageResponse.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { TokenService } from './token/token.service';
+
+export enum AuthResponseMessage {
+  AUTH_LOGGED_OUT = '로그아웃하였습니다.',
+}
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
   ) {}
 
   @Get('naver')
@@ -20,19 +27,21 @@ export class AuthController {
 
   @Get('naver/callback')
   @UseGuards(AuthGuard('naver'))
-  async naverCallback(@Req() req) {
+  async naverCallback(@Req() req, @Res() res: Response) {
     // 네이버 인증 후 사용자 정보 반환
     const user = req.user;
-    // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
-    const payload = { sub: user.id, provider: user.provider };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    return {
-      message: '네이버 로그인 성공',
-      user,
-      accessToken,
-      refreshToken,
-    };
+
+    // primary Key인 id 포함 payload 생성함
+    // TODO: 여기서 권한 추가해야함
+    const payload = { sub: user.id };
+    const accessToken = this.tokenService.generateAccessToken(payload);
+    const refreshToken = this.tokenService.generateRefreshToken(payload);
+
+    // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
+    this.tokenService.setAccessTokenCookie(res, accessToken);
+    this.tokenService.setRefreshTokenCookie(res, refreshToken);
+
+    res.redirect(302, '/');
   }
 
   @Get('kakao')
@@ -44,34 +53,32 @@ export class AuthController {
 
   @Get('kakao/callback')
   @UseGuards(AuthGuard('kakao'))
-  async kakaoCallback(@Req() req) {
-    // 카카오 인증 후 사용자 정보 반환
+  async kakaoCallback(@Req() req, @Res() res: Response) {
+    /// 카카오 인증 후 사용자 정보 반환
     const user = req.user;
-    // TODO: 후에 권한 (workspace 조회, 편집 기능)도 payload에 추가
-    const payload = { sub: user.id, provider: user.provider };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-    return {
-      message: '카카오 로그인 성공',
-      user,
-      accessToken,
-      refreshToken,
-    };
+
+    // primary Key인 id 포함 payload 생성함
+    // TODO: 여기서 권한 추가해야함
+    const payload = { sub: user.id };
+    const accessToken = this.tokenService.generateAccessToken(payload);
+    const refreshToken = this.tokenService.generateRefreshToken(payload);
+
+    // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
+    this.tokenService.setAccessTokenCookie(res, accessToken);
+    this.tokenService.setRefreshTokenCookie(res, refreshToken);
+
+    res.redirect(302, '/');
   }
 
-  @Post('refresh')
-  async refreshAccessToken(@Req() req) {
-    const { refreshToken } = req.body;
-
-    const decoded = this.jwtService.verify(refreshToken, {
-      secret: process.env.JWT_SECRET,
+  @ApiResponse({ type: MessageResponseDto })
+  @ApiOperation({ summary: '사용자가 로그아웃합니다.' })
+  @Post('logout')
+  logout(@Res() res: Response) {
+    // 쿠키 삭제 (옵션이 일치해야 삭제됨)
+    this.tokenService.clearCookies(res);
+    return res.status(200).json({
+      message: AuthResponseMessage.AUTH_LOGGED_OUT,
     });
-    const payload = { sub: decoded.sub, provider: decoded.provider };
-    const newAccessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    return {
-      message: '새로운 Access Token 발급 성공',
-      accessToken: newAccessToken,
-    };
   }
 
   // Example: 로그인한 사용자만 접근할 수 있는 엔드포인트

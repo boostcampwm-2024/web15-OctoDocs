@@ -69,6 +69,7 @@ describe('PageService', () => {
         version: 1,
         node: null,
         emoji: null,
+        workspace: null,
       };
 
       // 노드 엔티티
@@ -79,6 +80,7 @@ describe('PageService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       };
 
       // 레포지토리 모킹
@@ -134,6 +136,7 @@ describe('PageService', () => {
         updatedAt: originDate,
         version: 1,
         emoji: null,
+        workspace: null,
       };
       const newDate = new Date();
       const newPage: Page = {
@@ -145,6 +148,7 @@ describe('PageService', () => {
         updatedAt: newDate,
         version: 1,
         emoji: '📝',
+        workspace: null,
       };
 
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(originPage);
@@ -182,6 +186,7 @@ describe('PageService', () => {
         updatedAt: newDate,
         version: 1,
         emoji: null,
+        workspace: null,
       };
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(expectedPage);
 

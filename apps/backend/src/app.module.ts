@@ -10,12 +10,16 @@ import { Page } from './page/page.entity';
 import { Edge } from './edge/edge.entity';
 import { Node } from './node/node.entity';
 import { User } from './user/user.entity';
+import { Workspace } from './workspace/workspace.entity';
+import { Role } from './role/role.entity';
 import { YjsModule } from './yjs/yjs.module';
 import * as path from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { WorkspaceModule } from './workspace/workspace.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -24,15 +28,19 @@ import { UserModule } from './user/user.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: path.join(__dirname, '..', '.env'), // * nest 디렉터리 기준
+      envFilePath: path.join(__dirname, '..', '..', '..', '.env'), // * nest 디렉터리 기준
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [Node, Page, Edge, User],
+        entities: [Node, Page, Edge, User, Workspace, Role],
         logging: true,
         synchronize: true,
       }),
@@ -44,6 +52,8 @@ import { UserModule } from './user/user.module';
     UploadModule,
     AuthModule,
     UserModule,
+    WorkspaceModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

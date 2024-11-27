@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   JoinColumn,
   CreateDateColumn,
@@ -9,6 +10,7 @@ import {
   VersionColumn,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
+import { Workspace } from '../workspace/workspace.entity';
 
 @Entity()
 export class Page {
@@ -33,16 +35,15 @@ export class Page {
   @Column({ nullable: true })
   emoji: string | null;
 
-  // TODO:추가적인 메타데이터 컬럼들(user 기능 추가할때)
-  // @Column('created_by')
-  // createdBy: string;
-
-  // @Column('updated_by')
-  // updatedBy: string;
-
   @OneToOne(() => Node, (node) => node.page, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
   node: Node;
+
+  @ManyToOne(() => Workspace, (workspace) => workspace.pages, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'workspace_id' })
+  workspace: Workspace;
 }

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-naver';
 import { AuthService } from '../auth.service';
-import { SignUpDto } from '../dto/signUp.dto';
+import { SignUpDto } from '../dtos/signUp.dto';
 
 @Injectable()
 export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
@@ -26,6 +26,6 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
     if (!user) {
       user = await this.authService.signUp(createUserDto);
     }
-    return user; // req.user로 반환
+    return user;
   }
 }

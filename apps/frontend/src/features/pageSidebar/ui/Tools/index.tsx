@@ -4,11 +4,14 @@ import Button from "@/shared/ui/Button";
 
 import { useCreatePage, usePages } from "@/features/pageSidebar/api/usePages";
 import { usePageStore } from "../../model/pageStore";
+import useYDocStore from "@/shared/model/ydocStore";
+import { initializeYText } from "@/shared/model";
 
 export function Tools() {
   const { setCurrentPage } = usePageStore();
   const { pages } = usePages();
   const createMutation = useCreatePage();
+  const { ydoc } = useYDocStore();
 
   return (
     <Button
@@ -30,7 +33,15 @@ export function Tools() {
             y: 0,
             emoji: null,
           })
-          .then((res) => setCurrentPage(res.pageId));
+          .then((res) => {
+            setCurrentPage(res.pageId);
+
+            const yTitleMap = ydoc.getMap("title");
+            const yEmojiMap = ydoc.getMap("emoji");
+
+            initializeYText(yTitleMap, `title_${res.pageId}`, "제목 없음");
+            initializeYText(yEmojiMap, `emoji_${res.pageId}`, "");
+          });
       }}
     >
       <div>

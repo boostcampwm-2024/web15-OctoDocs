@@ -11,7 +11,7 @@ export type NoteNodeData = { title: string; id: number; emoji: string };
 export type NoteNodeType = Node<NoteNodeData, "note">;
 
 export function NoteNode({ data }: NodeProps<NoteNodeType>) {
-  const { setCurrentPage } = usePageStore();
+  const { currentPage, setCurrentPage } = usePageStore();
   const { users } = useUserStore();
 
   const [activeUsers, setActiveUsers] = useState(users);
@@ -31,7 +31,7 @@ export function NoteNode({ data }: NodeProps<NoteNodeType>) {
 
   return (
     <div
-      className="h-24 w-48 rounded-lg border-[1px] border-[#eaeaea] bg-white p-3 shadow-sm"
+      className={`h-24 w-48 rounded-lg border-[1px] ${currentPage === data.id ? "border-[#8dbaef]" : "border-[#eaeaea]"} bg-white p-3 shadow-sm`}
       onClick={handleNodeClick}
     >
       <Handle

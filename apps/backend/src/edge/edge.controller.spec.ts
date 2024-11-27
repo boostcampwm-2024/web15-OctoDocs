@@ -83,6 +83,7 @@ describe('EdgeController', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const node4 = {
         id: 4,
@@ -92,6 +93,7 @@ describe('EdgeController', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const node5 = {
         id: 5,
@@ -101,6 +103,7 @@ describe('EdgeController', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
 
       const expectedEdges = [
