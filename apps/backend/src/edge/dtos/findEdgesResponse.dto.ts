@@ -21,5 +21,5 @@ export class FindEdgesResponseDto {
     description: '모든 Edge 배열',
   })
   @IsArray()
-  nodes: Partial<Edge>[];
+  edges: Partial<Edge>[];
 }

@@ -4,12 +4,15 @@ import { NodeRepository } from '../node/node.repository';
 import { Edge } from './edge.entity';
 import { CreateEdgeDto } from './dtos/createEdge.dto';
 import { EdgeNotFoundException } from '../exception/edge.exception';
+import { WorkspaceRepository } from '../workspace/workspace.repository';
+import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 
 @Injectable()
 export class EdgeService {
   constructor(
     private readonly edgeRepository: EdgeRepository,
     private readonly nodeRepository: NodeRepository,
+    private readonly workspaceRepository: WorkspaceRepository,
   ) {}
 
   async createEdge(dto: CreateEdgeDto): Promise<Edge> {
@@ -39,26 +42,6 @@ export class EdgeService {
     }
   }
 
-  async findEdges(): Promise<Edge[]> {
-    // 모든 엣지들을 조회한다.
-    const edges = await this.edgeRepository.find({
-      relations: ['fromNode', 'toNode'],
-      select: {
-        id: true,
-        fromNode: {
-          id: true,
-        },
-        toNode: {
-          id: true,
-        },
-      },
-    });
-    // 엣지가 없으면 NotFound 에러
-    if (!edges) {
-      throw new EdgeNotFoundException();
-    }
-    return edges;
-  }
   async findEdgeByFromNodeAndToNode(fromNodeId: number, toNodeId: number) {
     return this.edgeRepository.findOne({
       where: {
@@ -67,5 +50,18 @@ export class EdgeService {
       },
       relations: ['fromNode', 'toNode'],
     });
+  }
+
+  async findEdgesByWorkspace(workspaceId: string): Promise<Edge[]> {
+    // 워크스페이스 DB에서 해당 워크스페이스의 내부 id를 찾는다
+    const workspace = await this.workspaceRepository.findOneBy({
+      snowflakeId: workspaceId,
+    });
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundException();
+    }
+
+    return await this.edgeRepository.findEdgesByWorkspace(workspace.id);
   }
 }
