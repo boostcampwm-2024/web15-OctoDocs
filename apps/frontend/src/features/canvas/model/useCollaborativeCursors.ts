@@ -6,6 +6,8 @@ import { useReactFlow, type XYPosition } from "@xyflow/react";
 import { createSocketIOProvider } from "@/shared/api/socketProvider";
 import { useUserStore } from "@/entities/user/model";
 
+import { useWorkspace } from "@/shared/lib/useWorkspace";
+
 export interface AwarenessState {
   cursor: XYPosition | null;
   color: string;
@@ -28,9 +30,10 @@ export function useCollaborativeCursors({
   );
   const { currentUser } = useUserStore();
   const { color, clientId } = currentUser;
+  const workspace = useWorkspace();
 
   useEffect(() => {
-    const wsProvider = createSocketIOProvider("flow-room", ydoc);
+    const wsProvider = createSocketIOProvider(`flow-room-${workspace}`, ydoc);
     provider.current = wsProvider;
 
     wsProvider.awareness.setLocalState({
