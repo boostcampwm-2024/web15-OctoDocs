@@ -7,6 +7,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
+import { Workspace } from '../workspace/workspace.entity';
 
 @Entity()
 export class Edge {
@@ -20,6 +21,12 @@ export class Edge {
   @ManyToOne(() => Node, (node) => node.incomingEdges, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'to_node_id' })
   toNode: Node;
+
+  @ManyToOne(() => Workspace, (workspace) => workspace.edges, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'workspace_id' })
+  workspace: Workspace;
 
   // @Column({ nullable: true })
   // type: string;

@@ -18,4 +18,8 @@ export class PageRepository extends Repository<Page> {
       },
     });
   }
+
+  async findPagesByWorkspace(workspaceId: number): Promise<Page[]> {
+    return this.find({ where: { workspace: { id: workspaceId } } });
+  }
 }

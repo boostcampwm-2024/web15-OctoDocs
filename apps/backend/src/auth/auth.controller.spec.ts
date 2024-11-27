@@ -89,11 +89,18 @@ describe('AuthController', () => {
         .spyOn(jwtService, 'verify')
         .mockReturnValue({ sub: 1, provider: 'naver' });
       const req = { body: { refreshToken: 'valid-refresh-token' } } as any;
+      const res = {
+        cookie: jest.fn(),
+        json: jest.fn(),
+      } as any;
 
-      const result = await authController.refreshAccessToken(req);
-      expect(result).toEqual({
+      await authController.refreshAccessToken(req, res);
+      expect(res.cookie).toHaveBeenCalledWith('accessToken', 'test-token', {
+        httpOnly: true,
+        maxAge: 3600000,
+      });
+      expect(res.json).toHaveBeenCalledWith({
         message: '새로운 Access Token 발급 성공',
-        accessToken: 'test-token',
       });
     });
   });
