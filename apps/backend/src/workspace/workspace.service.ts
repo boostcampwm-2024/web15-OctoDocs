@@ -49,12 +49,6 @@ export class WorkspaceService {
   }
 
   async deleteWorkspace(userId: number, workspaceId: string): Promise<void> {
-    // Owner가 존재하는지 확인
-    const owner = await this.userRepository.findOneBy({ id: userId });
-    if (!owner) {
-      throw new UserNotFoundException();
-    }
-
     // 워크스페이스가 존재하는지 확인
     const workspace = await this.workspaceRepository.findOneBy({
       snowflakeId: workspaceId,
@@ -67,7 +61,7 @@ export class WorkspaceService {
     // Role Repository에서 해당 workspace의 owner인지 확인
     const role = await this.roleRepository.findOneBy({
       workspaceId: workspace.id,
-      userId: owner.id,
+      userId: userId,
       role: 'owner',
     });
     // 아니면 exception 뱉기
