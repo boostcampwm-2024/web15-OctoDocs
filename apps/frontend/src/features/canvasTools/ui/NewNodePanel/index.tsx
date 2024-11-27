@@ -52,6 +52,7 @@ export function NewNodePanel() {
     };
 
     nodeMap.set(newNode.id, newNode);
+    close();
   };
 
   return (
