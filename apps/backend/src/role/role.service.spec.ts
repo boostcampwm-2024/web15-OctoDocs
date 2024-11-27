@@ -37,5 +37,8 @@ describe('RoleService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(userRepository).toBeDefined();
+    expect(roleRepository).toBeDefined();
+    expect(workspaceRepository).toBeDefined();
   });
 });
