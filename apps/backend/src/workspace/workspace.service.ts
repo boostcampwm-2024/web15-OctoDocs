@@ -8,6 +8,7 @@ import { UserNotFoundException } from '../exception/user.exception';
 import { Workspace } from './workspace.entity';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exception';
+import { TokenService } from '../auth/token/token.service';
 
 @Injectable()
 export class WorkspaceService {
@@ -15,6 +16,7 @@ export class WorkspaceService {
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
+    private readonly tokenService: TokenService,
   ) {}
 
   async createWorkspace(
@@ -57,7 +59,6 @@ export class WorkspaceService {
       throw new WorkspaceNotFoundException();
     }
 
-    // Role Repository에서 해당 workspace의 owner이 userId인지 확인
     // Role Repository에서 해당 workspace의 owner인지 확인
     const role = await this.roleRepository.findOneBy({
       workspaceId: workspace.id,
@@ -88,5 +89,36 @@ export class WorkspaceService {
       thumbnailUrl: role.workspace.thumbnailUrl || null,
       role: role.role as 'owner' | 'guest',
     }));
+  }
+
+  async generateInviteUrl(
+    userId: number,
+    workspaceId: string,
+  ): Promise<string> {
+    // 워크스페이스가 존재하는지 확인
+    const workspace = await this.workspaceRepository.findOneBy({
+      snowflakeId: workspaceId,
+    });
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundException();
+    }
+
+    // Role Repository에서 해당 사용자가 소유자인지 확인
+    const role = await this.roleRepository.findOneBy({
+      userId,
+      workspaceId: workspace.id,
+      role: 'owner',
+    });
+
+    if (!role) {
+      throw new NotWorkspaceOwnerException();
+    }
+
+    // 게스트용 초대용 토큰 생성
+    const token = this.tokenService.generateInviteToken(workspace.id, 'guest');
+
+    // TODO: 하드코딩 -> 바꿔야할듯?
+    return `https://octodocs.local/api/workspace/join?token=${token}`;
   }
 }

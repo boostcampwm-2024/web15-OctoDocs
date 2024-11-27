@@ -15,9 +15,9 @@ import { WorkspaceService } from './workspace.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
-import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
 import { CreateWorkspaceResponseDto } from './dtos/createWorkspaceResponse.dto';
 import { GetUserWorkspacesResponseDto } from './dtos/getUserWorkspacesResponse.dto';
+import { CreateWorkspaceInviteUrlDto } from './dtos/createWorkspaceInviteUrl.dto';
 
 export enum WorkspaceResponseMessage {
   WORKSPACE_CREATED = '워크스페이스를 생성했습니다.',
@@ -84,26 +84,26 @@ export class WorkspaceController {
   @HttpCode(HttpStatus.OK)
   async getUserWorkspaces(@Request() req) {
     const userId = req.user.sub; // 인증된 사용자의 ID
-    const workspaces = this.workspaceService.getUserWorkspaces(userId);
+    const workspaces = await this.workspaceService.getUserWorkspaces(userId);
     return {
       message: WorkspaceResponseMessage.WORKSPACES_RETURNED,
       workspaces,
     };
   }
 
-  // TODO: 후에 역할 나눠서 초대링크 만들 수 있게 확장
+  @ApiResponse({
+    type: CreateWorkspaceInviteUrlDto,
+  })
+  @ApiOperation({
+    summary: '사용자가 워크스페이스의 초대 링크를 생성합니다.',
+  })
   @Post('/:id/invite')
   @UseGuards(JwtAuthGuard) // 로그인 인증
   @HttpCode(HttpStatus.CREATED)
-  async generateInviteLink(
-    @Request() req,
-    @Param('workspaceId') workspaceId: string,
-  ) {
+  async generateInviteLink(@Request() req, @Param('id') id: string) {
+    // TODO: 나중에 guest말도 다른 역할 초대 링크로도 확장
     const userId = req.user.sub; // 인증된 사용자 ID
-    const inviteUrl = await this.workspaceService.generateInviteToken(
-      userId,
-      id,
-    );
+    const inviteUrl = await this.workspaceService.generateInviteUrl(userId, id);
 
     return {
       message: '초대 URL이 생성되었습니다.',

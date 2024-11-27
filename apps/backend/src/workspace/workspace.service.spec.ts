@@ -10,6 +10,7 @@ import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { Workspace } from './workspace.entity';
 import { Role } from '../role/role.entity';
 import { User } from '../user/user.entity';
+import { TokenModule } from '../auth/token/token.module';
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
@@ -19,6 +20,7 @@ describe('WorkspaceService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [TokenModule],
       providers: [
         WorkspaceService,
         {

@@ -6,6 +6,7 @@ import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { WorkspaceResponseMessage } from './workspace.controller';
 import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exception';
 import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
+import { TokenService } from '../auth/token/token.service';
 
 describe('WorkspaceController', () => {
   let controller: WorkspaceController;
@@ -22,6 +23,10 @@ describe('WorkspaceController', () => {
             deleteWorkspace: jest.fn(),
             getUserWorkspaces: jest.fn(),
           },
+        },
+        {
+          provide: TokenService,
+          useValue: {},
         },
       ],
     })
@@ -116,6 +121,11 @@ describe('WorkspaceController', () => {
         },
       ] as UserWorkspaceDto[];
 
+      const expectedResult = {
+        message: WorkspaceResponseMessage.WORKSPACES_RETURNED,
+        workspaces: mockWorkspaces,
+      };
+
       jest
         .spyOn(service, 'getUserWorkspaces')
         .mockResolvedValue(mockWorkspaces);
@@ -123,7 +133,7 @@ describe('WorkspaceController', () => {
       const result = await controller.getUserWorkspaces(req);
 
       expect(service.getUserWorkspaces).toHaveBeenCalledWith(req.user.sub);
-      expect(result).toEqual(mockWorkspaces);
+      expect(result).toEqual(expectedResult);
     });
   });
 });
