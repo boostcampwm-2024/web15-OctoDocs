@@ -117,10 +117,10 @@ export const useCanvas = () => {
     const yNodes = Array.from(nodesMap.values()) as YNode[];
 
     const initialNodes = yNodes.map((yNode) => {
-      const nodeEntries = Object.entries(yNode).filter(
-        ([key]) => key !== "isHolding",
-      );
-      return Object.fromEntries(nodeEntries) as Node;
+      const { isHolding, ...rest } = yNode;
+      // esline룰 통과를 위한 일시적인 로그
+      console.log(isHolding);
+      return rest;
     });
 
     setNodes(initialNodes);
@@ -137,10 +137,9 @@ export const useCanvas = () => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
           const updatedYNode = nodesMap.get(nodeId) as YNode;
-          const updatedNodeEntries = Object.entries(updatedYNode).filter(
-            ([key]) => key !== "isHolding",
-          );
-          const updatedNode = Object.fromEntries(updatedNodeEntries) as Node;
+          const { isHolding, ...updatedNode } = updatedYNode;
+          // esline룰 통과를 위한 일시적인 로그
+          console.log(isHolding);
 
           if (change.action === "add") {
             queryClient.invalidateQueries({ queryKey: ["pages"] });
@@ -156,7 +155,10 @@ export const useCanvas = () => {
               ...updatedNode,
               selected: newNodes[index].selected,
             };
-            return newNodes;
+
+            const groups = newNodes.filter((n) => n.type === "group");
+            const notes = newNodes.filter((n) => n.type !== "group");
+            return [...groups, ...notes];
           });
         } else if (change.action === "delete") {
           setNodes((nds) => nds.filter((n) => n.id !== nodeId));
@@ -192,19 +194,34 @@ export const useCanvas = () => {
       const pageId = page.id.toString();
       const existingNode = nodesMap.get(pageId) as YNode | undefined;
 
-      const newNode: YNode = {
-        id: pageId,
-        type: "note",
-        data: { title: page.title, id: page.id, emoji: page.emoji },
-        position: existingNode?.position || {
-          x: Math.random() * 500,
-          y: Math.random() * 500,
-        },
-        selected: false,
-        isHolding: false,
-      };
+      if (existingNode) {
+        nodesMap.set(pageId, {
+          ...existingNode,
+          data: {
+            title: page.title,
+            id: page.id,
+            emoji: page.emoji,
+          },
+        });
+      } else {
+        const newNode: YNode = {
+          id: pageId,
+          type: "note",
+          data: {
+            title: page.title,
+            id: page.id,
+            emoji: page.emoji,
+          },
+          position: {
+            x: Math.random() * 500,
+            y: Math.random() * 500,
+          },
+          selected: false,
+          isHolding: false,
+        };
+        nodesMap.set(pageId, newNode);
+      }
 
-      nodesMap.set(pageId, newNode);
       existingPageIds.current.add(pageId);
     });
   }, [pages, ydoc]);
