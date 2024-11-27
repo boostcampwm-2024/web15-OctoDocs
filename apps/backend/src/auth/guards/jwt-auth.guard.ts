@@ -60,9 +60,13 @@ export class JwtAuthGuard implements CanActivate {
 
           return true;
         } catch (refreshError) {
+          // refreshToken 디코딩 실패 시 처리 쿠키 비워줌
+          this.tokenService.clearCookies(response);
           throw new InvalidTokenException();
         }
       } else {
+        // accessToken 디코딩(만료가 아닌 이유로) 실패 시 처리 쿠키 비워줌
+        this.tokenService.clearCookies(response);
         throw new InvalidTokenException();
       }
     }
