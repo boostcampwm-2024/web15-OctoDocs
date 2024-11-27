@@ -1,6 +1,6 @@
 import {
   Controller,
-  // Get,
+  Get,
   Post,
   Delete,
   Param,
@@ -13,10 +13,10 @@ import { EdgeService } from './edge.service';
 import { CreateEdgeDto } from './dtos/createEdge.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
-// import { FindEdgesResponseDto } from './dtos/findEdgesResponse.dto';
+import { FindEdgesResponseDto } from './dtos/findEdgesResponse.dto';
 
 export enum EdgeResponseMessage {
-  EDGE_ALL_RETURNED = '모든 엣지를 가져왔습니다.',
+  EDGES_RETURNED = '워크스페이스의 모든 엣지를 가져왔습니다.',
   EDGE_CREATED = '엣지를 생성했습니다.',
   EDGE_DELETED = '엣지를 삭제했습니다.',
 }
@@ -46,6 +46,22 @@ export class EdgeController {
     await this.edgeService.deleteEdge(id);
     return {
       message: EdgeResponseMessage.EDGE_DELETED,
+    };
+  }
+
+  @ApiResponse({
+    type: FindEdgesResponseDto,
+  })
+  @ApiOperation({ summary: '특정 워크스페이스의 모든 엣지들을 가져옵니다.' })
+  @Get('/workspace/:workspaceId')
+  @HttpCode(HttpStatus.OK)
+  async findPagesByWorkspace(
+    @Param('workspaceId') workspaceId: string, // Snowflake ID
+  ): Promise<FindEdgesResponseDto> {
+    const nodes = await this.edgeService.findEdgesByWorkspace(workspaceId);
+    return {
+      message: EdgeResponseMessage.EDGES_RETURNED,
+      nodes,
     };
   }
 }

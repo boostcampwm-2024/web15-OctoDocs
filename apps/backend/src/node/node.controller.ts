@@ -18,11 +18,11 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { CoordinateResponseDto } from './dtos/coordinateResponse.dto';
 import { FindNodeResponseDto } from './dtos/findNodeResponse.dto';
-// import { FindNodesResponseDto } from './dtos/findNodesResponse.dto.';
+import { FindNodesResponseDto } from './dtos/findNodesResponse.dto.';
 
 export enum NodeResponseMessage {
   NODE_RETURNED = '노드와 페이지를 가져왔습니다.',
-  NODE_ALL_RETURNED = '모든 노드를 가져왔습니다.',
+  NODES_RETURNED = '워크스페이스의 모든 노드를 가져왔습니다.',
   NODE_CREATED = '노드와 페이지를 생성했습니다.',
   NODE_UPDATED = '노드와 페이지를 갱신했습니다.',
   NODE_DELETED = '노드와 페이지를 삭제했습니다.',
@@ -120,6 +120,22 @@ export class NodeController {
     await this.nodeService.moveNode(id, body);
     return {
       message: NodeResponseMessage.NODE_MOVED,
+    };
+  }
+
+  @ApiResponse({
+    type: FindNodesResponseDto,
+  })
+  @ApiOperation({ summary: '특정 워크스페이스의 모든 노드들을 가져옵니다.' })
+  @Get('/workspace/:workspaceId')
+  @HttpCode(HttpStatus.OK)
+  async findPagesByWorkspace(
+    @Param('workspaceId') workspaceId: string, // Snowflake ID
+  ): Promise<FindNodesResponseDto> {
+    const nodes = await this.nodeService.findNodesByWorkspace(workspaceId);
+    return {
+      message: NodeResponseMessage.NODES_RETURNED,
+      nodes,
     };
   }
 }
