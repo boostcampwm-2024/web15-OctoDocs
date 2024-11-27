@@ -1,4 +1,5 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
+import * as Y from "yjs";
 
 import { useSyncedUsers } from "@/entities/user/model";
 import { SideWrapper } from "@/shared/ui";
@@ -7,14 +8,12 @@ import { EditorView } from "@/widgets/EditorView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
 import { CanvasToolsView } from "@/widgets/CanvasToolsView";
 import { useWorkspace } from "@/shared/lib/useWorkspace";
-import { useEffect } from "react";
-import * as Y from "yjs";
 import useYDocStore from "@/shared/model/ydocStore";
-
-const queryClient = new QueryClient();
+import { useGetUser } from "@/features/auth/model/useAuth";
 
 function App() {
   useSyncedUsers();
+  useGetUser();
 
   const workspace = useWorkspace();
   const { setYDoc } = useYDocStore();
@@ -25,21 +24,19 @@ function App() {
   }, [workspace, setYDoc]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="fixed inset-0 bg-white">
-        <SideWrapper side="right" className="z-50">
-          <EditorView />
-        </SideWrapper>
-        <CanvasView />
-        <SideWrapper
-          side="left"
-          className="left-4 top-4 flex flex-row items-start gap-2"
-        >
-          <PageSideBarView />
-          <CanvasToolsView />
-        </SideWrapper>
-      </div>
-    </QueryClientProvider>
+    <div className="fixed inset-0 bg-white">
+      <SideWrapper side="right" className="z-50">
+        <EditorView />
+      </SideWrapper>
+      <CanvasView />
+      <SideWrapper
+        side="left"
+        className="left-4 top-4 flex flex-row items-start gap-2"
+      >
+        <PageSideBarView />
+        <CanvasToolsView />
+      </SideWrapper>
+    </div>
   );
 }
 

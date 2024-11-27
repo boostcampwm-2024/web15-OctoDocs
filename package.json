@@ -6,7 +6,7 @@
     "author": "ez <105545215+ezcolin2@users.noreply.github.com>",
     "license": "MIT",
     "scripts": {
-        "dev": "turbo run dev",
+        "dev": "turbo run dev --parallel",
         "build": "turbo run build",
         "start": "node apps/backend/dist/main.js",
         "lint": "turbo run lint",
