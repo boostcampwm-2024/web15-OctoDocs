@@ -17,11 +17,13 @@ import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
 import { CreateWorkspaceResponseDto } from './dtos/createWorkspaceResponse.dto';
+import { GetUserWorkspacesResponseDto } from './dtos/getUserWorkspacesResponse.dto';
 
 export enum WorkspaceResponseMessage {
   WORKSPACE_CREATED = '워크스페이스를 생성했습니다.',
   WORKSPACE_DELETED = '워크스페이스를 삭제했습니다.',
   WORKSPACES_RETURNED = '사용자가 참여하고 있는 모든 워크스페이스들을 가져왔습니다',
+  WORKSPACE_INVITED = '워크스페이스 게스트 초대 링크가 생성되었습니다',
 }
 
 @Controller('workspace')
@@ -73,15 +75,39 @@ export class WorkspaceController {
     };
   }
 
-  @ApiResponse({ status: HttpStatus.OK, type: [UserWorkspaceDto] })
+  @ApiResponse({ type: GetUserWorkspacesResponseDto })
   @ApiOperation({
     summary: '사용자가 참여 중인 워크스페이스 목록을 가져옵니다.',
   })
   @UseGuards(JwtAuthGuard)
   @Get('/user')
   @HttpCode(HttpStatus.OK)
-  async getUserWorkspaces(@Request() req): Promise<UserWorkspaceDto[]> {
+  async getUserWorkspaces(@Request() req) {
     const userId = req.user.sub; // 인증된 사용자의 ID
-    return await this.workspaceService.getUserWorkspaces(userId);
+    const workspaces = this.workspaceService.getUserWorkspaces(userId);
+    return {
+      message: WorkspaceResponseMessage.WORKSPACES_RETURNED,
+      workspaces,
+    };
+  }
+
+  // TODO: 후에 역할 나눠서 초대링크 만들 수 있게 확장
+  @Post('/:id/invite')
+  @UseGuards(JwtAuthGuard) // 로그인 인증
+  @HttpCode(HttpStatus.CREATED)
+  async generateInviteLink(
+    @Request() req,
+    @Param('workspaceId') workspaceId: string,
+  ) {
+    const userId = req.user.sub; // 인증된 사용자 ID
+    const inviteUrl = await this.workspaceService.generateInviteToken(
+      userId,
+      id,
+    );
+
+    return {
+      message: '초대 URL이 생성되었습니다.',
+      inviteUrl,
+    };
   }
 }
