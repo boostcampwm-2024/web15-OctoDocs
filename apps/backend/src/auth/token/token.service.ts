@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
 const HOUR = 60 * 60;
-const FIVE_MONTHS = 3 * 30 * 24 * 60 * 60;
+const FIVE_MONTHS = 5 * 30 * 24 * 60 * 60;
 
 @Injectable()
 export class TokenService {
