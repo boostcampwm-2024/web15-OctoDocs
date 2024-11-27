@@ -3,6 +3,7 @@ import { UserRepository } from '../user/user.repository';
 import { WorkspaceRepository } from './workspace.repository';
 import { RoleRepository } from '../role/role.repository';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
+import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
 import { UserNotFoundException } from '../exception/user.exception';
 import { Workspace } from './workspace.entity';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
@@ -76,5 +77,22 @@ export class WorkspaceService {
 
     // 워크스페이스 삭제
     await this.workspaceRepository.delete(workspace.id);
+  }
+
+  async getUserWorkspaces(userId: number): Promise<UserWorkspaceDto[]> {
+    // RoleRepository를 통해 사용자가 참여 중인 모든 워크스페이스 정보 조회
+    const userRoles = await this.roleRepository.find({
+      where: { userId },
+      relations: ['workspace'], // 워크스페이스 정보를 함께 가져오기
+    });
+
+    // 각 워크스페이스와 역할 정보를 가공하여 반환
+    return userRoles.map((role) => ({
+      workspaceId: role.workspace.snowflakeId,
+      title: role.workspace.title,
+      description: role.workspace.description || null,
+      thumbnailUrl: role.workspace.thumbnailUrl || null,
+      role: role.role as 'owner' | 'guest',
+    }));
   }
 }

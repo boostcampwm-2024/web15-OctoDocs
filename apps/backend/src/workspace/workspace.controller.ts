@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Delete,
+  Get,
   UseGuards,
   Request,
   Body,
@@ -14,6 +15,7 @@ import { WorkspaceService } from './workspace.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
+import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
 import { CreateWorkspaceResponseDto } from './dtos/createWorkspaceResponse.dto';
 
 export enum WorkspaceResponseMessage {
@@ -69,5 +71,17 @@ export class WorkspaceController {
     return {
       message: WorkspaceResponseMessage.WORKSPACE_CREATED,
     };
+  }
+
+  @ApiResponse({ status: HttpStatus.OK, type: [UserWorkspaceDto] })
+  @ApiOperation({
+    summary: '사용자가 참여 중인 워크스페이스 목록을 가져옵니다.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('/user')
+  @HttpCode(HttpStatus.OK)
+  async getUserWorkspaces(@Request() req): Promise<UserWorkspaceDto[]> {
+    const userId = req.user.sub; // 인증된 사용자의 ID
+    return await this.workspaceService.getUserWorkspaces(userId);
   }
 }
