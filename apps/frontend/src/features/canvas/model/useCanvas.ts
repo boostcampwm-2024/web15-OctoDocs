@@ -304,7 +304,7 @@ export const useCanvas = () => {
 
       onEdgesChange(changes);
     },
-    [onEdgesChange],
+    [onEdgesChange, ydoc],
   );
 
   const onConnect = useCallback(
