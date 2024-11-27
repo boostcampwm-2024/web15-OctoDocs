@@ -17,7 +17,9 @@ export const useNoteList = () => {
   useEffect(() => {
     nodesMap.observe(() => {
       const yNodes = Array.from(nodesMap.values()) as YNode[];
-      const data = yNodes.map((yNode) => yNode.data) as NoteNodeData[];
+      const data = yNodes
+        .filter((yNode) => yNode.data.type === "note")
+        .map((yNode) => yNode.data) as NoteNodeData[];
       setPages(data);
     });
   }, []);

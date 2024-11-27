@@ -25,6 +25,7 @@ import { useWorkspace } from "@/shared/lib/useWorkspace";
 
 export interface YNode extends Node {
   isHolding: boolean;
+  parentId?: string;
 }
 
 export const useCanvas = () => {
@@ -33,6 +34,7 @@ export const useCanvas = () => {
   const { pages } = usePages();
   const queryClient = useQueryClient();
   const { ydoc } = useYDocStore();
+  const { getIntersectingNodes } = useReactFlow();
 
   const workspace = useWorkspace();
 
@@ -70,23 +72,17 @@ export const useCanvas = () => {
   useEffect(() => {
     const yTitleMap = ydoc.getMap("title");
     const yEmojiMap = ydoc.getMap("emoji");
-
     const nodesMap = ydoc.getMap("nodes");
 
     yTitleMap.observeDeep((event) => {
       if (!event[0].path.length) return;
-
       const pageId = event[0].path[0].toString().split("_")[1];
       const value = event[0].target.toString();
-
       const existingNode = nodesMap.get(pageId) as YNode;
 
       const newNode: YNode = {
-        id: pageId,
-        type: "note",
-        data: { title: value, id: pageId, emoji: existingNode.data.emoji },
-        position: existingNode.position,
-        selected: false,
+        ...existingNode,
+        data: { ...existingNode.data, title: value },
         isHolding: false,
       };
 
@@ -95,18 +91,13 @@ export const useCanvas = () => {
 
     yEmojiMap.observeDeep((event) => {
       if (!event[0].path.length) return;
-
       const pageId = event[0].path[0].toString().split("_")[1];
       const value = event[0].target.toString();
-
       const existingNode = nodesMap.get(pageId) as YNode;
 
       const newNode: YNode = {
-        id: pageId,
-        type: "note",
-        data: { title: existingNode.data.title, id: pageId, emoji: value },
-        position: existingNode.position,
-        selected: false,
+        ...existingNode,
+        data: { ...existingNode.data, emoji: value },
         isHolding: false,
       };
 
@@ -118,7 +109,6 @@ export const useCanvas = () => {
     if (!ydoc) return;
 
     const wsProvider = createSocketIOProvider("flow-room", ydoc);
-
     provider.current = wsProvider;
 
     const nodesMap = ydoc.getMap("nodes");
@@ -240,13 +230,17 @@ export const useCanvas = () => {
         if (change.type === "position" && change.position) {
           const node = nodes.find((n) => n.id === change.id);
           if (node) {
-            const updatedYNode: YNode = {
-              ...node,
-              position: change.position,
-              selected: false,
-              isHolding: holdingNodeRef.current === change.id,
-            };
-            nodesMap.set(change.id, updatedYNode);
+            onNodesChange([change]);
+
+            const currentNode = nodes.find((n) => n.id === change.id);
+            if (currentNode) {
+              nodesMap.set(change.id, {
+                ...currentNode,
+                position: change.position,
+                selected: false,
+                isHolding: holdingNodeRef.current === change.id,
+              });
+            }
 
             const affectedEdges = edges.filter(
               (edge) => edge.source === change.id || edge.target === change.id,
@@ -270,10 +264,10 @@ export const useCanvas = () => {
               }
             });
           }
+        } else {
+          onNodesChange([change]);
         }
       });
-
-      onNodesChange(changes);
     },
     [nodes, edges, onNodesChange],
   );
@@ -341,12 +335,112 @@ export const useCanvas = () => {
       if (ydoc) {
         const nodesMap = ydoc.getMap("nodes");
         const yNode = nodesMap.get(node.id) as YNode | undefined;
+
         if (yNode) {
-          nodesMap.set(node.id, { ...yNode, isHolding: false });
+          const currentNode = nodes.find((n) => n.id === node.id);
+          if (!currentNode) return;
+
+          if (node.type === "group") {
+            const intersectingNotes = getIntersectingNodes(currentNode).filter(
+              (n) => n.type === "note" && !n.parentId,
+            );
+
+            intersectingNotes.forEach((noteNode) => {
+              const relativePosition = {
+                x: noteNode.position.x - currentNode.position.x,
+                y: noteNode.position.y - currentNode.position.y,
+              };
+
+              nodesMap.set(noteNode.id, {
+                ...noteNode,
+                parentId: node.id,
+                position: relativePosition,
+                isHolding: false,
+              });
+            });
+
+            nodesMap.set(node.id, {
+              ...currentNode,
+              isHolding: false,
+            });
+          } else {
+            const intersectingGroups = getIntersectingNodes(currentNode).filter(
+              (n) => n.type === "group",
+            );
+
+            if (intersectingGroups.length > 0) {
+              const parentNode =
+                intersectingGroups[intersectingGroups.length - 1];
+
+              if (yNode.parentId === parentNode.id) {
+                nodesMap.set(node.id, {
+                  ...yNode,
+                  position: currentNode.position,
+                  isHolding: false,
+                });
+              } else {
+                let absolutePosition = currentNode.position;
+                if (yNode.parentId) {
+                  const oldParentNode = nodes.find(
+                    (n) => n.id === yNode.parentId,
+                  );
+                  if (oldParentNode) {
+                    absolutePosition = {
+                      x: oldParentNode.position.x + currentNode.position.x,
+                      y: oldParentNode.position.y + currentNode.position.y,
+                    };
+                  }
+                }
+
+                const relativePosition = {
+                  x: absolutePosition.x - parentNode.position.x,
+                  y: absolutePosition.y - parentNode.position.y,
+                };
+
+                nodesMap.set(node.id, {
+                  ...currentNode,
+                  parentId: parentNode.id,
+                  position: relativePosition,
+                  isHolding: false,
+                });
+              }
+            } else {
+              if (yNode.parentId) {
+                const oldParentNode = nodes.find(
+                  (n) => n.id === yNode.parentId,
+                );
+                if (oldParentNode) {
+                  const absolutePosition = {
+                    x: oldParentNode.position.x + currentNode.position.x,
+                    y: oldParentNode.position.y + currentNode.position.y,
+                  };
+
+                  nodesMap.set(node.id, {
+                    ...currentNode,
+                    parentId: undefined,
+                    position: absolutePosition,
+                    isHolding: false,
+                  });
+                }
+              } else {
+                nodesMap.set(node.id, {
+                  ...currentNode,
+                  parentId: undefined,
+                  isHolding: false,
+                });
+              }
+            }
+          }
+
+          setNodes((ns) => {
+            const groups = ns.filter((n) => n.type === "group");
+            const notes = ns.filter((n) => n.type !== "group");
+            return [...groups, ...notes];
+          });
         }
       }
     },
-    [ydoc],
+    [ydoc, getIntersectingNodes, nodes, setNodes],
   );
 
   return {

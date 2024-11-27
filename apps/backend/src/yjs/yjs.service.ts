@@ -134,6 +134,9 @@ export class YjsService
         for (const [key, change] of event.changes.keys) {
           if (change.action === 'update') {
             const node: any = nodesMap.get(key);
+            if (node.type !== 'note') {
+              continue;
+            }
             const { title, id } = node.data; // TODO: 이모지 추가
             const { x, y } = node.position;
             const isHolding = node.isHolding;
