@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-kakao';
 import { AuthService } from '../auth.service';
-import { SignUpDto } from '../dto/signUp.dto';
+import { SignUpDto } from '../dtos/signUp.dto';
 
 @Injectable()
 export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {

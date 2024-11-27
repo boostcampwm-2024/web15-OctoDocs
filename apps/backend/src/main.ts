@@ -4,6 +4,7 @@ import { HttpExceptionFilter } from './filter/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import * as express from 'express';
+import * as cookieParser from 'cookie-parser';
 
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -26,6 +27,7 @@ async function bootstrap() {
   app.enableCors({
     origin: process.env.origin,
   });
+  app.use(cookieParser());
   await app.listen(3000);
 }
 bootstrap();
