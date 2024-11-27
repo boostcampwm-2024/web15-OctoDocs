@@ -5,9 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Edge } from './edge.entity';
 import { EdgeRepository } from './edge.repository';
 import { NodeModule } from '../node/node.module';
+import { WorkspaceModule } from '../workspace/workspace.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Edge]), forwardRef(() => NodeModule)],
+  imports: [
+    TypeOrmModule.forFeature([Edge]),
+    forwardRef(() => NodeModule),
+    WorkspaceModule,
+  ],
   controllers: [EdgeController],
   providers: [EdgeService, EdgeRepository],
   exports: [EdgeService],
