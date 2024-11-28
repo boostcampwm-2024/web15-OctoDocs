@@ -14,8 +14,9 @@ export const getPage = async (id: number) => {
   return res.data.page;
 };
 
-export const getPages = async () => {
-  const url = "/api/page";
+// TODO: 임시
+export const getPages = async (workspaceId: string) => {
+  const url = `/api/page/workspace/${workspaceId}`;
 
   const res = await Get<GetPagesResponse>(url);
   return res.data.pages;

@@ -34,12 +34,12 @@ export const useCanvas = () => {
   const { zoom } = useViewport();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { pages } = usePages();
+  const workspace = useWorkspace();
+  const { pages } = usePages(workspace);
+
   const queryClient = useQueryClient();
   const { ydoc } = useYDocStore();
   const { getIntersectingNodes } = useReactFlow();
-
-  const workspace = useWorkspace();
 
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({

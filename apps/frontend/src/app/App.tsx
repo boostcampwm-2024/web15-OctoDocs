@@ -1,27 +1,14 @@
-import { useEffect } from "react";
-import * as Y from "yjs";
-
 import { useSyncedUsers } from "@/entities/user";
 import { SideWrapper } from "@/shared/ui";
 import { CanvasView } from "@/widgets/CanvasView";
 import { EditorView } from "@/widgets/EditorView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
 import { CanvasToolsView } from "@/widgets/CanvasToolsView";
-import { useWorkspace } from "@/shared/lib/useWorkspace";
-import useYDocStore from "@/shared/model/ydocStore";
 import { useGetUser } from "@/features/auth/model/useAuth";
 
 function App() {
   useSyncedUsers();
   useGetUser();
-
-  const workspace = useWorkspace();
-  const { setYDoc } = useYDocStore();
-
-  useEffect(() => {
-    const doc = new Y.Doc({ guid: workspace });
-    setYDoc(doc);
-  }, [workspace, setYDoc]);
 
   return (
     <div className="fixed inset-0 bg-white">
