@@ -125,7 +125,7 @@ describe('EdgeService', () => {
   describe('findEdgesByWorkspace', () => {
     it('특정 워크스페이스에 존재하는 모든 엣지를 반환한다.', async () => {
       const workspaceId = '123456789012345678'; // Snowflake ID
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: workspaceId,
         owner: null,
@@ -138,7 +138,7 @@ describe('EdgeService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
       const node3 = {
         id: 3,
         x: 0,
