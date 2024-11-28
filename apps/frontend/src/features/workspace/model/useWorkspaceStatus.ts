@@ -7,11 +7,13 @@ import {
 } from "../api/workspaceStatusApi";
 
 export const useWorkspaceStatus = () => {
-  const { data: workspaces } = useUserWorkspace();
+  const { data } = useUserWorkspace();
   const currentWorkspaceId = useWorkspace();
 
-  return workspaces?.find((workspace) => workspace.id === currentWorkspaceId)
-    ?.visibility;
+  const workspaces = data?.workspaces;
+  return workspaces?.find(
+    (workspace) => workspace.workspaceId === currentWorkspaceId,
+  )?.visibility;
 };
 
 export const useToggleWorkspaceStatus = (
