@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import * as Y from "yjs";
 
-import { useSyncedUsers } from "@/entities/user/model";
+import { useSyncedUsers } from "@/entities/user";
 import { SideWrapper } from "@/shared/ui";
 import { CanvasView } from "@/widgets/CanvasView";
 import { EditorView } from "@/widgets/EditorView";

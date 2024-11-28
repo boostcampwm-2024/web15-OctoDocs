@@ -1,6 +1,6 @@
 import { RefreshCcw } from "lucide-react";
 
-import { useUserStore } from "@/entities/user/model";
+import { useUserStore } from "@/entities/user";
 import { getRandomColor } from "@/shared/lib";
 import { FormField } from "../FormField";
 

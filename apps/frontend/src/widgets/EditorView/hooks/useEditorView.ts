@@ -6,7 +6,7 @@ import { SocketIOProvider } from "y-socket.io";
 import { usePage } from "@/features/pageSidebar/api/usePages";
 import { createSocketIOProvider } from "@/shared/api/socketProvider";
 import { usePageStore } from "@/features/pageSidebar/model";
-import { useUserStore } from "@/entities/user/model";
+import { useUserStore } from "@/entities/user";
 
 export const useEditorView = () => {
   const { currentPage, isPanelOpen, isMaximized } = usePageStore();
