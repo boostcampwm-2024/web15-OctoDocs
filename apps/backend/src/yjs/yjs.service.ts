@@ -44,7 +44,9 @@ export class YjsService
     private readonly pageService: PageService,
     private readonly edgeService: EdgeService,
     private readonly redisService: RedisService,
-  ) {}
+  ) {
+    
+  }
 
   @WebSocketServer()
   server: Server;

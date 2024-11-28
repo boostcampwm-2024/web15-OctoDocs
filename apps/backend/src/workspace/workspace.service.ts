@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { WorkspaceRepository } from './workspace.repository';
 import { RoleRepository } from '../role/role.repository';
@@ -11,6 +11,8 @@ import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exceptio
 
 @Injectable()
 export class WorkspaceService {
+  private readonly logger = new Logger(WorkspaceService.name); // 클래스 이름을 context로 설정
+
   constructor(
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly userRepository: UserRepository,
@@ -88,5 +90,26 @@ export class WorkspaceService {
       thumbnailUrl: role.workspace.thumbnailUrl || null,
       role: role.role as 'owner' | 'guest',
     }));
+  }
+
+  // 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
+  async initializeMainWorkspace() {
+    // main workspace owner를 생성한다.
+    const owner = await this.userRepository.save({
+      snowflakeId: 'admin',
+      providerId: 'adminProviderId',
+      provider: 'adminProvider',
+      email: 'admin@mail.com',
+    });
+
+    // main workspace를 생성한다.
+    await this.workspaceRepository.save({
+      snowflakeId: 'main',
+      owner,
+      title: 'main workspace',
+      description: '모든 유저가 접근 가능한 메인 workspace',
+      vjisibility: 'private',
+    });
+    this.logger.log('메인 워크스페이스를 생성했습니다.');
   }
 }
