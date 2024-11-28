@@ -2905,9 +2905,9 @@
     "@tanstack/query-core" "5.61.5"
 
 "@tanstack/react-router@^1.82.12":
-  version "1.83.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-router/-/react-router-1.83.0.tgz#4e330ffdcad8d8148cbf9659b195de0e90f58795"
-  integrity sha512-oJ6ewpitY5uIMH82nHW2LuQt0gtTe+v4DAgufWjLBwOaWr5po/0by9DDBW/j02mgr1mVSXm+OXbKSDQNC/+ARw==
+  version "1.84.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-router/-/react-router-1.84.0.tgz#68fbb458f8db94cff09695fdcf0e6a30d7ecda32"
+  integrity sha512-JJ6NhktXQHF1oWBSZwPHwq7eRZJGqEbWhtar/Mw1JDwZcNrodZ6mgFSeL07jRax89/K3YAKHPzdVwIuSsllXeg==
   dependencies:
     "@tanstack/history" "1.81.9"
     "@tanstack/react-store" "^0.6.1"
@@ -2924,17 +2924,18 @@
     use-sync-external-store "^1.2.2"
 
 "@tanstack/router-devtools@^1.82.12":
-  version "1.83.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/router-devtools/-/router-devtools-1.83.0.tgz#590597ecea0890b7f6744c5ecb6d6d8977911396"
-  integrity sha512-jqFSJdPrDXSVadvWAV6XpWpdduMmgFGaJA222FgbBI25uXDRo9MRvoORonqMPYahfTUNersisruh2NXaZZAT0Q==
+  version "1.84.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/router-devtools/-/router-devtools-1.84.0.tgz#dc59710d902bc6182e2838aef2f561e812c9b86c"
+  integrity sha512-XCBT1MJNZ7k1h2+E+9Hwg4h21gahYJf92PZZU4JNhKKl3JSrFrIm+ItP5p7dP1hk6LE5eIB1DTDIZifT+meS5w==
   dependencies:
     clsx "^2.1.1"
     goober "^2.1.16"
 
-"@tanstack/router-generator@^1.83.0":
-  version "1.83.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/router-generator/-/router-generator-1.83.0.tgz#97646d451b66322821ecbed10a44d30647b3f9b5"
-  integrity sha512-fj8n0vQ4bxyctltCmlc9ge1DT+tc05VHbFs1BnroASBhz76KTMNmKAQexPRZptNiDNHgQIQHVL5AIxv93zHKpA==
+
+"@tanstack/router-generator@^1.83.1":
+  version "1.83.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/router-generator/-/router-generator-1.83.1.tgz#dc91cb538c5ffcb19e67154cd1fde3a62b4df330"
+  integrity sha512-PecQnkY8hz2V1ZVriQ5iKp3+033H6VbiOmAkESXSENCfnM3p5SBUsd+VbPI4/2w5V/4X1lFEWepJaIBNM1Gm3A==
   dependencies:
     "@tanstack/virtual-file-routes" "^1.81.9"
     prettier "^3.3.3"
@@ -2942,9 +2943,9 @@
     zod "^3.23.8"
 
 "@tanstack/router-plugin@^1.82.10":
-  version "1.83.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/router-plugin/-/router-plugin-1.83.0.tgz#1677e54e9bdf622af615bf740b5ba620feef19ca"
-  integrity sha512-frJafLRqQ/7DxCYc/6Y7ZrqT/W1sXN6FGeO3YkgJs+A/WRnGyvL+yEOI3GYDUakSHUpGapUfVYBC6RFhQ+CipQ==
+  version "1.83.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/router-plugin/-/router-plugin-1.83.1.tgz#0c0df682432ce85f4def507a90ccf5e23aefabcc"
+  integrity sha512-K/TQ81q5Sy+2l+9mprH2cKw0f4ytopDMgq0bEYujjwhjdR8/bXeTk9HuerWtz0dsyjOdm2SDh68w0Lan3nkHFA==
   dependencies:
     "@babel/core" "^7.26.0"
     "@babel/generator" "^7.26.2"
@@ -2954,7 +2955,7 @@
     "@babel/template" "^7.25.9"
     "@babel/traverse" "^7.25.9"
     "@babel/types" "^7.26.0"
-    "@tanstack/router-generator" "^1.83.0"
+    "@tanstack/router-generator" "^1.83.1"
     "@tanstack/virtual-file-routes" "^1.81.9"
     "@types/babel__core" "^7.20.5"
     "@types/babel__generator" "^7.6.8"
@@ -5489,9 +5490,9 @@ ejs@^3.1.10:
     jake "^10.8.5"
 
 electron-to-chromium@^1.5.41:
-  version "1.5.65"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.65.tgz#e2b9d84d31e187a847e3ccdcfb415ddd4a3d1ea7"
-  integrity sha512-PWVzBjghx7/wop6n22vS2MLU8tKGd4Q91aCEGhG/TYmW6PP5OcSXcdnxTe1NNt0T66N8D6jxh4kC8UsdzOGaIw==
+  version "1.5.66"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.66.tgz#1e9b4bc7638ac02d3551eea1dbaeb0101ec5823f"
+  integrity sha512-pI2QF6+i+zjPbqRzJwkMvtvkdI7MjVbSh2g8dlMguDJIXEPw+kwasS1Jl+YGPEBfGVxsVgGUratAKymPdPo2vQ==
 
 elkjs@^0.9.3:
   version "0.9.3"
