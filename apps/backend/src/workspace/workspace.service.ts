@@ -11,6 +11,7 @@ import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exceptio
 import { TokenService } from '../auth/token/token.service';
 import { ForbiddenAccessException } from '../exception/access.exception';
 import { UserAlreadyInWorkspaceException } from '../exception/role-duplicate.exception';
+import { Snowflake } from '@theinternetfolks/snowflake';
 
 enum MainWorkspace {
   OWNER_SNOWFLAKEID = 'admin',
@@ -53,6 +54,7 @@ export class WorkspaceService {
 
     // 워크스페이스 생성 및 저장
     const newWorkspace = await this.workspaceRepository.save({
+      snowflakeId: Snowflake.generate(),
       owner,
       title,
       description,

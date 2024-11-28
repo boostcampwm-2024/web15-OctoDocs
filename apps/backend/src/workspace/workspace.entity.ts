@@ -7,10 +7,8 @@ import {
   UpdateDateColumn,
   OneToMany,
   Index,
-  BeforeInsert,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Snowflake } from '@theinternetfolks/snowflake';
 import { Edge } from '../edge/edge.entity';
 import { Page } from '../page/page.entity';
 import { Node } from '../node/node.entity';
@@ -53,9 +51,4 @@ export class Workspace {
 
   @OneToMany(() => Node, (node) => node.workspace)
   nodes: Node[];
-
-  @BeforeInsert()
-  generateSnowflakeId() {
-    this.snowflakeId = Snowflake.generate();
-  }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { User } from '../user/user.entity';
 import { SignUpDto } from './dtos/signUp.dto';
+import { Snowflake } from '@theinternetfolks/snowflake';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,10 @@ export class AuthService {
   }
 
   async signUp(dto: SignUpDto): Promise<User> {
-    const user = this.userRepository.create(dto);
+    const user = this.userRepository.create({
+      ...dto,
+      snowflakeId: Snowflake.generate(),
+    });
     return this.userRepository.save(user);
   }
 
