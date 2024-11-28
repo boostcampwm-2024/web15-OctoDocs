@@ -10,6 +10,7 @@ import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exception';
 import { TokenService } from '../auth/token/token.service';
 import { ForbiddenAccessException } from '../exception/access.exception';
+import { UserAlreadyInWorkspaceException } from '../exception/role-duplicate.exception';
 
 enum MainWorkspace {
   OWNER_SNOWFLAKEID = 'admin',
@@ -37,7 +38,6 @@ export class WorkspaceService {
       this.initializeMainWorkspace();
     }
   }
-
 
   async createWorkspace(
     userId: number,
@@ -154,9 +154,8 @@ export class WorkspaceService {
     });
 
     // 이미 워크스페이스에 등록된 경우
-    // TODO: 워크스페이스 관련 에러 구현
     if (existingRole) {
-      throw new Error('이미 워크스페이스에 가입된 사용자입니다.');
+      throw new UserAlreadyInWorkspaceException();
     }
 
     // 새로운 역할 생성
@@ -205,7 +204,7 @@ export class WorkspaceService {
     // 권한이 없으면 예외 발생
     throw new ForbiddenAccessException();
   }
-  
+
   // 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
   async initializeMainWorkspace() {
     let findOwner = await this.userRepository.findOneBy({
