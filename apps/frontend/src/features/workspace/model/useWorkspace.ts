@@ -6,10 +6,10 @@ import {
   removeWorkspace,
 } from "../api/workspaceApi";
 
-export const useUserWorkspace = (userId: string) => {
+export const useUserWorkspace = () => {
   return useQuery({
-    queryKey: ["userWorkspace", userId],
-    queryFn: () => getUserWorkspaces(userId),
+    queryKey: ["userWorkspace"],
+    queryFn: getUserWorkspaces,
   });
 };
 
@@ -26,7 +26,7 @@ export const useCreateWorkspace = () => {
   });
 };
 
-export const useRemoveWorkspace = (w) => {
+export const useRemoveWorkspace = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
