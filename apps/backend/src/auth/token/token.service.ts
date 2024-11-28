@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { InvalidTokenException } from '../../exception/invalid.exception';
 
 const HOUR = 60 * 60;
 const DAY = 24 * 60 * 60;
@@ -34,13 +33,9 @@ export class TokenService {
   }
 
   verifyInviteToken(token: string): { workspaceId: string; role: string } {
-    try {
-      return this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
-      });
-    } catch (error) {
-      throw new InvalidTokenException();
-    }
+    return this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET,
+    });
   }
 
   // 후에 DB 로직 (지금은 refreshToken이 DB로 관리 X)
