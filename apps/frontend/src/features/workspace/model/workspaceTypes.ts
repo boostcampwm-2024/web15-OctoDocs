@@ -8,9 +8,9 @@ export interface Workspace {
 
 export interface CreateWorkSpaceResquest {
   title: string;
-  description: string;
-  visibility: "private" | "public";
-  thumbnailUrl: string;
+  description?: string;
+  visibility?: "private" | "public";
+  thumbnailUrl?: string;
 }
 
 export interface CreateWorkSpaceResponse {
