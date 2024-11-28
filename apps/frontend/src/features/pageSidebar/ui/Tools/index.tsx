@@ -13,38 +13,36 @@ export function Tools() {
   const createMutation = useCreatePage();
   const { ydoc } = useYDocStore();
 
-  const handleNewPageButtonClick = () => {
-    createMutation
-      .mutateAsync({
-        title: "제목 없음",
-        content: {
-          type: "doc",
-          content: [
-            {
-              type: "paragraph",
-              content: [{ type: "text", text: "" }],
-            },
-          ],
-        },
-        x: 0,
-        y: 0,
-        emoji: null,
-      })
-      .then((res) => {
-        setCurrentPage(res.pageId);
-
-        const yTitleMap = ydoc.getMap("title");
-        const yEmojiMap = ydoc.getMap("emoji");
-
-        initializeYText(yTitleMap, `title_${res.pageId}`, "제목 없음");
-        initializeYText(yEmojiMap, `emoji_${res.pageId}`, "");
-      });
-  };
-
   return (
     <Button
       className={`${!pages && "disabled"} flex w-full flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100`}
-      onClick={handleNewPageButtonClick}
+      onClick={() => {
+        createMutation
+          .mutateAsync({
+            title: "제목 없음",
+            content: {
+              type: "doc",
+              content: [
+                {
+                  type: "paragraph",
+                  content: [{ type: "text", text: "" }],
+                },
+              ],
+            },
+            x: 0,
+            y: 0,
+            emoji: null,
+          })
+          .then((res) => {
+            setCurrentPage(res.pageId);
+
+            const yTitleMap = ydoc.getMap("title");
+            const yEmojiMap = ydoc.getMap("emoji");
+
+            initializeYText(yTitleMap, `title_${res.pageId}`, "제목 없음");
+            initializeYText(yEmojiMap, `emoji_${res.pageId}`, "");
+          });
+      }}
     >
       <div>
         <PencilLine width={20} height={20} widths={1} color="#7f796d" />
