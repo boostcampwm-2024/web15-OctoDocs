@@ -11,7 +11,7 @@ export const useWorkspaceStatus = () => {
   const currentWorkspaceId = useWorkspace();
 
   return workspaces?.find((workspace) => workspace.id === currentWorkspaceId)
-    ?.status;
+    ?.visibility;
 };
 
 export const useToggleWorkspaceStatus = (
