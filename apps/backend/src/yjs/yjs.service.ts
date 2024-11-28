@@ -44,9 +44,7 @@ export class YjsService
     private readonly pageService: PageService,
     private readonly edgeService: EdgeService,
     private readonly redisService: RedisService,
-  ) {
-    
-  }
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -71,6 +69,8 @@ export class YjsService
       // document name이 flow-room이라면 모든 노드들을 볼 수 있는 화면입니다.
       // 노드를 클릭해 페이지를 열었을 때만 해당 페이지 값을 가져와서 초기 데이터로 세팅해줍니다.
       if (customDoc.name?.startsWith('document-')) {
+        const workspaceId = doc.guid;
+        console.log('workspaceid', workspaceId);
         const pageId = parseInt(customDoc.name.split('-')[1]);
         const findPage = await this.pageService.findPageById(pageId);
 
@@ -112,8 +112,13 @@ export class YjsService
       // node, edge, page content 가져오기
 
       // TODO: 서비스 함수 workspaceId 입력해야하도록 수정되었습니다!!
-      const nodes = await this.nodeService.findNodesByWorkspace('temp');
-      const edges = await this.edgeService.findEdgesByWorkspace('temp');
+
+      if (!customDoc.name?.startsWith('flow-room-')) {
+        return;
+      }
+      const workspaceId = customDoc.name.split('-')[2];
+      const nodes = await this.nodeService.findNodesByWorkspace(workspaceId);
+      const edges = await this.edgeService.findEdgesByWorkspace(workspaceId);
       const nodesMap = doc.getMap('nodes');
       const title = doc.getMap('title');
       const emoji = doc.getMap('emoji');

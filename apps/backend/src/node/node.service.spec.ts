@@ -14,6 +14,8 @@ describe('NodeService', () => {
   let service: NodeService;
   let nodeRepository: jest.Mocked<NodeRepository>;
   let pageRepository: jest.Mocked<PageRepository>;
+  let workspaceRepository: jest.Mocked<WorkspaceRepository>;
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -51,11 +53,14 @@ describe('NodeService', () => {
     service = module.get<NodeService>(NodeService);
     nodeRepository = module.get(NodeRepository);
     pageRepository = module.get(PageRepository);
-    workspaceRepository = module.get<WorkspaceRepository>(WorkspaceRepository);
+    workspaceRepository = module.get(WorkspaceRepository);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(service).toBeDefined();
+    expect(nodeRepository).toBeDefined();
+    expect(pageRepository).toBeDefined();
+    expect(workspaceRepository).toBeDefined();
   });
 
   describe('createNode', () => {
@@ -254,5 +259,26 @@ describe('NodeService', () => {
     });
   });
 
-  describe('findNodesByWorkspace', () => {});
+  describe('findNodesByWorkspace', () => {
+    it('workspace에 해당하는 노드 조회 성공', async () => {
+      const currentDate = new Date();
+      const workspace = {
+        id: 1,
+        snowflakeId: '1234567890',
+        title: 'workspace',
+        description: 'workspace description',
+        visibility: 'private',
+        createdAt: currentDate,
+        updatedAt: currentDate,
+        thumbnailUrl: 'https://example.com/thumbnail.jpg',
+      } as Workspace;
+
+      jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(workspace);
+      await service.findNodesByWorkspace(workspace.snowflakeId);
+
+      expect(nodeRepository.findNodesByWorkspace).toHaveBeenCalledWith(
+        workspace.id,
+      );
+    });
+  });
 });
