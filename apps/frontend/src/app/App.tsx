@@ -4,7 +4,6 @@ import { CanvasView } from "@/widgets/CanvasView";
 import { EditorView } from "@/widgets/EditorView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
 import { CanvasToolsView } from "@/widgets/CanvasToolsView";
-
 import { useGetUser } from "@/features/auth/model/useAuth";
 
 function App() {

@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   VersionColumn,
+  IsNull,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
 import { Workspace } from '../workspace/workspace.entity';
@@ -17,10 +18,10 @@ export class Page {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   title: string;
 
-  @Column('json') //TODO: Postgres에서는 jsonb로 변경
+  @Column('json', { nullable: true }) //TODO: Postgres에서는 jsonb로 변경
   content: JSON;
 
   @CreateDateColumn()

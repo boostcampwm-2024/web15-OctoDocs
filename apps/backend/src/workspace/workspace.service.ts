@@ -34,7 +34,6 @@ export class WorkspaceService {
     private readonly roleRepository: RoleRepository,
     private readonly tokenService: TokenService,
   ) {
-    console.log('환경 : ', process.env.NODE_ENV);
     if (process.env.NODE_ENV !== 'test') {
       this.initializeMainWorkspace();
     }

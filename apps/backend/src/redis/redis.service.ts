@@ -9,6 +9,9 @@ export class RedisService {
   private readonly redisClient: Redis;
 
   constructor() {
+    console.log('====================');
+    console.log(process.env.REDIS_HOST);
+    console.log(process.env.REDIS_PORT);
     this.redisClient = new Redis({
       host: process.env.REDIS_HOST,
       port: parseInt(process.env.REDIS_PORT),

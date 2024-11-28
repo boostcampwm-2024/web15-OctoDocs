@@ -1,84 +1,93 @@
 version: "3.8"
 
 services:
-    postgres:
-        image: postgres:16-alpine
-        environment:
-            POSTGRES_USER: ${DB_USER}
-            POSTGRES_PASSWORD: ${DB_PASSWORD}
-            POSTGRES_DB: ${DB_NAME}
-        volumes:
-            - postgres_data:/var/lib/postgresql/data
-        networks:
-            - backend
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
 
-    redis:
-        image: redis:latest
-        environment:
-            REDIS_HOST: ${REDIS_HOST}
-            REDIS_PORT: ${REDIS_PORT}
-        networks:
-            - backend
+  redis:
+    image: redis:latest
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    networks:
+      - net
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
 
-    backend:
-        build:
-            context: .
-            dockerfile: ./services/backend/Dockerfile.local
-        image: backend:latest
-        env_file:
-            - .env
-        volumes:
-            - .env:/app/.env
-            # 소스 코드 마운트
-            - ./apps/backend:/app/apps/backend
-            - ./apps/frontend:/app/apps/frontend
-            # 의존성 캐시를 위한 볼륨
-            - backend_node_modules:/app/node_modules
-            - backend_app_node_modules:/app/apps/backend/node_modules
-            - frontend_app_node_modules:/app/apps/frontend/node_modules
-        depends_on:
-            postgres:
-                condition: service_healthy
-        networks:
-            - backend
-            - frontend
-        ports:
-            - "5173:5173" # Vite dev server
-            - "3000:3000" # 백엔드 API 포트
-            - "1234:1234" # WebSocket 포트
+  backend:
+    build:
+      context: .
+      dockerfile: ./services/backend/Dockerfile.local
+    image: backend:latest
+    env_file:
+      - .env
+    volumes:
+      - .env:/app/.env
+      # 소스 코드 마운트
+      - ./apps/backend:/app/apps/backend
+      - ./apps/frontend:/app/apps/frontend
+      # 의존성 캐시를 위한 볼륨
+      - backend_node_modules:/app/node_modules
+      - backend_app_node_modules:/app/apps/backend/node_modules
+      - frontend_app_node_modules:/app/apps/frontend/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - net
+    ports:
+      - "5173:5173" # Vite dev server
+      - "3000:3000" # 백엔드 API 포트
+      - "1234:1234" # WebSocket 포트
 
-    nginx:
-        build:
-            context: .
-            dockerfile: ./services/nginx/Dockerfile.local
-        ports:
-            - "80:80"
-            - "443:443"
-        depends_on:
-            - backend
-        networks:
-            - frontend
-        volumes:
-            - type: bind
-              source: ./services/nginx/ssl
-              target: /etc/nginx/ssl
-              bind:
-                  create_host_path: true
-                  propagation: rprivate
-            - ./services/nginx/conf.d:/etc/nginx/conf.d
+  nginx:
+    build:
+      context: .
+      dockerfile: ./services/nginx/Dockerfile.local
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    networks:
+      - net
+    volumes:
+      - type: bind
+        source: ./services/nginx/ssl
+        target: /etc/nginx/ssl
+        bind:
+          create_host_path: true
+          propagation: rprivate
+      - ./services/nginx/conf.d:/etc/nginx/conf.d
 
 networks:
-    backend:
-        internal: true
-    frontend:
+  net:
 
 volumes:
-    postgres_data:
-    backend_node_modules:
-    backend_app_node_modules:
-    frontend_app_node_modules:
+  postgres_data:
+  backend_node_modules:
+  backend_app_node_modules:
+  frontend_app_node_modules:
