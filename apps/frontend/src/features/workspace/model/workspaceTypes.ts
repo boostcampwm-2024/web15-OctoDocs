@@ -4,6 +4,7 @@ export interface Workspace {
   description: string;
   thumbnailUrl: string;
   role: "owner" | "guest";
+  visibility: "private" | "public";
 }
 
 export interface CreateWorkSpaceResquest {
