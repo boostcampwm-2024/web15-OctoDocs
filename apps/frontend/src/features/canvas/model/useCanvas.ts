@@ -23,9 +23,11 @@ import { useCollaborativeCursors } from "./useCollaborativeCursors";
 import { getSortedNodes } from "./sortNodes";
 import { usePageStore } from "@/features/pageSidebar/model/pageStore";
 import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { getAbsolutePosition, getRelativePosition } from "./getPosition";
 
 export interface YNode extends Node {
   isHolding: boolean;
+  parentId?: string;
 }
 
 export const useCanvas = () => {
@@ -35,6 +37,7 @@ export const useCanvas = () => {
   const { pages } = usePages();
   const queryClient = useQueryClient();
   const { ydoc } = useYDocStore();
+  const { getIntersectingNodes } = useReactFlow();
 
   const workspace = useWorkspace();
 
@@ -67,23 +70,17 @@ export const useCanvas = () => {
   useEffect(() => {
     const yTitleMap = ydoc.getMap("title");
     const yEmojiMap = ydoc.getMap("emoji");
-
     const nodesMap = ydoc.getMap("nodes");
 
     yTitleMap.observeDeep((event) => {
       if (!event[0].path.length) return;
-
       const pageId = event[0].path[0].toString().split("_")[1];
       const value = event[0].target.toString();
-
       const existingNode = nodesMap.get(pageId) as YNode;
 
       const newNode: YNode = {
-        id: pageId,
-        type: "note",
-        data: { title: value, id: pageId, emoji: existingNode.data.emoji },
-        position: existingNode.position,
-        selected: false,
+        ...existingNode,
+        data: { ...existingNode.data, title: value },
         isHolding: false,
       };
 
@@ -92,18 +89,13 @@ export const useCanvas = () => {
 
     yEmojiMap.observeDeep((event) => {
       if (!event[0].path.length) return;
-
       const pageId = event[0].path[0].toString().split("_")[1];
       const value = event[0].target.toString();
-
       const existingNode = nodesMap.get(pageId) as YNode;
 
       const newNode: YNode = {
-        id: pageId,
-        type: "note",
-        data: { title: existingNode.data.title, id: pageId, emoji: value },
-        position: existingNode.position,
-        selected: false,
+        ...existingNode,
+        data: { ...existingNode.data, emoji: value },
         isHolding: false,
       };
 
@@ -115,7 +107,6 @@ export const useCanvas = () => {
     if (!ydoc) return;
 
     const wsProvider = createSocketIOProvider("flow-room", ydoc);
-
     provider.current = wsProvider;
 
     const nodesMap = ydoc.getMap("nodes");
@@ -124,10 +115,10 @@ export const useCanvas = () => {
     const yNodes = Array.from(nodesMap.values()) as YNode[];
 
     const initialNodes = yNodes.map((yNode) => {
-      const nodeEntries = Object.entries(yNode).filter(
-        ([key]) => key !== "isHolding",
-      );
-      return Object.fromEntries(nodeEntries) as Node;
+      const { isHolding, ...rest } = yNode;
+      // esline룰 통과를 위한 일시적인 로그
+      console.log(isHolding);
+      return rest;
     });
 
     setNodes(initialNodes);
@@ -144,10 +135,9 @@ export const useCanvas = () => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
           const updatedYNode = nodesMap.get(nodeId) as YNode;
-          const updatedNodeEntries = Object.entries(updatedYNode).filter(
-            ([key]) => key !== "isHolding",
-          );
-          const updatedNode = Object.fromEntries(updatedNodeEntries) as Node;
+          const { isHolding, ...updatedNode } = updatedYNode;
+          // esline룰 통과를 위한 일시적인 로그
+          console.log(isHolding);
 
           if (change.action === "add") {
             queryClient.invalidateQueries({ queryKey: ["pages"] });
@@ -163,7 +153,10 @@ export const useCanvas = () => {
               ...updatedNode,
               selected: newNodes[index].selected,
             };
-            return newNodes;
+
+            const groups = newNodes.filter((n) => n.type === "group");
+            const notes = newNodes.filter((n) => n.type !== "group");
+            return [...groups, ...notes];
           });
         } else if (change.action === "delete") {
           setNodes((nds) => nds.filter((n) => n.id !== nodeId));
@@ -199,19 +192,34 @@ export const useCanvas = () => {
       const pageId = page.id.toString();
       const existingNode = nodesMap.get(pageId) as YNode | undefined;
 
-      const newNode: YNode = {
-        id: pageId,
-        type: "note",
-        data: { title: page.title, id: page.id, emoji: page.emoji },
-        position: existingNode?.position || {
-          x: Math.random() * 500,
-          y: Math.random() * 500,
-        },
-        selected: false,
-        isHolding: false,
-      };
+      if (existingNode) {
+        nodesMap.set(pageId, {
+          ...existingNode,
+          data: {
+            title: page.title,
+            id: page.id,
+            emoji: page.emoji,
+          },
+        });
+      } else {
+        const newNode: YNode = {
+          id: pageId,
+          type: "note",
+          data: {
+            title: page.title,
+            id: page.id,
+            emoji: page.emoji,
+          },
+          position: {
+            x: Math.random() * 500,
+            y: Math.random() * 500,
+          },
+          selected: false,
+          isHolding: false,
+        };
+        nodesMap.set(pageId, newNode);
+      }
 
-      nodesMap.set(pageId, newNode);
       existingPageIds.current.add(pageId);
     });
   }, [pages, ydoc]);
@@ -237,13 +245,17 @@ export const useCanvas = () => {
         if (change.type === "position" && change.position) {
           const node = nodes.find((n) => n.id === change.id);
           if (node) {
-            const updatedYNode: YNode = {
-              ...node,
-              position: change.position,
-              selected: false,
-              isHolding: holdingNodeRef.current === change.id,
-            };
-            nodesMap.set(change.id, updatedYNode);
+            onNodesChange([change]);
+
+            const currentNode = nodes.find((n) => n.id === change.id);
+            if (currentNode) {
+              nodesMap.set(change.id, {
+                ...currentNode,
+                position: change.position,
+                selected: false,
+                isHolding: holdingNodeRef.current === change.id,
+              });
+            }
 
             const affectedEdges = edges.filter(
               (edge) => edge.source === change.id || edge.target === change.id,
@@ -257,6 +269,7 @@ export const useCanvas = () => {
                 const bestHandles = calculateBestHandles(
                   sourceNode,
                   targetNode,
+                  nodes,
                 );
                 const updatedEdge = {
                   ...edge,
@@ -267,10 +280,21 @@ export const useCanvas = () => {
               }
             });
           }
+        } else if (change.type === "dimensions" && change.dimensions) {
+          const currentNode = nodes.find((n) => n.id === change.id);
+          if (currentNode && currentNode.type === "group") {
+            nodesMap.set(change.id, {
+              ...currentNode,
+              dimensions: change.dimensions,
+              selected: false,
+              isHolding: holdingNodeRef.current === change.id,
+            });
+          }
+          onNodesChange([change]);
+        } else {
+          onNodesChange([change]);
         }
       });
-
-      onNodesChange(changes);
     },
     [nodes, edges, onNodesChange],
   );
@@ -288,7 +312,7 @@ export const useCanvas = () => {
 
       onEdgesChange(changes);
     },
-    [onEdgesChange],
+    [onEdgesChange, ydoc],
   );
 
   const onConnect = useCallback(
@@ -309,8 +333,7 @@ export const useCanvas = () => {
       const targetNode = nodes.find((n) => n.id === connection.target);
 
       if (sourceNode && targetNode) {
-        const bestHandles = calculateBestHandles(sourceNode, targetNode);
-
+        const bestHandles = calculateBestHandles(sourceNode, targetNode, nodes);
         const newEdge: Edge = {
           id: `e${connection.source}-${connection.target}`,
           source: connection.source,
@@ -335,17 +358,124 @@ export const useCanvas = () => {
 
   const onNodeDragStop = useCallback(
     (_event: React.MouseEvent, node: Node) => {
-      if (ydoc) {
-        const nodesMap = ydoc.getMap("nodes");
-        const yNode = nodesMap.get(node.id) as YNode | undefined;
-        if (yNode) {
-          nodesMap.set(node.id, { ...yNode, isHolding: false });
+      if (!ydoc) return;
+
+      const nodesMap = ydoc.getMap("nodes");
+      const yNode = nodesMap.get(node.id) as YNode | undefined;
+
+      if (!yNode) return;
+
+      const currentNode = nodes.find((n) => n.id === node.id);
+      if (!currentNode) return;
+
+      if (node.type === "group") {
+        const intersectingNotes = getIntersectingNodes(currentNode).filter(
+          (n) => n.type === "note" && !n.parentId,
+        );
+
+        intersectingNotes.forEach((noteNode) => {
+          nodesMap.set(noteNode.id, {
+            ...noteNode,
+            parentId: node.id,
+            position: getRelativePosition(noteNode, currentNode),
+            isHolding: false,
+          });
+        });
+
+        nodesMap.set(node.id, {
+          ...currentNode,
+          isHolding: false,
+        });
+
+        const childNodes = nodes.filter((n) => n.parentId === node.id);
+        const edgesMap = ydoc.getMap("edges");
+
+        childNodes.forEach((childNode) => {
+          const connectedEdges = edges.filter(
+            (edge) =>
+              edge.source === childNode.id || edge.target === childNode.id,
+          );
+
+          connectedEdges.forEach((edge) => {
+            const sourceNode = nodes.find((n) => n.id === edge.source);
+            const targetNode = nodes.find((n) => n.id === edge.target);
+
+            if (sourceNode && targetNode) {
+              const bestHandles = calculateBestHandles(
+                sourceNode,
+                targetNode,
+                nodes,
+              );
+              const updatedEdge = {
+                ...edge,
+                sourceHandle: bestHandles.source,
+                targetHandle: bestHandles.target,
+              };
+              edgesMap.set(edge.id, updatedEdge);
+            }
+          });
+        });
+      } else {
+        const intersectingGroups = getIntersectingNodes(currentNode).filter(
+          (n) => n.type === "group",
+        );
+
+        if (intersectingGroups.length > 0) {
+          const parentNode = intersectingGroups[intersectingGroups.length - 1];
+
+          if (yNode.parentId === parentNode.id) {
+            nodesMap.set(node.id, {
+              ...yNode,
+              position: currentNode.position,
+              isHolding: false,
+            });
+          } else {
+            const absolutePosition = yNode.parentId
+              ? getAbsolutePosition(
+                  currentNode,
+                  nodes.find((n) => n.id === yNode.parentId)!,
+                )
+              : currentNode.position;
+
+            nodesMap.set(node.id, {
+              ...currentNode,
+              parentId: parentNode.id,
+              position: getRelativePosition(
+                { ...currentNode, position: absolutePosition },
+                parentNode,
+              ),
+              isHolding: false,
+            });
+          }
+        } else {
+          if (yNode.parentId) {
+            const oldParentNode = nodes.find((n) => n.id === yNode.parentId);
+            if (oldParentNode) {
+              nodesMap.set(node.id, {
+                ...currentNode,
+                parentId: undefined,
+                position: getAbsolutePosition(currentNode, oldParentNode),
+                isHolding: false,
+              });
+            }
+          } else {
+            nodesMap.set(node.id, {
+              ...currentNode,
+              parentId: undefined,
+              isHolding: false,
+            });
+          }
         }
       }
-    },
-    [ydoc],
-  );
 
+      setNodes((ns) => {
+        const groups = ns.filter((n) => n.type === "group");
+        const notes = ns.filter((n) => n.type !== "group");
+        return [...groups, ...notes];
+      });
+    },
+    [ydoc, getIntersectingNodes, nodes, setNodes],
+  );
   return {
     handleMouseMove,
     nodes,

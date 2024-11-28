@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-
 import { useUserStore } from "@/entities/user/model";
 import { Popover } from "@/shared/ui";
-import {
-  CursorButton,
-  CursorPreview,
-  ProfileForm,
-} from "@/features/canvasTools/ui";
+import { CursorButton } from "@/features/canvasTools/ui";
+
+import { ProfilePanel, NewNodePanel } from "@/features/canvasTools/ui";
+import { Plus } from "lucide-react";
 
 export function CanvasToolsView() {
   const { currentUser } = useUserStore();
@@ -26,25 +23,25 @@ export function CanvasToolsView() {
           <CursorButton color={color} />
         </Popover.Trigger>
         <Popover.Content className="rounded-lg border border-neutral-200 bg-white p-2 shadow-md">
-          <div className="flex flex-row gap-4 p-4">
-            <CursorPreview
-              defaultCoors={{ x: 90, y: 80 }}
-              clientId={clientId}
-              color={color}
-            />
-            <ProfileForm
-              color={color}
-              clientId={clientId}
-              onColorChange={setColor}
-              onClientIdChange={setClientId}
-              onSave={() => {}}
-            />
-          </div>
+          <ProfilePanel
+            color={color}
+            clientId={clientId}
+            onColorChange={setColor}
+            onClientIdChange={setClientId}
+          />
         </Popover.Content>
       </Popover>
-      <button className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-[#F5F5F5]">
-        <Plus size={26} color="#3f3f3f" strokeWidth={1.5} />
-      </button>
+
+      <Popover placement="bottom" align="start" offset={{ y: 16 }}>
+        <Popover.Trigger>
+          <button className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-[#F5F5F5]">
+            <Plus size={26} color="#3f3f3f" strokeWidth={1.5} />
+          </button>
+        </Popover.Trigger>
+        <Popover.Content className="rounded-lg border border-neutral-200 bg-white p-2 shadow-md">
+          <NewNodePanel />
+        </Popover.Content>
+      </Popover>
     </div>
   );
 }
