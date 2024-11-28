@@ -1,17 +1,17 @@
-import { useParams } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 
 import { Divider } from "@/shared/ui";
 import { WorkspaceNav } from "@/features/pageSidebar/ui";
 import { UserInfoView } from "@/widgets/UserInfoView/ui";
 import { useUserWorkspace } from "@/features/workspace/model/useWorkspace";
+import { useWorkspace } from "@/shared/lib/useWorkspace";
 
 interface TopNavProps {
   onExpand: () => void;
   isExpanded: boolean;
 }
 export function TopNavView({ onExpand, isExpanded }: TopNavProps) {
-  const { workspaceId } = useParams({ strict: false });
+  const workspace = useWorkspace();
   const { data } = useUserWorkspace();
 
   const getWorkspaceTitle = () => {
