@@ -134,6 +134,7 @@ export class WorkspaceService {
     });
 
     // 이미 워크스페이스에 등록된 경우
+    // TODO: 워크스페이스 관련 에러 구현
     if (existingRole) {
       throw new Error('이미 워크스페이스에 가입된 사용자입니다.');
     }
@@ -144,5 +145,43 @@ export class WorkspaceService {
       userId: userId,
       role: role,
     });
+  }
+
+  async checkAccess(
+    userId: string | null,
+    workspaceId: string,
+  ): Promise<'public' | 'owner' | 'guest' | 'forbidden'> {
+    // workspace가 존재하는지 확인
+    const workspace = await this.workspaceRepository.findOne({
+      where: { snowflakeId: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundException();
+    }
+
+    if (workspace.visibility === 'public') {
+      return 'public';
+    }
+
+    if (userId !== null) {
+      // user이 존재하는지 확인
+      const user = await this.userRepository.findOneBy({
+        snowflakeId: userId,
+      });
+      if (!user) {
+        throw new UserNotFoundException();
+      }
+      // workspace + user => role 있는지 확인
+      const role = await this.roleRepository.findOne({
+        where: { userId: user.id, workspaceId: workspace.id },
+      });
+
+      if (role) {
+        return role.role as 'owner' | 'guest';
+      }
+    }
+
+    return 'forbidden';
   }
 }

@@ -19,6 +19,7 @@ import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { CreateWorkspaceResponseDto } from './dtos/createWorkspaceResponse.dto';
 import { GetUserWorkspacesResponseDto } from './dtos/getUserWorkspacesResponse.dto';
 import { CreateWorkspaceInviteUrlDto } from './dtos/createWorkspaceInviteUrl.dto';
+import { GetWorkspaceAccessResponseDto } from './dtos/getWorkspaceAccessResponse.dto';
 
 export enum WorkspaceResponseMessage {
   WORKSPACE_CREATED = '워크스페이스를 생성했습니다.',
@@ -26,6 +27,7 @@ export enum WorkspaceResponseMessage {
   WORKSPACES_RETURNED = '사용자가 참여하고 있는 모든 워크스페이스들을 가져왔습니다.',
   WORKSPACE_INVITED = '워크스페이스 게스트 초대 링크가 생성되었습니다.',
   WORKSPACE_JOINED = '워크스페이스에 게스트로 등록되었습니다.',
+  WORKSPACE_ACCESS_CHECKED = '워크스페이스에 대한 사용자의 권한을 확인하였습니다.',
 }
 
 @Controller('workspace')
@@ -117,7 +119,7 @@ export class WorkspaceController {
     type: MessageResponseDto,
   })
   @ApiOperation({
-    summary: '워크스페이스초대 링크에 접속해 권한을 업데이트합니다.',
+    summary: '워크스페이스 초대 링크에 접속해 권한을 업데이트합니다.',
   })
   @Get('/join')
   @UseGuards(JwtAuthGuard) // 로그인 인증
@@ -129,40 +131,24 @@ export class WorkspaceController {
     return { message: WorkspaceResponseMessage.WORKSPACE_INVITED };
   }
 
-  @ApiOperation({
-    summary: '특정 워크스페이스에 대한 사용자의 권한을 확인합니다.',
-  })
   @ApiResponse({
-    status: HttpStatus.OK,
-    description: '사용자의 권한이 확인되었습니다.',
-    schema: {
-      example: {
-        role: 'owner',
-      },
-    },
+    type: GetWorkspaceAccessResponseDto,
   })
-  @Get('/check-role')
+  @ApiOperation({
+    summary: '워크스페이스에 대한 사용자의 권한을 확인합니다.',
+  })
+  @Get('/:workspaceId/:userId')
   @HttpCode(HttpStatus.OK)
-  async checkUserRole(
-    @Request() req,
-    @Query('workspaceId') workspaceId: string,
-  ): Promise<{ role: 'owner' | 'guest' }> {
-    const userId = req.user.sub; // 현재 인증된 사용자의 ID
-
-    const role = await this.workspaceService.getUserRoleInWorkspace(
-      userId,
-      workspaceId,
-    );
-
-    if (!role) {
-      throw new ForbiddenException(
-        '해당 워크스페이스에 접근할 권한이 없습니다.',
-      );
-    }
+  async checkWorkspaceAccess(
+    @Param('workspaceId') workspaceId: string,
+    @Param('userId') userId: string | 'null', // 로그인되지 않은 경우 'null'
+  ) {
+    // workspaceId, userId 둘 다 snowflakeId
+    const access = await this.workspaceService.checkAccess(userId, workspaceId);
 
     return {
-      workspaceId,
-      role,
+      message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
+      access,
     };
   }
 }
