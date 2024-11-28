@@ -6,7 +6,6 @@ import {
   CreateDateColumn,
   Index,
 } from 'typeorm';
-import { Snowflake } from '@theinternetfolks/snowflake';
 
 @Entity()
 export class User {
@@ -15,7 +14,7 @@ export class User {
 
   @Column({ unique: true })
   @Index()
-  snowflakeId: string = Snowflake.generate();
+  snowflakeId: string;
 
   @Column({ unique: true })
   providerId: string; // 네이버/카카오 ID
