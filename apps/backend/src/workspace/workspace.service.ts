@@ -123,7 +123,7 @@ export class WorkspaceService {
     return `https://octodocs.local/api/workspace/join?token=${token}`;
   }
 
-  async processInviteToken(userId: number, token: string): Promise<void> {
+  async processInviteUrl(userId: number, token: string): Promise<void> {
     // 토큰 검증 및 디코딩
     const decodedToken = this.tokenService.verifyInviteToken(token);
     const { workspaceId, role } = decodedToken;

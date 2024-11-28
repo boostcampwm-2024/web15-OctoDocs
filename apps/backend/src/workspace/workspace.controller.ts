@@ -125,7 +125,7 @@ export class WorkspaceController {
   @HttpCode(HttpStatus.OK)
   async joinWorkspace(@Request() req, @Query('token') token: string) {
     const userId = req.user.sub; // 인증된 사용자 ID
-    await this.workspaceService.processInviteToken(userId, token);
+    await this.workspaceService.processInviteUrl(userId, token);
 
     return { message: WorkspaceResponseMessage.WORKSPACE_INVITED };
   }
