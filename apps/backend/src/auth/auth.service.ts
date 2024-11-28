@@ -29,7 +29,7 @@ export class AuthService {
   }
   async updateUser(id: number, dto: UpdateUserDto) {
     // 유저를 찾는다.
-    const findUser = await this.userRepository.findBy({ id });
+    const findUser = await this.userRepository.findOneBy({ id });
 
     // 유저가 없으면 오류
     if (!findUser) {
