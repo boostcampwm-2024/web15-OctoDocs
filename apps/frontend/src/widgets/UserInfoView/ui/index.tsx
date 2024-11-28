@@ -2,7 +2,7 @@ import { LoginForm, UserInfo, useGetUser } from "@/features/auth";
 import { LogoBtn } from "@/features/pageSidebar/ui";
 import { Popover } from "@/shared/ui";
 
-export function LogoBtnView() {
+export function UserInfoView() {
   const getUserQuery = useGetUser();
 
   return (

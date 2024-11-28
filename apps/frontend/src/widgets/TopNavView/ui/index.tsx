@@ -2,7 +2,7 @@ import { Menu, X } from "lucide-react";
 
 import { Divider } from "@/shared/ui";
 import { WorkspaceNav } from "@/features/pageSidebar/ui";
-import { LogoBtnView } from "@/widgets/LogoBtnView/ui";
+import { UserInfoView } from "@/widgets/UserInfoView/ui";
 
 interface TopNavProps {
   onExpand: () => void;
@@ -12,7 +12,7 @@ export function TopNavView({ onExpand, isExpanded }: TopNavProps) {
   return (
     <div className="flex w-full flex-row items-center justify-between">
       <div className="flex flex-row items-center gap-2">
-        <LogoBtnView />
+        <UserInfoView />
         <Divider direction="vertical" className="h-3" />
         <WorkspaceNav workspaceTitle="프로젝트 Web15" />
       </div>
