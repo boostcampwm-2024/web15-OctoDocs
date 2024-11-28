@@ -1,0 +1,38 @@
+# 빌드 스테이지
+FROM node:20-alpine as builder
+
+WORKDIR /app
+
+# 의존성 파일 복사
+COPY package.json yarn.lock ./
+COPY turbo.json ./
+COPY apps/backend/package.json ./apps/backend/
+COPY apps/frontend/package.json ./apps/frontend/
+
+# 의존성 설치
+RUN yarn install --frozen-lockfile
+
+# 소스 코드 복사
+COPY . .
+
+# 백엔드 빌드
+RUN yarn turbo run build --filter=backend
+
+# 실행 스테이지
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 프로덕션에 필요한 파일만 복사
+COPY --from=builder /app/package.json /app/yarn.lock ./
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+
+# 프로덕션 의존성만 설치
+RUN yarn install --frozen-lockfile --production
+
+ENV NODE_ENV=production
+
+EXPOSE 3000 1234
+
+CMD ["yarn", "start"]

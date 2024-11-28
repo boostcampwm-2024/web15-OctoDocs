@@ -5,7 +5,6 @@ import { PageRepository } from '../page/page.repository';
 import { NodeNotFoundException } from '../exception/node.exception';
 import { Node } from './node.entity';
 import { Page } from '../page/page.entity';
-import { Workspace } from '../workspace/workspace.entity';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { MoveNodeDto } from './dtos/moveNode.dto';
@@ -16,6 +15,7 @@ describe('NodeService', () => {
   let nodeRepository: jest.Mocked<NodeRepository>;
   let pageRepository: jest.Mocked<PageRepository>;
   let workspaceRepository: jest.Mocked<WorkspaceRepository>;
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
