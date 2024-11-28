@@ -16,11 +16,9 @@ export class TasksService {
     console.log(await this.redisService.getAllKeys());
     const keys = await this.redisService.getAllKeys();
     const pages = [];
-
+    this.logger.log('스케줄러 시작');
     for await (const key of keys) {
       const { title, content } = await this.redisService.get(key);
-      console.log('title,', title);
-      console.log('content,', content);
       const jsonContent = JSON.parse(content);
       pages.push({
         id: key,
@@ -28,10 +26,11 @@ export class TasksService {
         content: jsonContent,
         version: 1,
       });
-      //   this.pageService.updatePage(parseInt(key), {
-      //     title,
-      //     content: jsonContent,
-      //   });
+      this.pageService.updatePage(parseInt(key), {
+        title,
+        content: jsonContent,
+      });
+      this.logger.log('데이터베이스 갱신');
     }
     this.pageService.updateBulkPage(pages);
   }
