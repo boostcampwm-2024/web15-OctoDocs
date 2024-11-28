@@ -27,7 +27,10 @@ export class WorkspaceService {
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
   ) {
-    this.initializeMainWorkspace();
+    console.log('환경 : ', process.env.NODE_ENV);
+    // if (process.env.NODE_ENV !== 'test') {
+    //   this.initializeMainWorkspace();
+    // }
   }
 
   async createWorkspace(
