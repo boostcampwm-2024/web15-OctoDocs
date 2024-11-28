@@ -2,7 +2,7 @@ import { RefreshCcw } from "lucide-react";
 
 import { useUserStore } from "@/entities/user";
 import { getRandomColor } from "@/shared/lib";
-import { FormField } from "../FormField";
+import { FormField } from "@/shared/ui";
 
 interface ProfileFormProps {
   color: string;
