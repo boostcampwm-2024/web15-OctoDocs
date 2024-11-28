@@ -9,7 +9,6 @@ import { RoleModule } from '../role/role.module';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TokenModule } from '../auth/token/token.module';
 import { TokenService } from '../auth/token/token.service';
-import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [

@@ -3,7 +3,8 @@ import { AuthService } from './auth.service';
 import { UserRepository } from '../user/user.repository';
 import { SignUpDto } from './dtos/signUp.dto';
 import { User } from '../user/user.entity';
-import { Snowflake } from '@theinternetfolks/snowflake';
+import { UpdateUserDto } from './dtos/UpdateUser.dto';
+import { UserNotFoundException } from '../exception/user.exception';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -17,6 +18,7 @@ describe('AuthService', () => {
           provide: UserRepository,
           useValue: {
             findOne: jest.fn(),
+            findOneBy: jest.fn(),
             create: jest.fn(),
             save: jest.fn(),
           },
@@ -66,7 +68,9 @@ describe('AuthService', () => {
         provider: 'naver',
         email: 'new@naver.com',
       };
-      const generatedSnowflakeId = Snowflake.generate(); // Snowflake.generate()의 mock 값을 준비
+      const generated
+      
+      flakeId = Snowflake.generate(); // Snowflake.generate()의 mock 값을 준비
       const newDate = new Date();
       const createdUser = {
         providerId: dto.providerId,
@@ -97,6 +101,57 @@ describe('AuthService', () => {
         snowflakeId: generatedSnowflakeId,
       });
       expect(userRepository.save).toHaveBeenCalledWith(createdUser);
+    });
+  });
+
+  describe('updateUser', () => {
+    it('사용자를 성공적으로 갱신한다', async () => {
+      const dto: UpdateUserDto = {
+        cursorColor: '#FFFFFF',
+        nickname: 'new-nickname',
+      };
+
+      // 현재 날짜
+      const currentDate = new Date();
+      const originUser = {
+        id: 1,
+        snowflakeId: '123456789012345678',
+        providerId: 'kakao_12345',
+        provider: 'kakao',
+        email: 'example@domain.com',
+        cursorColor: '#FF8A8A',
+        nickname: 'origin-nickname',
+        profileImage: 'https://example.com/profile.jpg',
+        createdAt: currentDate,
+      } as User;
+
+      const newUser = {
+        id: 1,
+        snowflakeId: '123456789012345678',
+        providerId: 'kakao_12345',
+        provider: 'kakao',
+        email: 'example@domain.com',
+        cursorColor: '#FFFFFF',
+        nickname: 'new-nickname',
+        profileImage: 'https://example.com/profile.jpg',
+        createdAt: currentDate,
+      };
+
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(originUser);
+      await authService.updateUser(1, dto);
+      expect(userRepository.save).toHaveBeenCalledWith(newUser);
+    });
+
+    it('사용자가 존재하지 않으면 예외를 던진다.', async () => {
+      const dto: UpdateUserDto = {
+        cursorColor: '#FFFFFF',
+        nickname: 'new-nickname',
+      };
+
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(null);
+      expect(authService.updateUser(1, dto)).rejects.toThrow(
+        UserNotFoundException,
+      );
     });
   });
 });
