@@ -14,6 +14,9 @@ export class NodeRepository extends Repository<Node> {
   }
 
   async findNodesByWorkspace(workspaceId: number): Promise<Node[]> {
-    return this.find({ where: { workspace: { id: workspaceId } } });
+    return this.find({
+      where: { workspace: { id: workspaceId } },
+      relations: ['page'],
+    });
   }
 }
