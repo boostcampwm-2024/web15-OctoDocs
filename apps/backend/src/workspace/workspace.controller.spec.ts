@@ -136,4 +136,49 @@ describe('WorkspaceController', () => {
       expect(result).toEqual(expectedResult);
     });
   });
+
+  it('컨트롤러가 정상적으로 인스턴스화된다.', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('generateInviteLink', () => {
+    it('초대 링크를 생성하고 반환한다.', async () => {
+      const req = { user: { sub: 1 } };
+      const workspaceId = 'workspace-snowflake-id';
+      const mockInviteUrl =
+        'https://example.com/api/workspace/join?token=abc123';
+
+      jest.spyOn(service, 'generateInviteUrl').mockResolvedValue(mockInviteUrl);
+
+      const result = await controller.generateInviteLink(req, workspaceId);
+
+      expect(service.generateInviteUrl).toHaveBeenCalledWith(
+        req.user.sub,
+        workspaceId,
+      );
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_INVITED,
+        inviteUrl: mockInviteUrl,
+      });
+    });
+  });
+
+  describe('joinWorkspace', () => {
+    it('초대 토큰을 처리하고 성공 메시지를 반환한다.', async () => {
+      const req = { user: { sub: 1 } };
+      const token = 'valid-token';
+
+      jest.spyOn(service, 'processInviteToken').mockResolvedValue();
+
+      const result = await controller.joinWorkspace(req, token);
+
+      expect(service.processInviteToken).toHaveBeenCalledWith(
+        req.user.sub,
+        token,
+      );
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_INVITED,
+      });
+    });
+  });
 });

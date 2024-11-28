@@ -19,7 +19,6 @@ import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { CreateWorkspaceResponseDto } from './dtos/createWorkspaceResponse.dto';
 import { GetUserWorkspacesResponseDto } from './dtos/getUserWorkspacesResponse.dto';
 import { CreateWorkspaceInviteUrlDto } from './dtos/createWorkspaceInviteUrl.dto';
-import { GetWorkspaceAccessResponseDto } from './dtos/getWorkspaceAccessResponse.dto';
 
 export enum WorkspaceResponseMessage {
   WORKSPACE_CREATED = '워크스페이스를 생성했습니다.',
@@ -27,7 +26,7 @@ export enum WorkspaceResponseMessage {
   WORKSPACES_RETURNED = '사용자가 참여하고 있는 모든 워크스페이스들을 가져왔습니다.',
   WORKSPACE_INVITED = '워크스페이스 게스트 초대 링크가 생성되었습니다.',
   WORKSPACE_JOINED = '워크스페이스에 게스트로 등록되었습니다.',
-  WORKSPACE_ACCESS_CHECKED = '워크스페이스에 대한 사용자의 권한을 확인하였습니다.',
+  WORKSPACE_ACCESS_CHECKED = '워크스페이스에 대한 사용자의 접근 권한이 확인되었습니다.',
 }
 
 @Controller('workspace')
@@ -132,7 +131,7 @@ export class WorkspaceController {
   }
 
   @ApiResponse({
-    type: GetWorkspaceAccessResponseDto,
+    type: MessageResponseDto,
   })
   @ApiOperation({
     summary: '워크스페이스에 대한 사용자의 권한을 확인합니다.',
@@ -141,14 +140,16 @@ export class WorkspaceController {
   @HttpCode(HttpStatus.OK)
   async checkWorkspaceAccess(
     @Param('workspaceId') workspaceId: string,
-    @Param('userId') userId: string | 'null', // 로그인되지 않은 경우 'null'
+    @Param('userId') userId: string, // 로그인되지 않은 경우 'null'
   ) {
     // workspaceId, userId 둘 다 snowflakeId
-    const access = await this.workspaceService.checkAccess(userId, workspaceId);
+    // userId 'null'인 경우 => null로 처리
+    const checkedUserId = userId === 'null' ? null : userId;
+
+    await this.workspaceService.checkAccess(checkedUserId, workspaceId);
 
     return {
       message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
-      access,
     };
   }
 }

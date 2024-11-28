@@ -9,6 +9,7 @@ import { Workspace } from './workspace.entity';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exception';
 import { TokenService } from '../auth/token/token.service';
+import { ForbiddenAccessException } from '../exception/access.exception';
 
 @Injectable()
 export class WorkspaceService {
@@ -147,10 +148,7 @@ export class WorkspaceService {
     });
   }
 
-  async checkAccess(
-    userId: string | null,
-    workspaceId: string,
-  ): Promise<'public' | 'owner' | 'guest' | 'forbidden'> {
+  async checkAccess(userId: string | null, workspaceId: string): Promise<void> {
     // workspace가 존재하는지 확인
     const workspace = await this.workspaceRepository.findOne({
       where: { snowflakeId: workspaceId },
@@ -160,28 +158,32 @@ export class WorkspaceService {
       throw new WorkspaceNotFoundException();
     }
 
+    // 퍼블릭 워크스페이스인 경우
     if (workspace.visibility === 'public') {
-      return 'public';
+      return;
     }
 
+    // 사용자 인증 필요
     if (userId !== null) {
-      // user이 존재하는지 확인
       const user = await this.userRepository.findOneBy({
         snowflakeId: userId,
       });
       if (!user) {
         throw new UserNotFoundException();
       }
-      // workspace + user => role 있는지 확인
+
+      // workspace와 user에 대한 role 확인
       const role = await this.roleRepository.findOne({
         where: { userId: user.id, workspaceId: workspace.id },
       });
 
+      // role이 존재하면 접근 허용
       if (role) {
-        return role.role as 'owner' | 'guest';
+        return;
       }
     }
 
-    return 'forbidden';
+    // 권한이 없으면 예외 발생
+    throw new ForbiddenAccessException();
   }
 }
