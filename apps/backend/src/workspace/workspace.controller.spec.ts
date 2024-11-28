@@ -27,6 +27,7 @@ describe('WorkspaceController', () => {
             generateInviteUrl: jest.fn(),
             processInviteUrl: jest.fn(),
             checkAccess: jest.fn(),
+            updateVisibility: jest.fn(),
           },
         },
         {
