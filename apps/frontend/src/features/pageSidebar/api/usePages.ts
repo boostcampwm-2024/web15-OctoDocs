@@ -49,10 +49,10 @@ export const useDeletePage = () => {
   });
 };
 
-export const usePages = () => {
+export const usePages = (workspaceId: string) => {
   const { data: pages, isError } = useQuery({
-    queryKey: ["pages"],
-    queryFn: getPages,
+    queryKey: ["pages", workspaceId],
+    queryFn: workspaceId ? () => getPages(workspaceId) : skipToken,
   });
 
   return { pages, isError };

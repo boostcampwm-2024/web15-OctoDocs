@@ -30,11 +30,11 @@ export interface YNode extends Node {
 export const useCanvas = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { pages } = usePages();
   const queryClient = useQueryClient();
   const { ydoc } = useYDocStore();
 
   const workspace = useWorkspace();
+  const { pages } = usePages(workspace);
 
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({

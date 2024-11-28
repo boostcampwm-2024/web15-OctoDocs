@@ -20,30 +20,21 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { RoleModule } from './role/role.module';
-import { RedisService } from './redis/redis.service';
-import { RedisModule } from './redis/redis.module';
-import { ScheduleModule } from '@nestjs/schedule';
-import { TasksService } from './tasks/tasks.service';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', '..', 'frontend', 'dist'),
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '/app/.env', // * docker 내부 디렉터리 기준
+      envFilePath: path.join(__dirname, '..', '.env'), // * nest 디렉터리 기준
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USER'),
-        password: configService.get('DB_PASSWORD'),
+        type: 'sqlite',
         database: configService.get('DB_NAME'),
         entities: [Node, Page, Edge, User, Workspace, Role],
         logging: true,
@@ -59,9 +50,8 @@ import { TasksService } from './tasks/tasks.service';
     UserModule,
     WorkspaceModule,
     RoleModule,
-    RedisModule,
   ],
   controllers: [AppController],
-  providers: [AppService, RedisService, TasksService],
+  providers: [AppService],
 })
 export class AppModule {}

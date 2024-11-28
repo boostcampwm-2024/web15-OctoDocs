@@ -6,10 +6,12 @@ import { useCreatePage, usePages } from "@/features/pageSidebar/api/usePages";
 import { usePageStore } from "../../model/pageStore";
 import useYDocStore from "@/shared/model/ydocStore";
 import { initializeYText } from "@/shared/model";
+import { useWorkspace } from "@/shared/lib/useWorkspace";
 
 export function Tools() {
   const { setCurrentPage } = usePageStore();
-  const { pages } = usePages();
+  const workspace = useWorkspace();
+  const { pages } = usePages(workspace);
   const createMutation = useCreatePage();
   const { ydoc } = useYDocStore();
 
