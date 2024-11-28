@@ -28,9 +28,9 @@ export class WorkspaceService {
     private readonly roleRepository: RoleRepository,
   ) {
     console.log('환경 : ', process.env.NODE_ENV);
-    // if (process.env.NODE_ENV !== 'test') {
-    //   this.initializeMainWorkspace();
-    // }
+    if (process.env.NODE_ENV !== 'test') {
+      this.initializeMainWorkspace();
+    }
   }
 
   async createWorkspace(
@@ -108,12 +108,12 @@ export class WorkspaceService {
 
   // 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
   async initializeMainWorkspace() {
-    const findUser = await this.userRepository.findOneBy({
+    let findOwner = await this.userRepository.findOneBy({
       snowflakeId: MainWorkspace.OWNER_SNOWFLAKEID,
     });
 
     // 존재하지 않을 때만 생성한다.
-    if (!findUser) {
+    if (!findOwner) {
       // main workspace owner를 생성한다.
       const owner = await this.userRepository.save({
         snowflakeId: MainWorkspace.OWNER_SNOWFLAKEID,
@@ -122,28 +122,20 @@ export class WorkspaceService {
         email: MainWorkspace.OWNER_EMAIL,
       });
 
-      // main workspace를 생성한다.
-      await this.workspaceRepository.save({
-        snowflakeId: MainWorkspace.WORKSPACE_SNOWFLAKEID,
-        owner,
-        title: MainWorkspace.WORKSPACE_TITLE,
-        description: MainWorkspace.WORKSPACE_DESCRIPTION,
-        visibility: MainWorkspace.WORKSPACE_VISIBILITY,
-      });
-      this.logger.log('main workspace를 생성했습니다.');
+      findOwner = owner;
     }
     this.logger.log('main workspace owner가 존재합니다.');
 
     // main workspace를 찾는다.
-    const findWorkspace = await this.workspaceRepository.findOneBy({
+    let findWorkspace = await this.workspaceRepository.findOneBy({
       snowflakeId: MainWorkspace.WORKSPACE_SNOWFLAKEID,
     });
 
     // owner는 존재하지만 워크스페이스가 없으면 생성한다.
     if (!findWorkspace) {
-      await this.workspaceRepository.save({
+      findWorkspace = await this.workspaceRepository.save({
         snowflakeId: MainWorkspace.WORKSPACE_SNOWFLAKEID,
-        owner: findUser,
+        owner: findOwner,
         title: MainWorkspace.WORKSPACE_TITLE,
         description: MainWorkspace.WORKSPACE_DESCRIPTION,
         visibility: MainWorkspace.WORKSPACE_VISIBILITY,
@@ -151,5 +143,24 @@ export class WorkspaceService {
       this.logger.log('main workspace를 생성했습니다.');
     }
     this.logger.log('main workspace가 존재합니다.');
+
+    // owner의 role을 찾는다.
+    const role = await this.roleRepository.findOne({
+      where: {
+        workspaceId: findWorkspace.id,
+        userId: findOwner.id,
+      },
+    });
+
+    // owner의 role이 없으면 생성한다.
+    if (!role) {
+      await this.roleRepository.save({
+        workspaceId: findWorkspace.id,
+        userId: findOwner.id,
+        workspace: findWorkspace,
+        user: findOwner,
+        role: 'owner',
+      });
+    }
   }
 }
