@@ -5,7 +5,7 @@ import { FileText } from "lucide-react";
 import Emoji from "@/shared/ui/Emoji";
 import ActiveUser from "@/shared/ui/ActiveUser";
 import { usePageStore } from "@/features/pageSidebar/model";
-import { useUserStore } from "@/entities/user/model";
+import { useUserStore } from "@/entities/user";
 
 export type NoteNodeData = { title: string; id: number; emoji: string };
 export type NoteNodeType = Node<NoteNodeData, "note">;

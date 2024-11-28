@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useUserStore } from "@/entities/user/model";
+import { Plus } from "lucide-react";
+
 import { Popover } from "@/shared/ui";
 import { CursorButton } from "@/features/canvasTools/ui";
 import { ShareTool } from "@/features/workspace/ui/ShareTool";
-
 import { ProfilePanel, NewNodePanel } from "@/features/canvasTools/ui";
-import { Plus } from "lucide-react";
+import { useUserStore } from "@/entities/user";
 
 export function CanvasToolsView() {
   const { currentUser } = useUserStore();

@@ -2,12 +2,7 @@ import { Get, Post } from "@/shared/api";
 
 interface GetUserResponse {
   message: string;
-  user: {
-    sub: number;
-    exp: number;
-    iat: number;
-    provider: "kakao" | "naver";
-  };
+  snowflakeId: string;
 }
 
 export const getUser = async () => {
