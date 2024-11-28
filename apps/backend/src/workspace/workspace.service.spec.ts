@@ -83,7 +83,7 @@ describe('WorkspaceService', () => {
 
       const owner = { id: userId } as User;
       const newDate = new Date();
-      const newWorkspace: Workspace = {
+      const newWorkspace = {
         id: 1,
         snowflakeId: 'snowflake-id',
         owner,
@@ -96,7 +96,7 @@ describe('WorkspaceService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(owner);
       jest.spyOn(workspaceRepository, 'save').mockResolvedValue(newWorkspace);
@@ -139,7 +139,7 @@ describe('WorkspaceService', () => {
       const workspaceId = 'snowflake-id';
       const newDate = new Date();
 
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: workspaceId,
         owner: { id: userId } as User,
@@ -152,7 +152,7 @@ describe('WorkspaceService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       const role: Role = {
         workspaceId: workspace.id,
@@ -189,7 +189,7 @@ describe('WorkspaceService', () => {
     });
 
     it('현재 요청하는 사용자가 워크스페이스의 owner이 아닐 경우  NotWorkspaceOwnerException을 throw한다.', async () => {
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: 'snowflake-id',
         owner: null,
@@ -202,7 +202,7 @@ describe('WorkspaceService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(workspace);
       jest.spyOn(roleRepository, 'findOneBy').mockResolvedValue(null);
@@ -216,7 +216,7 @@ describe('WorkspaceService', () => {
   describe('getUserWorkspaces', () => {
     it('현재 요청하는 사용자가 참여하고 있는 워크스페이스들을 반환한다.', async () => {
       const userId = 1;
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: 'snowflake-id',
         owner: null,
@@ -229,7 +229,7 @@ describe('WorkspaceService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       const role: Role = {
         workspaceId: workspace.id,
