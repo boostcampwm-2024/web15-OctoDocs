@@ -103,6 +103,9 @@ export class AuthController {
     return {
       message: '인증된 사용자 정보',
       snowflakeId: user.snowflakeId,
+      nickname: user.nickname,
+      cursorColor: user.cursorColor,
+      profileImage: user.profileImage,
     };
   }
 
