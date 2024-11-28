@@ -25,7 +25,11 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
   app.enableCors({
-    origin: process.env.origin,
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? ['https://octodocs.com', 'https://www.octodocs.com']
+        : process.env.origin,
+    credentials: true,
   });
   app.use(cookieParser());
   await app.listen(3000);
