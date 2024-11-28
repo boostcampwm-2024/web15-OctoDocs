@@ -15,7 +15,7 @@ export const getPage = async (id: number) => {
 };
 
 export const getPages = async () => {
-  const url = "/api/page";
+  const url = "/api/page/main";
 
   const res = await Get<GetPagesResponse>(url);
   return res.data.pages;
