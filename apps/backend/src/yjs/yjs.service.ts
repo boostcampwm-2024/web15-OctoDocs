@@ -70,7 +70,6 @@ export class YjsService
       // 노드를 클릭해 페이지를 열었을 때만 해당 페이지 값을 가져와서 초기 데이터로 세팅해줍니다.
       if (customDoc.name?.startsWith('document-')) {
         const workspaceId = doc.guid;
-        console.log('workspaceid', workspaceId);
         const pageId = parseInt(customDoc.name.split('-')[1]);
         const findPage = await this.pageService.findPageById(pageId);
 
@@ -101,9 +100,9 @@ export class YjsService
             'content',
             JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
           );
-          this.redisService.get(pageId.toString()).then((data) => {
-            console.log(data);
-          });
+          // this.redisService.get(pageId.toString()).then((data) => {
+          //   console.log(data);
+          // });
         });
         return;
       }
@@ -116,7 +115,10 @@ export class YjsService
       if (!customDoc.name?.startsWith('flow-room-')) {
         return;
       }
-      const workspaceId = customDoc.name.split('-')[2];
+
+      // const workspaceId = customDoc.name.split('-')[2];
+      // console.log('======', workspaceId);
+      const workspaceId = 'main';
       const nodes = await this.nodeService.findNodesByWorkspace(workspaceId);
       const edges = await this.edgeService.findEdgesByWorkspace(workspaceId);
       const nodesMap = doc.getMap('nodes');
@@ -155,8 +157,6 @@ export class YjsService
       });
       // node의 변경 사항을 감지한다.
       nodesMap.observe(async (event) => {
-        console.log('nodesmap', nodesMap.toJSON());
-        console.log('노드 개수', event.changes.keys);
         for (const [key, change] of event.changes.keys) {
           if (change.action === 'update') {
             const node: any = nodesMap.get(key);
