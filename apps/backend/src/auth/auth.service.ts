@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { User } from '../user/user.entity';
 import { SignUpDto } from './dtos/signUp.dto';
+import { UpdateUserDto } from './dtos/UpdateUser.dto';
+import { UserNotFoundException } from 'src/exception/user.exception';
 
 @Injectable()
 export class AuthService {
@@ -24,5 +26,20 @@ export class AuthService {
 
   async findUserById(id: number): Promise<User | null> {
     return await this.userRepository.findOneBy({ id });
+  }
+  async updateUser(dto: UpdateUserDto) {
+    // 유저를 찾는다.
+    const findUser = await this.userRepository.findBy({
+      snowflakeId: dto.snowflakeId,
+    });
+
+    // 유저가 없으면 오류
+    if (!findUser) {
+      throw new UserNotFoundException();
+    }
+
+    // 유저 갱신
+    const newPage = Object.assign({}, findUser, dto);
+    await this.userRepository.save(newPage);
   }
 }

@@ -26,6 +26,11 @@ export class User {
   @Column()
   email: string;
 
+  @Column({
+    default: '#FF8A8A',
+  })
+  cursorColor: string;
+
   @Column({ nullable: true })
   nickname: string;
 
