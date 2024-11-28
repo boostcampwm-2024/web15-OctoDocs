@@ -1,4 +1,13 @@
-import { Controller, Get, UseGuards, Req, Res, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Req,
+  Res,
+  Post,
+  Patch,
+  Body,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -6,6 +15,7 @@ import { Response } from 'express';
 import { MessageResponseDto } from './dtos/messageResponse.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TokenService } from './token/token.service';
+import { UpdateUserDto } from './dtos/UpdateUser.dto';
 
 export enum AuthResponseMessage {
   AUTH_LOGGED_OUT = '로그아웃하였습니다.',
@@ -94,5 +104,11 @@ export class AuthController {
       message: '인증된 사용자 정보',
       snowflakeId: user.snowflakeId,
     };
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@Req() req, @Body() body: UpdateUserDto) {
+    await this.authService.updateUser(req.user.sub, body);
   }
 }
