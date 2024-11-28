@@ -14,7 +14,6 @@ import {
 import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
 import { useQueryClient } from "@tanstack/react-query";
-import { useParams } from "@tanstack/react-router";
 
 import { usePages } from "@/features/pageSidebar/api/usePages";
 import useYDocStore from "@/shared/model/ydocStore";
@@ -35,14 +34,12 @@ export const useCanvas = () => {
   const { zoom } = useViewport();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const { workspaceId } = useParams({ strict: false });
-  const { pages } = usePages(workspaceId ?? "main");
+  const workspace = useWorkspace();
+  const { pages } = usePages(workspace);
 
   const queryClient = useQueryClient();
   const { ydoc } = useYDocStore();
   const { getIntersectingNodes } = useReactFlow();
-
-  const workspace = useWorkspace();
 
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({
