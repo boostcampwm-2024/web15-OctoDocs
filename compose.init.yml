@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+    nginx:
+        image: nginx:alpine
+        restart: always
+        ports:
+            - "80:80"
+        volumes:
+            - ./services/nginx/conf.d/prod_nginx_init.conf:/etc/nginx/conf.d/default.conf
+            - ./data/certbot/www:/var/www/certbot
+        networks:
+            - frontend
+
+    certbot:
+        image: certbot/certbot:latest
+        volumes:
+            - ./data/certbot/conf:/etc/letsencrypt
+            - ./data/certbot/www:/var/www/certbot
+            - ./data/certbot/log:/var/log/letsencrypt
+        command: >
+            certonly --webroot
+            --webroot-path=/var/www/certbot
+            --email hihj070914@icloud.com
+            --agree-tos
+            --no-eff-email
+            -d octodocs.com
+            -d www.octodocs.com
+
+networks:
+    frontend:
+        driver: bridge
