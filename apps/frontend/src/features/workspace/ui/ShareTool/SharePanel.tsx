@@ -9,6 +9,14 @@ import { useCreateWorkspaceInviteLink } from "@/features/workspace/model/useWork
 import { useWorkspace } from "@/shared/lib/useWorkspace";
 import { useInviteLinkStore } from "@/features/workspace/model/useInviteLinkStore";
 
+const createFrontendUrl = (apiUrl: string, currentWorkspaceId: string) => {
+  const searchParams = new URLSearchParams();
+
+  searchParams.set("workspaceId", currentWorkspaceId);
+  searchParams.set("token", new URL(apiUrl).searchParams.get("token") || "");
+  return `${window.location.origin}/join?${searchParams.toString()}`;
+};
+
 export function SharePanel() {
   const [copied, setCopied] = useState(false);
   const currentWorkspaceId = useWorkspace();
@@ -30,7 +38,8 @@ export function SharePanel() {
     } else if (!inviteLink && currentWorkspaceId) {
       createLink(currentWorkspaceId, {
         onSuccess: (inviteUrl) => {
-          setInviteLink(inviteUrl);
+          const frontendUrl = createFrontendUrl(inviteUrl, currentWorkspaceId);
+          setInviteLink(frontendUrl);
         },
       });
     }
