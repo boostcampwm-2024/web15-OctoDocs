@@ -2,6 +2,6 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class NotWorkspaceOwnerException extends HttpException {
   constructor() {
-    super('You are not the owner of this workspace.', HttpStatus.FORBIDDEN);
+    super('해당 워크스페이스의 소유자가 아닙니다.', HttpStatus.FORBIDDEN);
   }
 }

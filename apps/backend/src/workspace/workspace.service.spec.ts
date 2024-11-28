@@ -10,12 +10,15 @@ import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { Workspace } from './workspace.entity';
 import { Role } from '../role/role.entity';
 import { User } from '../user/user.entity';
+import { TokenService } from '../auth/token/token.service';
+import { ForbiddenAccessException } from '../exception/access.exception';
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
   let workspaceRepository: WorkspaceRepository;
   let userRepository: UserRepository;
   let roleRepository: RoleRepository;
+  let tokenService: TokenService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,9 +27,10 @@ describe('WorkspaceService', () => {
         {
           provide: WorkspaceRepository,
           useValue: {
-            save: jest.fn(),
             findOneBy: jest.fn(),
+            findOne: jest.fn(),
             delete: jest.fn(),
+            save: jest.fn(),
           },
         },
         {
@@ -39,8 +43,16 @@ describe('WorkspaceService', () => {
           provide: RoleRepository,
           useValue: {
             findOneBy: jest.fn(),
+            findOne: jest.fn(),
             find: jest.fn(),
             save: jest.fn(),
+          },
+        },
+        {
+          provide: TokenService,
+          useValue: {
+            generateInviteToken: jest.fn(),
+            verifyInviteToken: jest.fn(),
           },
         },
       ],
@@ -50,6 +62,7 @@ describe('WorkspaceService', () => {
     workspaceRepository = module.get<WorkspaceRepository>(WorkspaceRepository);
     userRepository = module.get<UserRepository>(UserRepository);
     roleRepository = module.get<RoleRepository>(RoleRepository);
+    tokenService = module.get<TokenService>(TokenService);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
@@ -244,6 +257,140 @@ describe('WorkspaceService', () => {
         where: { userId },
         relations: ['workspace'],
       });
+    });
+  });
+
+  describe('generateInviteUrl', () => {
+    it('정상적으로 초대 링크를 생성한다.', async () => {
+      const userId = 1;
+      const workspaceId = 'workspace-snowflake-id';
+      const workspaceMock = { id: 1 } as Workspace;
+      const tokenMock = 'invite-token';
+
+      jest
+        .spyOn(workspaceRepository, 'findOneBy')
+        .mockResolvedValue(workspaceMock);
+      jest
+        .spyOn(roleRepository, 'findOneBy')
+        .mockResolvedValue({ role: 'owner' } as Role);
+      jest
+        .spyOn(tokenService, 'generateInviteToken')
+        .mockReturnValue(tokenMock);
+
+      const result = await service.generateInviteUrl(userId, workspaceId);
+
+      expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+        snowflakeId: workspaceId,
+      });
+      expect(roleRepository.findOneBy).toHaveBeenCalledWith({
+        userId,
+        workspaceId: workspaceMock.id,
+        role: 'owner',
+      });
+      expect(result).toEqual(
+        `https://octodocs.local/api/workspace/join?token=${tokenMock}`,
+      );
+    });
+
+    it('워크스페이스가 존재하지 않으면 예외를 던진다.', async () => {
+      jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(null);
+
+      await expect(
+        service.generateInviteUrl(1, 'invalid-workspace-id'),
+      ).rejects.toThrow(WorkspaceNotFoundException);
+    });
+
+    it('소유자가 아닌 사용자가 초대 링크를 생성하려고 하면 예외를 던진다.', async () => {
+      const workspaceMock = { id: 1 } as Workspace;
+
+      jest
+        .spyOn(workspaceRepository, 'findOneBy')
+        .mockResolvedValue(workspaceMock);
+      jest.spyOn(roleRepository, 'findOneBy').mockResolvedValue(null);
+
+      await expect(
+        service.generateInviteUrl(1, 'workspace-snowflake-id'),
+      ).rejects.toThrow(NotWorkspaceOwnerException);
+    });
+  });
+
+  describe('processInviteUrl', () => {
+    it('정상적으로 초대 링크를 처리한다.', async () => {
+      const userId = 1;
+      const token = 'invite-token';
+      const decodedToken = { workspaceId: '1', role: 'guest' };
+
+      jest
+        .spyOn(tokenService, 'verifyInviteToken')
+        .mockReturnValue(decodedToken);
+      jest.spyOn(roleRepository, 'findOneBy').mockResolvedValue(null);
+
+      await service.processInviteUrl(userId, token);
+
+      expect(tokenService.verifyInviteToken).toHaveBeenCalledWith(token);
+      expect(roleRepository.save).toHaveBeenCalledWith({
+        workspaceId: 1,
+        userId,
+        role: 'guest',
+      });
+    });
+
+    it('이미 워크스페이스에 등록된 사용자는 예외를 던진다.', async () => {
+      const userId = 1;
+      const token = 'invite-token';
+      const decodedToken = { workspaceId: '1', role: 'guest' };
+
+      jest
+        .spyOn(tokenService, 'verifyInviteToken')
+        .mockReturnValue(decodedToken);
+      jest.spyOn(roleRepository, 'findOneBy').mockResolvedValue({} as Role);
+
+      await expect(service.processInviteUrl(userId, token)).rejects.toThrow(
+        Error,
+      );
+    });
+  });
+
+  describe('checkAccess', () => {
+    it('퍼블릭 워크스페이스는 접근을 허용한다.', async () => {
+      jest
+        .spyOn(workspaceRepository, 'findOne')
+        .mockResolvedValue({ visibility: 'public' } as Workspace);
+
+      await expect(
+        service.checkAccess(null, 'workspace-snowflake-id'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('프라이빗 워크스페이스는 권한이 없으면 예외를 던진다.', async () => {
+      jest
+        .spyOn(workspaceRepository, 'findOne')
+        .mockResolvedValue({ visibility: 'private' } as Workspace);
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockResolvedValue({ id: 1 } as User);
+      jest.spyOn(roleRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(
+        service.checkAccess('user-snowflake-id', 'workspace-snowflake-id'),
+      ).rejects.toThrow(ForbiddenAccessException);
+    });
+
+    it('프라이빗 워크스페이스는 권한이 있으면 접근을 허용한다.', async () => {
+      const userMock = { id: 1 };
+      const workspaceMock = { id: 1, visibility: 'private' };
+
+      jest
+        .spyOn(workspaceRepository, 'findOne')
+        .mockResolvedValue(workspaceMock as Workspace);
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockResolvedValue(userMock as User);
+      jest.spyOn(roleRepository, 'findOne').mockResolvedValue({} as Role);
+
+      await expect(
+        service.checkAccess('user-snowflake-id', 'workspace-snowflake-id'),
+      ).resolves.toBeUndefined();
     });
   });
 });

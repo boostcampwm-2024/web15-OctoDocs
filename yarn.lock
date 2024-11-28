@@ -2931,6 +2931,7 @@
     clsx "^2.1.1"
     goober "^2.1.16"
 
+
 "@tanstack/router-generator@^1.83.1":
   version "1.83.1"
   resolved "https://registry.yarnpkg.com/@tanstack/router-generator/-/router-generator-1.83.1.tgz#dc91cb538c5ffcb19e67154cd1fde3a62b4df330"

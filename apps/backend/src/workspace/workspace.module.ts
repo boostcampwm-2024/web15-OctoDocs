@@ -7,22 +7,16 @@ import { WorkspaceRepository } from './workspace.repository';
 import { UserModule } from '../user/user.module';
 import { RoleModule } from '../role/role.module';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TokenModule } from '../auth/token/token.module';
 import { TokenService } from '../auth/token/token.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Workspace]),
     UserModule,
     RoleModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-      }),
-    }),
+    TokenModule,
   ],
   controllers: [WorkspaceController],
   providers: [
