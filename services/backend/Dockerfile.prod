@@ -16,7 +16,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # 백엔드 빌드
-RUN yarn build -w @octodocs/backend
+RUN yarn turbo run build --filter=backend
 
 # 실행 스테이지
 FROM node:20-alpine
