@@ -12,6 +12,7 @@ import { Role } from '../role/role.entity';
 import { User } from '../user/user.entity';
 import { TokenService } from '../auth/token/token.service';
 import { ForbiddenAccessException } from '../exception/access.exception';
+import { Snowflake } from '@theinternetfolks/snowflake';
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
@@ -72,64 +73,68 @@ describe('WorkspaceService', () => {
   });
 
   describe('createWorkspace', () => {
-    it('워크스페이스를 성공적으로 생성한다.', async () => {
+    it('성공적으로 워크스페이스를 생성한다.', async () => {
+      // Mock 데이터
       const userId = 1;
       const dto: CreateWorkspaceDto = {
         title: 'New Workspace',
-        description: 'A test workspace',
+        description: 'Description of workspace',
         visibility: 'private',
-        thumbnailUrl: 'http://example.com/thumbnail.png',
+        thumbnailUrl: 'http://example.com/image.png',
       };
 
-      const owner = { id: userId } as User;
-      const newDate = new Date();
-      const newWorkspace: Workspace = {
-        id: 1,
-        snowflakeId: 'snowflake-id',
-        owner,
-        title: dto.title,
-        description: dto.description,
-        visibility: dto.visibility,
-        createdAt: newDate,
-        updatedAt: newDate,
-        thumbnailUrl: dto.thumbnailUrl,
-        edges: [],
-        pages: [],
-        nodes: [],
-      };
+      const mockUser = { id: userId } as User;
+      const generatedSnowflakeId = Snowflake.generate();
+      const mockWorkspace = {
+        id: 10,
+        ...dto,
+        snowflakeId: generatedSnowflakeId,
+      } as Workspace;
 
-      jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(owner);
-      jest.spyOn(workspaceRepository, 'save').mockResolvedValue(newWorkspace);
+      // Mocking
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(mockUser);
+      jest.spyOn(Snowflake, 'generate').mockReturnValue(generatedSnowflakeId);
+      jest.spyOn(workspaceRepository, 'save').mockResolvedValue(mockWorkspace);
+      jest.spyOn(roleRepository, 'save').mockResolvedValue(undefined);
 
+      // 실행
       const result = await service.createWorkspace(userId, dto);
 
-      expect(result).toEqual(newWorkspace);
+      // 검증
       expect(userRepository.findOneBy).toHaveBeenCalledWith({ id: userId });
       expect(workspaceRepository.save).toHaveBeenCalledWith({
-        owner,
-        ...dto,
-        visibility: 'private',
+        snowflakeId: generatedSnowflakeId,
+        owner: mockUser,
+        title: dto.title,
+        description: dto.description,
+        visibility: 'private', // 기본값 확인
+        thumbnailUrl: dto.thumbnailUrl,
       });
       expect(roleRepository.save).toHaveBeenCalledWith({
-        userId: owner.id,
-        workspaceId: newWorkspace.id,
+        userId: mockUser.id,
+        workspaceId: mockWorkspace.id,
         role: 'owner',
       });
+      expect(result).toEqual(mockWorkspace);
     });
 
-    it('사용자가 존재하지 않으면 UserNotFoundException을 throw한다.', async () => {
+    it('사용자를 찾을 수 없으면 UserNotFoundException을 던진다.', async () => {
+      // Mocking
       jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(null);
 
-      const dto: CreateWorkspaceDto = {
-        title: 'New Workspace',
-        description: 'A test workspace',
-        visibility: 'private',
-        thumbnailUrl: 'http://example.com/thumbnail.png',
-      };
+      // 실행 및 검증
+      await expect(
+        service.createWorkspace(1, {
+          title: 'New Workspace',
+          description: 'Description of workspace',
+          visibility: 'private',
+          thumbnailUrl: 'http://example.com/image.png',
+        }),
+      ).rejects.toThrow(UserNotFoundException);
 
-      await expect(service.createWorkspace(1, dto)).rejects.toThrow(
-        UserNotFoundException,
-      );
+      expect(userRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(workspaceRepository.save).not.toHaveBeenCalled();
+      expect(roleRepository.save).not.toHaveBeenCalled();
     });
   });
 
@@ -139,7 +144,7 @@ describe('WorkspaceService', () => {
       const workspaceId = 'snowflake-id';
       const newDate = new Date();
 
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: workspaceId,
         owner: { id: userId } as User,
@@ -152,7 +157,7 @@ describe('WorkspaceService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       const role: Role = {
         workspaceId: workspace.id,
@@ -189,7 +194,7 @@ describe('WorkspaceService', () => {
     });
 
     it('현재 요청하는 사용자가 워크스페이스의 owner이 아닐 경우  NotWorkspaceOwnerException을 throw한다.', async () => {
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: 'snowflake-id',
         owner: null,
@@ -202,7 +207,7 @@ describe('WorkspaceService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(workspace);
       jest.spyOn(roleRepository, 'findOneBy').mockResolvedValue(null);
@@ -216,7 +221,7 @@ describe('WorkspaceService', () => {
   describe('getUserWorkspaces', () => {
     it('현재 요청하는 사용자가 참여하고 있는 워크스페이스들을 반환한다.', async () => {
       const userId = 1;
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: 'snowflake-id',
         owner: null,
@@ -229,7 +234,7 @@ describe('WorkspaceService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       const role: Role = {
         workspaceId: workspace.id,
@@ -251,6 +256,7 @@ describe('WorkspaceService', () => {
           description: 'Workspace Description',
           thumbnailUrl: 'http://example.com/thumbnail.png',
           role: 'owner',
+          visibility: 'private',
         },
       ]);
       expect(roleRepository.find).toHaveBeenCalledWith({

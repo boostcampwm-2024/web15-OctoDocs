@@ -11,6 +11,7 @@ import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exceptio
 import { TokenService } from '../auth/token/token.service';
 import { ForbiddenAccessException } from '../exception/access.exception';
 import { UserAlreadyInWorkspaceException } from '../exception/role-duplicate.exception';
+import { Snowflake } from '@theinternetfolks/snowflake';
 
 enum MainWorkspace {
   OWNER_SNOWFLAKEID = 'admin',
@@ -53,6 +54,7 @@ export class WorkspaceService {
 
     // 워크스페이스 생성 및 저장
     const newWorkspace = await this.workspaceRepository.save({
+      snowflakeId: Snowflake.generate(),
       owner,
       title,
       description,
@@ -108,6 +110,7 @@ export class WorkspaceService {
       description: role.workspace.description || null,
       thumbnailUrl: role.workspace.thumbnailUrl || null,
       role: role.role as 'owner' | 'guest',
+      visibility: role.workspace.visibility as 'public' | 'private',
     }));
   }
 
@@ -261,5 +264,35 @@ export class WorkspaceService {
         role: 'owner',
       });
     }
+  }
+
+  async updateVisibility(
+    userId: number,
+    workspaceId: string,
+    visibility: 'public' | 'private',
+  ): Promise<void> {
+    // 워크스페이스가 존재하는지 확인
+    const workspace = await this.workspaceRepository.findOneBy({
+      snowflakeId: workspaceId,
+    });
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundException();
+    }
+
+    // Role Repository에서 해당 workspace의 owner인지 확인
+    const role = await this.roleRepository.findOneBy({
+      workspaceId: workspace.id,
+      userId: userId,
+      role: 'owner',
+    });
+    // 아니면 exception 뱉기
+    if (!role) {
+      throw new NotWorkspaceOwnerException();
+    }
+
+    // 가시성 변경
+    workspace.visibility = visibility;
+    await this.workspaceRepository.save(workspace);
   }
 }

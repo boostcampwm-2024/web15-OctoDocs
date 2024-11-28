@@ -3,6 +3,7 @@ import {
   Post,
   Delete,
   Get,
+  Patch,
   UseGuards,
   Request,
   Body,
@@ -27,6 +28,8 @@ export enum WorkspaceResponseMessage {
   WORKSPACE_INVITED = '워크스페이스 게스트 초대 링크가 생성되었습니다.',
   WORKSPACE_JOINED = '워크스페이스에 게스트로 등록되었습니다.',
   WORKSPACE_ACCESS_CHECKED = '워크스페이스에 대한 사용자의 접근 권한이 확인되었습니다.',
+  WORKSPACE_UPDATED_TO_PUBLIC = '워크스페이스가 공개로 설정되었습니다.',
+  WORKSPACE_UPDATED_TO_PRIVATE = '워크스페이스가 비공개로 설정되었습니다.',
 }
 
 @Controller('workspace')
@@ -151,5 +154,35 @@ export class WorkspaceController {
     return {
       message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
     };
+  }
+
+  @ApiResponse({
+    type: MessageResponseDto,
+  })
+  @ApiOperation({
+    summary: '워크스페이스를 비공개에서 공개로 설정합니다.',
+  })
+  @Patch('/:id/public')
+  @UseGuards(JwtAuthGuard) // 로그인 인증
+  @HttpCode(HttpStatus.OK)
+  async makeWorkspacePublic(@Request() req, @Param('id') id: string) {
+    const userId = req.user.sub; // 인증된 사용자 ID
+    await this.workspaceService.updateVisibility(userId, id, 'public');
+    return { message: WorkspaceResponseMessage.WORKSPACE_UPDATED_TO_PUBLIC };
+  }
+
+  @ApiResponse({
+    type: MessageResponseDto,
+  })
+  @ApiOperation({
+    summary: '워크스페이스를 공개에서 비공개로 설정합니다.',
+  })
+  @Patch('/:id/private')
+  @UseGuards(JwtAuthGuard) // 로그인 인증
+  @HttpCode(HttpStatus.OK)
+  async makeWorkspacePrivate(@Request() req, @Param('id') id: string) {
+    const userId = req.user.sub; // 인증된 사용자 ID
+    await this.workspaceService.updateVisibility(userId, id, 'private');
+    return { message: WorkspaceResponseMessage.WORKSPACE_UPDATED_TO_PRIVATE };
   }
 }

@@ -68,14 +68,39 @@ describe('AuthService', () => {
         provider: 'naver',
         email: 'new@naver.com',
       };
-      const user = new User();
-      jest.spyOn(userRepository, 'create').mockReturnValue(user);
-      jest.spyOn(userRepository, 'save').mockResolvedValue(user);
+      const generated
+      
+      flakeId = Snowflake.generate(); // Snowflake.generate()의 mock 값을 준비
+      const newDate = new Date();
+      const createdUser = {
+        providerId: dto.providerId,
+        provider: dto.provider,
+        email: dto.email,
+        snowflakeId: generatedSnowflakeId,
+      };
+      const savedUser = {
+        providerId: dto.providerId,
+        provider: dto.provider,
+        email: dto.email,
+        snowflakeId: generatedSnowflakeId,
+        id: 1,
+        createdAt: newDate,
+      };
+
+      jest.spyOn(Snowflake, 'generate').mockReturnValue(generatedSnowflakeId);
+      jest.spyOn(userRepository, 'create').mockReturnValue(createdUser as User);
+      jest.spyOn(userRepository, 'save').mockResolvedValue(savedUser as User);
 
       const result = await authService.signUp(dto);
-      expect(result).toEqual(user);
-      expect(userRepository.create).toHaveBeenCalledWith(dto);
-      expect(userRepository.save).toHaveBeenCalledWith(user);
+
+      // Then
+      expect(result).toEqual(savedUser); // 반환된 값이 예상된 저장된 사용자와 동일
+      expect(Snowflake.generate).toHaveBeenCalled(); // Snowflake.generate 호출 확인
+      expect(userRepository.create).toHaveBeenCalledWith({
+        ...dto,
+        snowflakeId: generatedSnowflakeId,
+      });
+      expect(userRepository.save).toHaveBeenCalledWith(createdUser);
     });
   });
 

@@ -3,7 +3,7 @@ import { Compact } from "@uiw/react-color";
 
 import { Dialog } from "@/shared/ui/Dialog";
 import Button from "@/shared/ui/Button";
-import { useUserStore } from "@/entities/user/model";
+import { useUserStore } from "@/entities/user";
 
 type RemoveNoteModalProps = {
   isOpen: boolean;

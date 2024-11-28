@@ -5,6 +5,7 @@ import { SignUpDto } from './dtos/signUp.dto';
 import { UpdateUserDto } from './dtos/UpdateUser.dto';
 import { UserNotFoundException } from '../exception/user.exception';
 
+
 @Injectable()
 export class AuthService {
   constructor(private readonly userRepository: UserRepository) {}
@@ -20,7 +21,10 @@ export class AuthService {
   }
 
   async signUp(dto: SignUpDto): Promise<User> {
-    const user = this.userRepository.create(dto);
+    const user = this.userRepository.create({
+      ...dto,
+      snowflakeId: Snowflake.generate(),
+    });
     return this.userRepository.save(user);
   }
 

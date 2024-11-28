@@ -61,7 +61,7 @@ describe('PageService', () => {
   describe('createPage', () => {
     it('페이지를 성공적으로 생성한다.', async () => {
       const newDate1 = new Date();
-      const workspace1: Workspace = {
+      const workspace1 = {
         id: 1,
         snowflakeId: 'snowflake-id-1',
         owner: null,
@@ -74,7 +74,7 @@ describe('PageService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       // 페이지 dto
       const newPageDto: CreatePageDto = {
@@ -254,7 +254,7 @@ describe('PageService', () => {
   describe('findPagesByWorkspace', () => {
     it('특정 워크스페이스에 존재하는 페이지들을 content 없이 반환한다.', async () => {
       const workspaceId = '123456789012345678'; // Snowflake ID
-      const workspace: Workspace = {
+      const workspace = {
         id: 1,
         snowflakeId: workspaceId,
         owner: null,
@@ -267,7 +267,7 @@ describe('PageService', () => {
         edges: [],
         pages: [],
         nodes: [],
-      };
+      } as Workspace;
 
       const page1: Page = {
         id: 1,
