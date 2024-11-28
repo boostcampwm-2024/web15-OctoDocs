@@ -4,9 +4,7 @@ import * as Y from "yjs";
 import { useReactFlow, type XYPosition } from "@xyflow/react";
 
 import { createSocketIOProvider } from "@/shared/api/socketProvider";
-import { useUserStore } from "@/entities/user";
-
-import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { useUserStore } from "@/entities/user/model/userStore";
 
 export interface AwarenessState {
   cursor: XYPosition | null;
@@ -30,10 +28,9 @@ export function useCollaborativeCursors({
   );
   const { currentUser } = useUserStore();
   const { color, clientId } = currentUser;
-  const workspace = useWorkspace();
 
   useEffect(() => {
-    const wsProvider = createSocketIOProvider(`flow-room-${workspace}`, ydoc);
+    const wsProvider = createSocketIOProvider("flow-room", ydoc);
     provider.current = wsProvider;
 
     wsProvider.awareness.setLocalState({

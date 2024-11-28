@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
 
 import { Popover } from "@/shared/ui";
 import { CursorButton } from "@/features/canvasTools/ui";
 import { ShareTool } from "@/features/workspace/ui/ShareTool";
-import { ProfilePanel, NewNodePanel } from "@/features/canvasTools/ui";
+import { ProfilePanel } from "@/features/canvasTools/ui";
 import { useUserStore } from "@/entities/user";
 
 export function CanvasToolsView() {
@@ -31,17 +30,6 @@ export function CanvasToolsView() {
             onColorChange={setColor}
             onClientIdChange={setClientId}
           />
-        </Popover.Content>
-      </Popover>
-
-      <Popover placement="bottom" align="start" offset={{ y: 16 }}>
-        <Popover.Trigger>
-          <button className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-[#F5F5F5]">
-            <Plus size={26} color="#3f3f3f" strokeWidth={1.5} />
-          </button>
-        </Popover.Trigger>
-        <Popover.Content className="rounded-lg border border-neutral-200 bg-white p-2 shadow-md">
-          <NewNodePanel />
         </Popover.Content>
       </Popover>
     </div>

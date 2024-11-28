@@ -1,61 +1,34 @@
-import { Position, Node, XYPosition } from "@xyflow/react";
+import { Position, Node } from "@xyflow/react";
 
-const getAbsolutePosition = (node: Node, nodes: Node[]): XYPosition => {
-  if (!node.parentId) {
-    return node.position;
-  }
-
-  const parentNode = nodes.find((n) => n.id === node.parentId);
-  if (!parentNode) {
-    return node.position;
-  }
-
-  const parentPosition: XYPosition = getAbsolutePosition(parentNode, nodes);
-  return {
-    x: parentPosition.x + node.position.x,
-    y: parentPosition.y + node.position.y,
-  };
-};
-
-export const getHandlePosition = (
-  node: Node,
-  handleId: Position,
-  nodes: Node[],
-) => {
+export const getHandlePosition = (node: Node, handleId: Position) => {
   const nodeElement = document.querySelector(`[data-id="${node.id}"]`);
   const nodeRect = nodeElement!.getBoundingClientRect();
   const nodeWidth = nodeRect.width;
   const nodeHeight = nodeRect.height;
 
-  const absolutePosition = getAbsolutePosition(node, nodes);
-
   const positions = {
     [Position.Left]: {
-      x: absolutePosition.x,
-      y: absolutePosition.y + nodeHeight / 2,
+      x: node.position.x,
+      y: node.position.y + nodeHeight / 2,
     },
     [Position.Right]: {
-      x: absolutePosition.x + nodeWidth,
-      y: absolutePosition.y + nodeHeight / 2,
+      x: node.position.x + nodeWidth,
+      y: node.position.y + nodeHeight / 2,
     },
     [Position.Top]: {
-      x: absolutePosition.x + nodeWidth / 2,
-      y: absolutePosition.y,
+      x: node.position.x + nodeWidth / 2,
+      y: node.position.y,
     },
     [Position.Bottom]: {
-      x: absolutePosition.x + nodeWidth / 2,
-      y: absolutePosition.y + nodeHeight,
+      x: node.position.x + nodeWidth / 2,
+      y: node.position.y + nodeHeight,
     },
   };
 
   return positions[handleId];
 };
 
-export const calculateBestHandles = (
-  sourceNode: Node,
-  targetNode: Node,
-  nodes: Node[],
-) => {
+export const calculateBestHandles = (sourceNode: Node, targetNode: Node) => {
   const handlePositions = [
     Position.Left,
     Position.Right,
@@ -69,9 +42,9 @@ export const calculateBestHandles = (
   };
 
   handlePositions.forEach((sourceHandle) => {
-    const sourcePosition = getHandlePosition(sourceNode, sourceHandle, nodes);
+    const sourcePosition = getHandlePosition(sourceNode, sourceHandle);
     handlePositions.forEach((targetHandle) => {
-      const targetPosition = getHandlePosition(targetNode, targetHandle, nodes);
+      const targetPosition = getHandlePosition(targetNode, targetHandle);
       const distance = Math.hypot(
         sourcePosition.x - targetPosition.x,
         sourcePosition.y - targetPosition.y,
