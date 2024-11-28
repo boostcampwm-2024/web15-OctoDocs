@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsArray } from 'class-validator';
 import { UserWorkspaceDto } from './userWorkspace.dto';
 
-export class getUserWorkspacesResponseDto {
+export class GetUserWorkspacesResponseDto {
   @ApiProperty({
     example: 'OO 생성에 성공했습니다.',
     description: 'api 요청 결과 메시지',

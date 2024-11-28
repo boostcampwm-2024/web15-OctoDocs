@@ -6,6 +6,9 @@ import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { WorkspaceResponseMessage } from './workspace.controller';
 import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exception';
 import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
+import { TokenService } from '../auth/token/token.service';
+import { WorkspaceNotFoundException } from '../exception/workspace.exception';
+import { ForbiddenAccessException } from '../exception/access.exception';
 
 describe('WorkspaceController', () => {
   let controller: WorkspaceController;
@@ -21,7 +24,14 @@ describe('WorkspaceController', () => {
             createWorkspace: jest.fn(),
             deleteWorkspace: jest.fn(),
             getUserWorkspaces: jest.fn(),
+            generateInviteUrl: jest.fn(),
+            processInviteUrl: jest.fn(),
+            checkAccess: jest.fn(),
           },
+        },
+        {
+          provide: TokenService,
+          useValue: {},
         },
       ],
     })
@@ -116,6 +126,11 @@ describe('WorkspaceController', () => {
         },
       ] as UserWorkspaceDto[];
 
+      const expectedResult = {
+        message: WorkspaceResponseMessage.WORKSPACES_RETURNED,
+        workspaces: mockWorkspaces,
+      };
+
       jest
         .spyOn(service, 'getUserWorkspaces')
         .mockResolvedValue(mockWorkspaces);
@@ -123,7 +138,114 @@ describe('WorkspaceController', () => {
       const result = await controller.getUserWorkspaces(req);
 
       expect(service.getUserWorkspaces).toHaveBeenCalledWith(req.user.sub);
-      expect(result).toEqual(mockWorkspaces);
+      expect(result).toEqual(expectedResult);
+    });
+  });
+
+  it('컨트롤러가 정상적으로 인스턴스화된다.', () => {
+    expect(controller).toBeDefined();
+  });
+
+  describe('generateInviteLink', () => {
+    it('초대 링크를 생성하고 반환한다.', async () => {
+      const req = { user: { sub: 1 } };
+      const workspaceId = 'workspace-snowflake-id';
+      const mockInviteUrl =
+        'https://example.com/api/workspace/join?token=abc123';
+
+      jest.spyOn(service, 'generateInviteUrl').mockResolvedValue(mockInviteUrl);
+
+      const result = await controller.generateInviteLink(req, workspaceId);
+
+      expect(service.generateInviteUrl).toHaveBeenCalledWith(
+        req.user.sub,
+        workspaceId,
+      );
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_INVITED,
+        inviteUrl: mockInviteUrl,
+      });
+    });
+  });
+
+  describe('joinWorkspace', () => {
+    it('초대 토큰을 처리하고 성공 메시지를 반환한다.', async () => {
+      const req = { user: { sub: 1 } };
+      const token = 'valid-token';
+
+      jest.spyOn(service, 'processInviteUrl').mockResolvedValue();
+
+      const result = await controller.joinWorkspace(req, token);
+
+      expect(service.processInviteUrl).toHaveBeenCalledWith(
+        req.user.sub,
+        token,
+      );
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_INVITED,
+      });
+    });
+  });
+
+  describe('checkWorkspaceAccess', () => {
+    it('워크스페이스에 접근 가능한 경우 메시지를 반환한다.', async () => {
+      const workspaceId = 'workspace-snowflake-id';
+      const userId = 'user-snowflake-id';
+
+      jest.spyOn(service, 'checkAccess').mockResolvedValue(undefined);
+
+      const result = await controller.checkWorkspaceAccess(workspaceId, userId);
+
+      expect(service.checkAccess).toHaveBeenCalledWith(userId, workspaceId);
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
+      });
+    });
+
+    it('로그인하지 않은 사용자의 경우 null로 처리하고 접근 가능한 경우 메시지를 반환한다.', async () => {
+      const workspaceId = 'workspace-snowflake-id';
+      const userId = 'null'; // 로그인되지 않은 상태를 나타냄
+
+      jest.spyOn(service, 'checkAccess').mockResolvedValue(undefined);
+
+      const result = await controller.checkWorkspaceAccess(workspaceId, userId);
+
+      expect(service.checkAccess).toHaveBeenCalledWith(null, workspaceId);
+      expect(result).toEqual({
+        message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
+      });
+    });
+
+    it('권한이 없는 경우 ForbiddenAccessException을 던진다.', async () => {
+      const workspaceId = 'workspace-snowflake-id';
+      const userId = 'user-snowflake-id';
+
+      // 권한 없음
+      jest
+        .spyOn(service, 'checkAccess')
+        .mockRejectedValue(new ForbiddenAccessException());
+
+      await expect(
+        controller.checkWorkspaceAccess(workspaceId, userId),
+      ).rejects.toThrow(ForbiddenAccessException);
+
+      expect(service.checkAccess).toHaveBeenCalledWith(userId, workspaceId);
+    });
+
+    it('워크스페이스가 존재하지 않는 경우 WorkspaceNotFoundException을 던진다.', async () => {
+      const workspaceId = 'invalid-snowflake-id';
+      const userId = 'user-snowflake-id';
+
+      // 워크스페이스 없음
+      jest
+        .spyOn(service, 'checkAccess')
+        .mockRejectedValue(new WorkspaceNotFoundException());
+
+      await expect(
+        controller.checkWorkspaceAccess(workspaceId, userId),
+      ).rejects.toThrow(WorkspaceNotFoundException);
+
+      expect(service.checkAccess).toHaveBeenCalledWith(userId, workspaceId);
     });
   });
 });

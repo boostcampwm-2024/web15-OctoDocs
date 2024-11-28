@@ -22,7 +22,7 @@ export class AuthService {
     return this.userRepository.save(user);
   }
 
-  async findUserBySnowflakeId(snowflakeId: string): Promise<User | null> {
-    return await this.userRepository.findOneBy({ snowflakeId });
+  async findUserById(id: number): Promise<User | null> {
+    return await this.userRepository.findOneBy({ id });
   }
 }

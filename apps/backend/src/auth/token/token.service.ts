@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { InvalidTokenException } from '../../exception/invalid.exception';
 
 const HOUR = 60 * 60;
+const DAY = 24 * 60 * 60;
 const FIVE_MONTHS = 5 * 30 * 24 * 60 * 60;
 const MS_HALF_YEAR = 6 * 30 * 24 * 60 * 60 * 1000;
 
@@ -20,6 +22,25 @@ export class TokenService {
     return this.jwtService.sign(payload, {
       expiresIn: FIVE_MONTHS,
     });
+  }
+
+  generateInviteToken(workspaceId: number, role: string): string {
+    // 초대용 JWT 토큰 생성
+    const payload = { workspaceId, role };
+    return this.jwtService.sign(payload, {
+      expiresIn: DAY, // 초대 유효 기간: 1일
+      secret: process.env.JWT_SECRET,
+    });
+  }
+
+  verifyInviteToken(token: string): { workspaceId: string; role: string } {
+    try {
+      return this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+    } catch (error) {
+      throw new InvalidTokenException();
+    }
   }
 
   // 후에 DB 로직 (지금은 refreshToken이 DB로 관리 X)
