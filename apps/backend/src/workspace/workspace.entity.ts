@@ -6,6 +6,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  Index,
+  BeforeInsert,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Snowflake } from '@theinternetfolks/snowflake';
@@ -19,7 +21,8 @@ export class Workspace {
   id: number;
 
   @Column({ unique: true })
-  snowflakeId: string = Snowflake.generate();
+  @Index()
+  snowflakeId: string;
 
   @ManyToOne(() => User, { nullable: false })
   owner: User;
@@ -50,4 +53,9 @@ export class Workspace {
 
   @OneToMany(() => Node, (node) => node.workspace)
   nodes: Node[];
+
+  @BeforeInsert()
+  generateSnowflakeId() {
+    this.snowflakeId = Snowflake.generate();
+  }
 }
