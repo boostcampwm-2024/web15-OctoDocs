@@ -18,7 +18,7 @@ export const useNoteList = () => {
     nodesMap.observe(() => {
       const yNodes = Array.from(nodesMap.values()) as YNode[];
       const data = yNodes
-        .filter((yNode) => yNode.data.type === "note")
+        .filter((yNode) => yNode.data.type !== "note")
         .map((yNode) => yNode.data) as NoteNodeData[];
       setPages(data);
     });
