@@ -108,6 +108,7 @@ export class WorkspaceService {
       description: role.workspace.description || null,
       thumbnailUrl: role.workspace.thumbnailUrl || null,
       role: role.role as 'owner' | 'guest',
+      visibility: role.workspace.visibility as 'public' | 'private',
     }));
   }
 

@@ -251,6 +251,7 @@ describe('WorkspaceService', () => {
           description: 'Workspace Description',
           thumbnailUrl: 'http://example.com/thumbnail.png',
           role: 'owner',
+          visibility: 'private',
         },
       ]);
       expect(roleRepository.find).toHaveBeenCalledWith({
