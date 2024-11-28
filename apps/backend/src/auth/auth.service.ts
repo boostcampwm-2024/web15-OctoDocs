@@ -4,6 +4,7 @@ import { User } from '../user/user.entity';
 import { SignUpDto } from './dtos/signUp.dto';
 import { UpdateUserDto } from './dtos/UpdateUser.dto';
 import { UserNotFoundException } from '../exception/user.exception';
+import { Snowflake } from '@theinternetfolks/snowflake';
 
 
 @Injectable()
