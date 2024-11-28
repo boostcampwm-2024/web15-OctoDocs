@@ -1,1 +1,1 @@
-export { UserInfoView as LogoBtnView } from "./ui";
+export { UserInfoView } from "./ui";
