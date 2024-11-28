@@ -15,10 +15,10 @@ export function TopNavView({ onExpand, isExpanded }: TopNavProps) {
   const { data } = useUserWorkspace();
 
   const getWorkspaceTitle = () => {
-    if (!workspaceId) return "공용 워크스페이스";
+    if (!workspace) return "공용 워크스페이스";
 
     return (
-      data?.workspaces.find((w) => w.workspaceId === workspaceId)?.title ??
+      data?.workspaces.find((w) => w.workspaceId === workspace)?.title ??
       "로딩 중..."
     );
   };
