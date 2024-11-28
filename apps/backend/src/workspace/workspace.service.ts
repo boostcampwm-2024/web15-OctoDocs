@@ -8,7 +8,16 @@ import { UserNotFoundException } from '../exception/user.exception';
 import { Workspace } from './workspace.entity';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 import { NotWorkspaceOwnerException } from '../exception/workspace-auth.exception';
-
+enum MainWorkspace {
+  OWNER_SNOWFLAKEID = 'admin',
+  OWNER_PROVIDER_ID = 'adminProviderId',
+  OWNER_PROVIDER = 'adminProvider',
+  OWNER_EMAIL = 'admin@mail.com',
+  WORKSPACE_SNOWFLAKEID = 'main',
+  WORKSPACE_TITLE = 'main workspace',
+  WORKSPACE_DESCRIPTION = '모든 유저가 접근 가능한 메인 workspace',
+  WORKSPACE_VISIBILITY = 'public',
+}
 @Injectable()
 export class WorkspaceService {
   private readonly logger = new Logger(WorkspaceService.name); // 클래스 이름을 context로 설정
@@ -17,7 +26,9 @@ export class WorkspaceService {
     private readonly workspaceRepository: WorkspaceRepository,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
-  ) {}
+  ) {
+    this.initializeMainWorkspace();
+  }
 
   async createWorkspace(
     userId: number,
@@ -94,22 +105,48 @@ export class WorkspaceService {
 
   // 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
   async initializeMainWorkspace() {
-    // main workspace owner를 생성한다.
-    const owner = await this.userRepository.save({
-      snowflakeId: 'admin',
-      providerId: 'adminProviderId',
-      provider: 'adminProvider',
-      email: 'admin@mail.com',
+    const findUser = await this.userRepository.findOneBy({
+      snowflakeId: MainWorkspace.OWNER_SNOWFLAKEID,
     });
 
-    // main workspace를 생성한다.
-    await this.workspaceRepository.save({
-      snowflakeId: 'main',
-      owner,
-      title: 'main workspace',
-      description: '모든 유저가 접근 가능한 메인 workspace',
-      vjisibility: 'private',
+    // 존재하지 않을 때만 생성한다.
+    if (!findUser) {
+      // main workspace owner를 생성한다.
+      const owner = await this.userRepository.save({
+        snowflakeId: MainWorkspace.OWNER_SNOWFLAKEID,
+        providerId: MainWorkspace.OWNER_PROVIDER_ID,
+        provider: MainWorkspace.OWNER_PROVIDER,
+        email: MainWorkspace.OWNER_EMAIL,
+      });
+
+      // main workspace를 생성한다.
+      await this.workspaceRepository.save({
+        snowflakeId: MainWorkspace.WORKSPACE_SNOWFLAKEID,
+        owner,
+        title: MainWorkspace.WORKSPACE_TITLE,
+        description: MainWorkspace.WORKSPACE_DESCRIPTION,
+        visibility: MainWorkspace.WORKSPACE_VISIBILITY,
+      });
+      this.logger.log('main workspace를 생성했습니다.');
+    }
+    this.logger.log('main workspace owner가 존재합니다.');
+
+    // main workspace를 찾는다.
+    const findWorkspace = await this.workspaceRepository.findOneBy({
+      snowflakeId: MainWorkspace.WORKSPACE_SNOWFLAKEID,
     });
-    this.logger.log('메인 워크스페이스를 생성했습니다.');
+
+    // owner는 존재하지만 워크스페이스가 없으면 생성한다.
+    if (!findWorkspace) {
+      await this.workspaceRepository.save({
+        snowflakeId: MainWorkspace.WORKSPACE_SNOWFLAKEID,
+        owner: findUser,
+        title: MainWorkspace.WORKSPACE_TITLE,
+        description: MainWorkspace.WORKSPACE_DESCRIPTION,
+        visibility: MainWorkspace.WORKSPACE_VISIBILITY,
+      });
+      this.logger.log('main workspace를 생성했습니다.');
+    }
+    this.logger.log('main workspace가 존재합니다.');
   }
 }
