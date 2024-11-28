@@ -5,9 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Index,
-  BeforeInsert,
 } from 'typeorm';
-import { Snowflake } from '@theinternetfolks/snowflake';
 
 @Entity()
 export class User {
@@ -35,9 +33,4 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @BeforeInsert()
-  generateSnowflakeId() {
-    this.snowflakeId = Snowflake.generate();
-  }
 }
