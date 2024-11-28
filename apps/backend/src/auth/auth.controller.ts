@@ -82,15 +82,17 @@ export class AuthController {
     });
   }
 
-  // Example: 로그인한 사용자만 접근할 수 있는 엔드포인트
+  // 클라이언트가 사용자의 외부 id(snowflakeId) + 이름을 알 수 있는 엔드포인트
   // auth/profile
+  // TODO: 사용자 지정 닉네임 + 프로필 이미지도 return하게 확장
   @Get('profile')
   @UseGuards(JwtAuthGuard) // JWT 인증 검사
   async getProfile(@Req() req) {
+    const user = await this.authService.findUserById(req.user.sub);
     // JWT 토큰을 검증하고 사용자 정보 반환
     return {
       message: '인증된 사용자 정보',
-      user: req.user,
+      snowflakeId: user.snowflakeId,
     };
   }
 }

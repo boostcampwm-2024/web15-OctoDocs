@@ -3,10 +3,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { TokenService } from './token/token.service';
-import { LoginRequiredException } from '../exception/login.exception';
+import { User } from '../user/user.entity';
 
 describe('AuthController', () => {
-  let authController: AuthController;
+  let controller: AuthController;
   let authService: AuthService;
 
   beforeEach(async () => {
@@ -37,33 +37,27 @@ describe('AuthController', () => {
       })
       .compile();
 
-    authController = module.get<AuthController>(AuthController);
+    controller = module.get<AuthController>(AuthController);
     authService = module.get<AuthService>(AuthService);
   });
 
   it('컨트롤러 클래스가 정상적으로 인스턴스화된다.', () => {
-    expect(authController).toBeDefined();
+    expect(controller).toBeDefined();
   });
 
   describe('getProfile', () => {
     it('JWT 토큰이 유효한 경우 profile을 return한다.', async () => {
       const req = {
-        user: { sub: 1, email: 'test@naver.com', provider: 'naver' },
+        user: { sub: 1 },
       } as any;
-      const result = await authController.getProfile(req);
+      const returnedUser = { id: 1, snowflakeId: 'snowflake-id-1' } as User;
+      jest.spyOn(authService, 'findUserById').mockResolvedValue(returnedUser);
+
+      const result = await controller.getProfile(req);
       expect(result).toEqual({
         message: '인증된 사용자 정보',
-        user: req.user,
+        snowflakeId: returnedUser.snowflakeId,
       });
-    });
-
-    it('JWT 토큰이 없는 경우 예외를 던진다.', async () => {
-      const req = {} as any;
-      try {
-        authController.getProfile(req);
-      } catch (error) {
-        expect(error).toBeInstanceOf(LoginRequiredException);
-      }
     });
   });
 });

@@ -128,4 +128,41 @@ export class WorkspaceController {
 
     return { message: WorkspaceResponseMessage.WORKSPACE_INVITED };
   }
+
+  @ApiOperation({
+    summary: '특정 워크스페이스에 대한 사용자의 권한을 확인합니다.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '사용자의 권한이 확인되었습니다.',
+    schema: {
+      example: {
+        role: 'owner',
+      },
+    },
+  })
+  @Get('/check-role')
+  @HttpCode(HttpStatus.OK)
+  async checkUserRole(
+    @Request() req,
+    @Query('workspaceId') workspaceId: string,
+  ): Promise<{ role: 'owner' | 'guest' }> {
+    const userId = req.user.sub; // 현재 인증된 사용자의 ID
+
+    const role = await this.workspaceService.getUserRoleInWorkspace(
+      userId,
+      workspaceId,
+    );
+
+    if (!role) {
+      throw new ForbiddenException(
+        '해당 워크스페이스에 접근할 권한이 없습니다.',
+      );
+    }
+
+    return {
+      workspaceId,
+      role,
+    };
+  }
 }
