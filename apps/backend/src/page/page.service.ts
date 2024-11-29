@@ -37,6 +37,7 @@ export class PageService {
       content,
       emoji,
       workspace,
+      node,
     });
 
     // 페이지와 노드를 서로 연결하여 저장한다.
@@ -66,6 +67,7 @@ export class PageService {
   }
 
   async updatePage(id: number, dto: UpdatePageDto): Promise<Page> {
+    console.log(id, dto, 'asdfasdasd');
     // 갱신할 페이지를 조회한다.
     // 페이지를 조회한다.
     const page = await this.pageRepository.findOneBy({ id });
@@ -87,7 +89,10 @@ export class PageService {
 
   async findPageById(id: number): Promise<Page> {
     // 페이지를 조회한다.
-    const page = await this.pageRepository.findOneBy({ id });
+    const page = await this.pageRepository.findOne({
+      where: { id },
+      relations: ['node'],
+    });
 
     // 페이지가 없으면 NotFound 에러
     if (!page) {
