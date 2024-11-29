@@ -185,11 +185,20 @@ export class YjsService
             if (node.type !== 'note') {
               continue;
             }
-            const { title, id } = node.data; // TODO: 이모지 추가
+
+            // node.data는 페이지에 대한 정보
+            const { title, id } = node.data;
             const { x, y } = node.position;
             const isHolding = node.isHolding;
+            this.logger.log('log', node);
             if (!isHolding) {
-              await this.nodeService.updateNode(id, { title, x, y });
+              // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
+              const findPage = await this.pageService.findPageById(id);
+              await this.nodeService.updateNode(findPage.node.id, {
+                title,
+                x,
+                y,
+              });
             }
           }
         }
