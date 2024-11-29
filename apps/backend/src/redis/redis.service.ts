@@ -24,14 +24,12 @@ export class RedisService {
 
   async get(key: string) {
     const data = await this.redisClient.hgetall(key);
-    console.log(data);
     return Object.fromEntries(
       Object.entries(data).map(([field, value]) => [field, value]),
     ) as RedisPage;
   }
 
   async set(key: string, value: object) {
-    console.log('set', Object.entries(value));
     return await this.redisClient.hset(key, Object.entries(value));
   }
 

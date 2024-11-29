@@ -5,6 +5,7 @@ import { PageRepository } from './page.repository';
 import { Page } from './page.entity';
 import { CreatePageDto } from './dtos/createPage.dto';
 import { UpdatePageDto } from './dtos/updatePage.dto';
+import { UpdatePartialPageDto } from './dtos/updatePartialPage.dto';
 import { PageNotFoundException } from '../exception/page.exception';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 
@@ -67,7 +68,6 @@ export class PageService {
   }
 
   async updatePage(id: number, dto: UpdatePageDto): Promise<Page> {
-    console.log(id, dto, 'asdfasdasd');
     // 갱신할 페이지를 조회한다.
     // 페이지를 조회한다.
     const page = await this.pageRepository.findOneBy({ id });
@@ -83,7 +83,7 @@ export class PageService {
     return await this.pageRepository.save(newPage);
   }
 
-  async updateBulkPage(pages: UpdatePageDto[]) {
+  async updateBulkPage(pages: UpdatePartialPageDto[]) {
     await this.pageRepository.bulkUpdate(pages);
   }
 

@@ -100,7 +100,6 @@ export class YjsService
 
         if (Object.keys(pageContent).length > 0) {
           this.transformText(pageContent);
-          this.logger.error(pageContent);
           // this.logger.error(this.transformText(pageContent));
           this.initializePageContent(pageContent, editorDoc);
         }
