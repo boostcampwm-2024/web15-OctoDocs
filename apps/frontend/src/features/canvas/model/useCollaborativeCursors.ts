@@ -5,6 +5,7 @@ import { useReactFlow, type XYPosition } from "@xyflow/react";
 
 import { createSocketIOProvider } from "@/shared/api/socketProvider";
 import { useUserStore } from "@/entities/user/model/userStore";
+import { useWorkspace } from "@/shared/lib/useWorkspace";
 
 export interface AwarenessState {
   cursor: XYPosition | null;
@@ -14,13 +15,9 @@ export interface AwarenessState {
 
 interface CollaborativeCursorsProps {
   ydoc: Y.Doc;
-  roomName?: string;
 }
 
-export function useCollaborativeCursors({
-  ydoc,
-  roomName = "cursor-room",
-}: CollaborativeCursorsProps) {
+export function useCollaborativeCursors({ ydoc }: CollaborativeCursorsProps) {
   const flowInstance = useReactFlow();
   const provider = useRef<SocketIOProvider>();
   const [cursors, setCursors] = useState<Map<number, AwarenessState>>(
@@ -29,8 +26,10 @@ export function useCollaborativeCursors({
   const { currentUser } = useUserStore();
   const { color, clientId } = currentUser;
 
+  const workspace = useWorkspace();
+
   useEffect(() => {
-    const wsProvider = createSocketIOProvider("flow-room", ydoc);
+    const wsProvider = createSocketIOProvider(`flow-room-${workspace}`, ydoc);
     provider.current = wsProvider;
 
     wsProvider.awareness.setLocalState({
@@ -53,7 +52,7 @@ export function useCollaborativeCursors({
     return () => {
       wsProvider.destroy();
     };
-  }, [ydoc, roomName, color, clientId]);
+  }, [ydoc, color, clientId, workspace]);
 
   const updateCursorPosition = useCallback(
     (x: number | null, y: number | null) => {
