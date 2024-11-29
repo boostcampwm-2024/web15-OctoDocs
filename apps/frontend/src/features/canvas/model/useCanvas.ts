@@ -38,7 +38,6 @@ export const useCanvas = () => {
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({
       ydoc,
-      roomName: `flow-room-${workspace}`,
     });
 
   const provider = useRef<SocketIOProvider>();
@@ -81,7 +80,7 @@ export const useCanvas = () => {
       const existingNode = nodesMap.get(pageId) as YNode;
 
       const newNode: YNode = {
-        id: pageId,
+        id: existingNode.id,
         type: "note",
         data: { title: value, id: pageId, emoji: existingNode.data.emoji },
         position: existingNode.position,
@@ -116,7 +115,7 @@ export const useCanvas = () => {
   useEffect(() => {
     if (!ydoc) return;
 
-    const wsProvider = createSocketIOProvider("flow-room", ydoc);
+    const wsProvider = createSocketIOProvider(`flow-room-${workspace}`, ydoc);
 
     provider.current = wsProvider;
 
