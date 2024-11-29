@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { RedisService } from '../redis/redis.service';
 import { PageService } from '../page/page.service';
+import { PageNotFoundException } from 'src/exception/page.exception';
 
 @Injectable()
 export class TasksService {
@@ -11,7 +12,7 @@ export class TasksService {
     private readonly pageService: PageService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_SECOND)
   async handleCron() {
     console.log(await this.redisService.getAllKeys());
     const keys = await this.redisService.getAllKeys();
@@ -32,6 +33,11 @@ export class TasksService {
       });
       this.logger.log('데이터베이스 갱신');
     }
-    this.pageService.updateBulkPage(pages);
+    try {
+      this.pageService.updateBulkPage(pages);
+    } catch (exception) {
+      if (exception instanceof PageNotFoundException) {
+      }
+    }
   }
 }
