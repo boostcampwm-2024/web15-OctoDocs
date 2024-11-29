@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { RedisService } from '../redis/redis.service';
 import { PageService } from '../page/page.service';
-import { PageNotFoundException } from 'src/exception/page.exception';
 
 @Injectable()
 export class TasksService {

@@ -5,6 +5,7 @@ import { SignUpDto } from './dtos/signUp.dto';
 import { User } from '../user/user.entity';
 import { UpdateUserDto } from './dtos/UpdateUser.dto';
 import { UserNotFoundException } from '../exception/user.exception';
+import { Snowflake } from '@theinternetfolks/snowflake';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -68,9 +69,8 @@ describe('AuthService', () => {
         provider: 'naver',
         email: 'new@naver.com',
       };
-      const generated
-      
-      flakeId = Snowflake.generate(); // Snowflake.generate()의 mock 값을 준비
+
+      const generatedSnowflakeId = Snowflake.generate(); // Snowflake.generate()의 mock 값을 준비
       const newDate = new Date();
       const createdUser = {
         providerId: dto.providerId,

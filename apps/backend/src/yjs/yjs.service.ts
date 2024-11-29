@@ -17,11 +17,11 @@ import {
 } from 'y-prosemirror';
 import { novelEditorSchema } from './yjs.schema';
 import { EdgeService } from '../edge/edge.service';
-import { Node } from 'src/node/node.entity';
-import { Edge } from 'src/edge/edge.entity';
+import { Node } from '../node/node.entity';
+import { Edge } from '../edge/edge.entity';
 import { YMapEdge } from './yjs.type';
 import { RedisService } from '../redis/redis.service';
-import { PageNotFoundException } from 'src/exception/page.exception';
+import { PageNotFoundException } from '../exception/page.exception';
 
 // Y.Doc에는 name 컬럼이 없어서 생성했습니다.
 class CustomDoc extends Y.Doc {
