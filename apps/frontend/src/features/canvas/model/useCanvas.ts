@@ -140,6 +140,14 @@ export const useCanvas = () => {
             return newNodes;
           });
         } else if (change.action === "delete") {
+          // pageInt는 yjs.service.ts에서 타입 변환 로직 참고.
+          const deletedNodeId = parseInt(nodeId);
+          const currentPageValue = usePageStore.getState().currentPage;
+
+          if (currentPageValue === deletedNodeId) {
+            usePageStore.setState({ currentPage: null, isPanelOpen: false });
+          }
+
           setNodes((nds) => nds.filter((n) => n.id !== nodeId));
         }
       });
