@@ -20,9 +20,12 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { RoleModule } from './role/role.module';
+import { TasksModule } from './tasks/tasks.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, '..', '..', 'frontend', 'dist'),
     }),
@@ -34,14 +37,14 @@ import { RoleModule } from './role/role.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
-        database: 'db.sqlite',
-        // type: 'postgres',
-        // host: configService.get('DB_HOST'),
-        // port: configService.get('DB_PORT'),
-        // username: configService.get('DB_USER'),
-        // password: configService.get('DB_PASSWORD'),
-        // database: configService.get('DB_NAME'),
+        // type: 'sqlite',
+        // database: 'db.sqlite',
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
         entities: [Node, Page, Edge, User, Workspace, Role],
         logging: true,
         synchronize: true,
@@ -56,6 +59,7 @@ import { RoleModule } from './role/role.module';
     UserModule,
     WorkspaceModule,
     RoleModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
