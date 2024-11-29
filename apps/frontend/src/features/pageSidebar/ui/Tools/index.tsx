@@ -36,6 +36,20 @@ export function Tools() {
             emoji: null,
           })
           .then((res) => {
+            const nodesMap = ydoc.getMap("nodes");
+            nodesMap.set(res.pageId.toString(), {
+              id: res.pageId.toString(),
+              type: "note",
+              data: {
+                title: "제목 없음",
+                id: res.pageId,
+                emoji: "",
+              },
+              position: { x: 0, y: 0 },
+              selected: false,
+              isHolding: false,
+            });
+
             setCurrentPage(res.pageId);
 
             const yTitleMap = ydoc.getMap("title");

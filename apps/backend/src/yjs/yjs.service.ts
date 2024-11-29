@@ -66,10 +66,13 @@ export class YjsService
       const editorDoc = doc.getXmlFragment('default');
       const customDoc = editorDoc.doc as CustomDoc;
 
+      if (customDoc.name === 'users') {
+        return;
+      }
+
       // document name이 flow-room이라면 모든 노드들을 볼 수 있는 화면입니다.
       // 노드를 클릭해 페이지를 열었을 때만 해당 페이지 값을 가져와서 초기 데이터로 세팅해줍니다.
       if (customDoc.name?.startsWith('document-')) {
-        const workspaceId = doc.guid;
         const pageId = parseInt(customDoc.name.split('-')[1]);
         const findPage = await this.pageService.findPageById(pageId);
 
@@ -88,18 +91,18 @@ export class YjsService
         editorDoc.observeDeep(() => {
           const document = editorDoc.doc as CustomDoc;
           const pageId = parseInt(document.name.split('-')[1]);
-          // this.pageService.updatePage(
-          //   pageId,
-          //   JSON.parse(
-          //     JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
-          //   ),
-          // );
-
-          this.redisService.setField(
-            pageId.toString(),
-            'content',
-            JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+          this.pageService.updatePage(
+            pageId,
+            JSON.parse(
+              JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+            ),
           );
+
+          // this.redisService.setField(
+          //   pageId.toString(),
+          //   'content',
+          //   JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+          // );
           // this.redisService.get(pageId.toString()).then((data) => {
           //   console.log(data);
           // });
@@ -133,17 +136,17 @@ export class YjsService
       title.observeDeep(async (event) => {
         // path가 존재할 때만 페이지 갱신
         event[0].path.toString().split('_')[1] &&
-          // this.pageService.updatePage(
-          //   parseInt(event[0].path.toString().split('_')[1]),
-          //   {
-          //     title: event[0].target.toString(),
-          //   },
-          // );
-          this.redisService.setField(
-            event[0].path.toString().split('_')[1],
-            'title',
-            event[0].target.toString(),
+          this.pageService.updatePage(
+            parseInt(event[0].path.toString().split('_')[1]),
+            {
+              title: event[0].target.toString(),
+            },
           );
+        // this.redisService.setField(
+        //   event[0].path.toString().split('_')[1],
+        //   'title',
+        //   event[0].target.toString(),
+        // );
       });
       emoji.observeDeep((event) => {
         // path가 존재할 때만 페이지 갱신

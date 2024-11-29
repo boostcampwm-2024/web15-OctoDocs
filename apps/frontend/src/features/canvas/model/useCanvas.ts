@@ -12,14 +12,11 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
-import { useQueryClient } from "@tanstack/react-query";
 
-import { usePages } from "@/features/pageSidebar/api/usePages";
 import useYDocStore from "@/shared/model/ydocStore";
 import { calculateBestHandles } from "@/features/canvas/model/calculateHandles";
 import { createSocketIOProvider } from "@/shared/api/socketProvider";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
-import { getSortedNodes } from "./sortNodes";
 import { usePageStore } from "@/features/pageSidebar/model/pageStore";
 import { useWorkspace } from "@/shared/lib/useWorkspace";
 
@@ -31,8 +28,6 @@ export const useCanvas = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const workspace = useWorkspace();
-  const { pages } = usePages(workspace);
-  const queryClient = useQueryClient();
   const { ydoc } = useYDocStore();
 
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
@@ -41,7 +36,6 @@ export const useCanvas = () => {
     });
 
   const provider = useRef<SocketIOProvider>();
-  const existingPageIds = useRef(new Set<string>());
   const holdingNodeRef = useRef<string | null>(null);
 
   const currentPage = usePageStore((state) => state.currentPage);
@@ -68,7 +62,6 @@ export const useCanvas = () => {
   useEffect(() => {
     const yTitleMap = ydoc.getMap("title");
     const yEmojiMap = ydoc.getMap("emoji");
-
     const nodesMap = ydoc.getMap("nodes");
 
     yTitleMap.observeDeep((event) => {
@@ -78,6 +71,7 @@ export const useCanvas = () => {
       const value = event[0].target.toString();
 
       const existingNode = nodesMap.get(pageId) as YNode;
+      if (!existingNode) return;
 
       const newNode: YNode = {
         id: existingNode.id,
@@ -98,6 +92,7 @@ export const useCanvas = () => {
       const value = event[0].target.toString();
 
       const existingNode = nodesMap.get(pageId) as YNode;
+      if (!existingNode) return;
 
       const newNode: YNode = {
         id: pageId,
@@ -110,67 +105,42 @@ export const useCanvas = () => {
 
       nodesMap.set(pageId, newNode);
     });
-  }, []);
-
+  }, [ydoc]);
   useEffect(() => {
     if (!ydoc) return;
 
     const wsProvider = createSocketIOProvider(`flow-room-${workspace}`, ydoc);
-
     provider.current = wsProvider;
+
+    wsProvider.on("sync", (isSynced: boolean) => {
+      if (isSynced) {
+        const nodesMap = ydoc.getMap("nodes");
+        const yNodes = Array.from(nodesMap.values()) as YNode[];
+        setNodes(yNodes);
+      }
+    });
 
     const nodesMap = ydoc.getMap("nodes");
     const edgesMap = ydoc.getMap("edges");
-
-    const yNodes = Array.from(nodesMap.values()) as YNode[];
-
-    const initialNodes = yNodes.map((yNode) => {
-      const nodeEntries = Object.entries(yNode).filter(
-        ([key]) => key !== "isHolding",
-      );
-      return Object.fromEntries(nodeEntries) as Node;
-    });
-
-    console.log(initialNodes);
-
-    setNodes(initialNodes);
-
-    let isInitialSync = true;
+    const yEdges = Array.from(edgesMap.values()) as Edge[];
+    setEdges(yEdges);
 
     nodesMap.observe((event) => {
-      if (isInitialSync) {
-        isInitialSync = false;
-        return;
-      }
-
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
-          const updatedYNode = nodesMap.get(nodeId) as YNode;
-          const updatedNodeEntries = Object.entries(updatedYNode).filter(
-            ([key]) => key !== "isHolding",
-          );
-          const updatedNode = Object.fromEntries(updatedNodeEntries) as Node;
-
-          if (change.action === "add") {
-            queryClient.invalidateQueries({ queryKey: ["pages"] });
-          }
-
+          const updatedNode = nodesMap.get(nodeId) as Node;
           setNodes((nds) => {
             const index = nds.findIndex((n) => n.id === nodeId);
             if (index === -1) {
               return [...nds, updatedNode];
             }
             const newNodes = [...nds];
-            newNodes[index] = {
-              ...updatedNode,
-              selected: newNodes[index].selected,
-            };
+            newNodes[index] = updatedNode;
             return newNodes;
           });
         } else if (change.action === "delete") {
           setNodes((nds) => nds.filter((n) => n.id !== nodeId));
-          queryClient.invalidateQueries({ queryKey: ["pages"] });
         }
       });
     });
@@ -183,52 +153,7 @@ export const useCanvas = () => {
     return () => {
       wsProvider.destroy();
     };
-  }, [ydoc, queryClient]);
-
-  useEffect(() => {
-    if (!pages || !ydoc) return;
-
-    const nodesMap = ydoc.getMap("nodes");
-    const currentPageIds = new Set(pages.map((page) => page.id.toString()));
-
-    existingPageIds.current.forEach((pageId) => {
-      if (!currentPageIds.has(pageId)) {
-        nodesMap.delete(pageId);
-        existingPageIds.current.delete(pageId);
-      }
-    });
-
-    pages.forEach((page) => {
-      const pageId = page.id.toString();
-      const existingNode = nodesMap.get(pageId) as YNode | undefined;
-
-      const newNode: YNode = {
-        id: pageId,
-        type: "note",
-        data: { title: page.title, id: page.id, emoji: page.emoji },
-        position: existingNode?.position || {
-          x: Math.random() * 500,
-          y: Math.random() * 500,
-        },
-        selected: false,
-        isHolding: false,
-      };
-
-      nodesMap.set(pageId, newNode);
-      existingPageIds.current.add(pageId);
-    });
-  }, [pages, ydoc]);
-
-  const sortNodes = async () => {
-    const sortedNodes = await getSortedNodes(nodes, edges);
-    const nodesMap = ydoc.getMap("nodes");
-
-    sortedNodes.forEach((updateNode) => {
-      nodesMap.set(updateNode.id, updateNode);
-    });
-
-    setNodes(sortedNodes);
-  };
+  }, [ydoc, setNodes, setEdges, workspace]);
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -275,7 +200,7 @@ export const useCanvas = () => {
 
       onNodesChange(changes);
     },
-    [nodes, edges, onNodesChange],
+    [nodes, edges, onNodesChange, ydoc],
   );
 
   const handleEdgesChange = useCallback(
@@ -291,7 +216,7 @@ export const useCanvas = () => {
 
       onEdgesChange(changes);
     },
-    [onEdgesChange],
+    [onEdgesChange, ydoc],
   );
 
   const onConnect = useCallback(
@@ -360,7 +285,6 @@ export const useCanvas = () => {
     onNodeDragStart,
     onNodeDragStop,
     onConnect,
-    sortNodes,
     cursors,
   };
 };
