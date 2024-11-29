@@ -12,7 +12,7 @@ export class TasksService {
     private readonly pageService: PageService,
   ) {}
 
-  @Cron(CronExpression.EVERY_SECOND)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async handleCron() {
     console.log(await this.redisService.getAllKeys());
     const keys = await this.redisService.getAllKeys();
@@ -22,22 +22,18 @@ export class TasksService {
       const { title, content } = await this.redisService.get(key);
       const jsonContent = JSON.parse(content);
       pages.push({
-        id: key,
+        id: parseInt(key),
         title,
         content: jsonContent,
         version: 1,
       });
-      this.pageService.updatePage(parseInt(key), {
-        title,
-        content: jsonContent,
-      });
-      this.logger.log('데이터베이스 갱신');
+      // this.pageService.updatePage(parseInt(key), {
+      //   title,
+      //   content: jsonContent,
+      // });
+      // this.logger.log('데이터베이스 갱신');
     }
-    try {
-      this.pageService.updateBulkPage(pages);
-    } catch (exception) {
-      if (exception instanceof PageNotFoundException) {
-      }
-    }
+    console.log(pages);
+    this.pageService.updateBulkPage(pages);
   }
 }

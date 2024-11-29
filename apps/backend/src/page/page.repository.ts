@@ -23,9 +23,9 @@ export class PageRepository extends Repository<Page> {
   async bulkUpdate(pages) {
     await this.createQueryBuilder()
       .insert()
-      .into(Page)
+      .into(Page, ['id', 'title', 'content', 'version'])
       .values(pages)
-      .orUpdate(['title', 'content'], ['id'])
+      .orUpdate(['title', 'content', 'version'], ['id'])
       .execute();
   }
 }
