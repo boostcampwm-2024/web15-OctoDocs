@@ -299,12 +299,13 @@ export class YjsService
   }
 
   // editor에서 paragraph 내부 text 노드의 text 값의 빈 문자열을 제거한다.
+  // text 값이 빈 문자열이면 empty text nodes are not allowed 에러가 발생합니다.
   transformText(doc: any) {
     doc.content.forEach((paragraph) => {
       if (paragraph.type === 'paragraph' && Array.isArray(paragraph.content)) {
         paragraph.content.forEach((textNode) => {
           if (textNode.type === 'text' && textNode.text === '') {
-            textNode.text = ' '; // 빈 문자열을 "a"로 대체
+            textNode.text = ' '; // 빈 문자열을 공백으로 대체
           }
         });
       }
