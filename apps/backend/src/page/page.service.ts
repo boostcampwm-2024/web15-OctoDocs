@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { NodeRepository } from '../node/node.repository';
 import { WorkspaceRepository } from '../workspace/workspace.repository';
 import { PageRepository } from './page.repository';
@@ -8,13 +8,16 @@ import { UpdatePageDto } from './dtos/updatePage.dto';
 import { UpdatePartialPageDto } from './dtos/updatePartialPage.dto';
 import { PageNotFoundException } from '../exception/page.exception';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
+import Redlock from 'redlock';
 
+const RED_LOCK_TOKEN = 'RED_LOCK';
 @Injectable()
 export class PageService {
   constructor(
     private readonly pageRepository: PageRepository,
     private readonly nodeRepository: NodeRepository,
     private readonly workspaceRepository: WorkspaceRepository,
+    @Inject(RED_LOCK_TOKEN) private readonly redisLock: Redlock,
   ) {}
 
   async createPage(dto: CreatePageDto): Promise<Page> {
