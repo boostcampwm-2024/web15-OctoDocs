@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Page } from './page.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
+import { UpdatePartialPageDto } from './dtos/updatePartialPage.dto';
 
 @Injectable()
 export class PageRepository extends Repository<Page> {
@@ -20,12 +21,7 @@ export class PageRepository extends Repository<Page> {
     });
   }
 
-  async bulkUpdate(pages) {
-    await this.createQueryBuilder()
-      .insert()
-      .into(Page)
-      .values(pages)
-      .orUpdate(['title', 'content'], ['id'])
-      .execute();
+  async bulkUpdate(pages: UpdatePartialPageDto[]) {
+    await Promise.all(pages.map((page) => this.update(page.id, page)));
   }
 }

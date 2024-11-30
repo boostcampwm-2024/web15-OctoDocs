@@ -6,7 +6,6 @@ import { UpdateUserDto } from './dtos/UpdateUser.dto';
 import { UserNotFoundException } from '../exception/user.exception';
 import { Snowflake } from '@theinternetfolks/snowflake';
 
-
 @Injectable()
 export class AuthService {
   constructor(private readonly userRepository: UserRepository) {}
