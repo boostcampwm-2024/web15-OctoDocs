@@ -10,13 +10,17 @@ import { UpdatePageDto } from './dtos/updatePage.dto';
 import { PageNotFoundException } from '../exception/page.exception';
 import { WorkspaceRepository } from '../workspace/workspace.repository';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
+const RED_LOCK_TOKEN = 'RED_LOCK';
+type RedisLock = {
+  acquire(): Promise<{ release: () => void }>;
+};
 
 describe('PageService', () => {
   let service: PageService;
   let pageRepository: PageRepository;
   let nodeRepository: NodeRepository;
   let workspaceRepository: WorkspaceRepository;
-
+  let redisLock: RedisLock;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -46,6 +50,12 @@ describe('PageService', () => {
             findOneBy: jest.fn(),
           },
         },
+        {
+          provide: RED_LOCK_TOKEN,
+          useValue: {
+            acquire: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -53,10 +63,15 @@ describe('PageService', () => {
     pageRepository = module.get<PageRepository>(PageRepository);
     nodeRepository = module.get<NodeRepository>(NodeRepository);
     workspaceRepository = module.get<WorkspaceRepository>(WorkspaceRepository);
+    redisLock = module.get<RedisLock>(RED_LOCK_TOKEN);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(service).toBeDefined();
+    expect(pageRepository).toBeDefined();
+    expect(nodeRepository).toBeDefined();
+    expect(workspaceRepository).toBeDefined();
+    expect(redisLock).toBeDefined();
   });
 
   describe('createPage', () => {
@@ -141,17 +156,15 @@ describe('PageService', () => {
     });
   });
 
-  describe('createLinkedPage', () => {
-    it('', () => {});
-  });
-
   describe('deletePage', () => {
     it('id에 해당하는 페이지를 찾아 성공적으로 삭제한다.', async () => {
       jest
         .spyOn(pageRepository, 'delete')
         .mockResolvedValue({ affected: true } as any);
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(new Page());
-
+      jest.spyOn(redisLock, 'acquire').mockResolvedValue({
+        release: jest.fn(),
+      });
       await service.deletePage(1);
 
       expect(pageRepository.delete).toHaveBeenCalledWith(1);
@@ -161,7 +174,9 @@ describe('PageService', () => {
       jest
         .spyOn(pageRepository, 'delete')
         .mockResolvedValue({ affected: false } as any);
-
+      jest.spyOn(redisLock, 'acquire').mockResolvedValue({
+        release: jest.fn(),
+      });
       await expect(service.deletePage(1)).rejects.toThrow(
         PageNotFoundException,
       );
@@ -199,10 +214,11 @@ describe('PageService', () => {
         emoji: '📝',
         workspace: null,
       };
-
       jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(originPage);
       jest.spyOn(pageRepository, 'save').mockResolvedValue(newPage);
-
+      jest.spyOn(redisLock, 'acquire').mockResolvedValue({
+        release: jest.fn(),
+      });
       const result = await service.updatePage(1, dto);
 
       expect(result).toEqual(newPage);
@@ -216,7 +232,9 @@ describe('PageService', () => {
       jest
         .spyOn(nodeRepository, 'findOneBy')
         .mockResolvedValue({ affected: false } as any);
-
+      jest.spyOn(redisLock, 'acquire').mockResolvedValue({
+        release: jest.fn(),
+      });
       await expect(service.updatePage(1, new UpdatePageDto())).rejects.toThrow(
         PageNotFoundException,
       );

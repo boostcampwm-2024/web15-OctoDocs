@@ -20,7 +20,6 @@ describe('PageController', () => {
           provide: PageService,
           useValue: {
             createPage: jest.fn(),
-            createLinkedPage: jest.fn(),
             deletePage: jest.fn(),
             updatePage: jest.fn(),
             findPageById: jest.fn(),

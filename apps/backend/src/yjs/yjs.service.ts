@@ -113,11 +113,12 @@ export class YjsService
         editorDoc.observeDeep(() => {
           const document = editorDoc.doc as CustomDoc;
           const pageId = parseInt(document.name.split('-')[1]);
-          this.pageService.updatePage(
-            pageId,
-            JSON.parse(
-              JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
-            ),
+          
+          this.redisService.setField(
+            `page:${pageId.toString()}`,
+            'content',
+            JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+
           );
 
           // this.redisService.setField(
@@ -157,12 +158,13 @@ export class YjsService
       // title의 변경 사항을 감지한다.
       title.observeDeep(async (event) => {
         // path가 존재할 때만 페이지 갱신
+
         event[0].path.toString().split('_')[1] &&
-          this.pageService.updatePage(
-            parseInt(event[0].path.toString().split('_')[1]),
-            {
-              title: event[0].target.toString(),
-            },
+          this.redisService.setField(
+            `page:${event[0].path.toString().split('_')[1]}`,
+            'title',
+            event[0].target.toString(),
+
           );
         // this.redisService.setField(
         //   event[0].path.toString().split('_')[1],
@@ -193,7 +195,6 @@ export class YjsService
             const { title, id } = node.data;
             const { x, y } = node.position;
             const isHolding = node.isHolding;
-            this.logger.log('log', node);
             if (!isHolding) {
               // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
               const findPage = await this.pageService.findPageById(id);
