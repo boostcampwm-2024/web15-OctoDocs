@@ -20,12 +20,12 @@ export class TasksService {
       keys.map(async (key) => {
         const { title, content } = await this.redisService.get(key);
         const pageId = parseInt(key.split(':')[1]);
-        if (title === null) {
+        if (title === undefined) {
           const jsonContent = JSON.parse(content);
           await this.pageService.updatePage(pageId, {
             content: jsonContent,
           });
-        } else if (content === null) {
+        } else if (content === undefined) {
           await this.pageService.updatePage(pageId, {
             title,
           });
@@ -35,8 +35,8 @@ export class TasksService {
             title,
             content: jsonContent,
           });
-          await this.redisService.delete(key);
         }
+        await this.redisService.delete(key);
       }),
     )
       .then(() => {

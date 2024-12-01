@@ -190,7 +190,6 @@ export class YjsService
             const { title, id } = node.data;
             const { x, y } = node.position;
             const isHolding = node.isHolding;
-            this.logger.log('log', node);
             if (!isHolding) {
               // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
               const findPage = await this.pageService.findPageById(id);
