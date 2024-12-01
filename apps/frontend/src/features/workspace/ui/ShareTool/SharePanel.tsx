@@ -16,15 +16,20 @@ export function SharePanel() {
 
   return (
     <div className="w-full">
-      <div className="flex w-full items-center gap-2 p-1">
-        <div className="flex-row text-sm text-slate-400">공개 범위</div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            checked={isPublic}
-            onChange={setIsPublic}
-            CheckedIcon={Globe2}
-            UncheckedIcon={Lock}
-          />
+      <div className="flex w-full flex-row justify-between p-1">
+        <div className="flex flex-row items-center gap-2">
+          <div className="flex-row text-sm text-slate-400">공개 범위</div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={isPublic}
+              onChange={setIsPublic}
+              CheckedIcon={Globe2}
+              UncheckedIcon={Lock}
+            />
+          </div>
+        </div>
+        <div className="select-none flex-row text-sm text-slate-400">
+          🚧 수정 중입니다.
         </div>
       </div>
       <div
