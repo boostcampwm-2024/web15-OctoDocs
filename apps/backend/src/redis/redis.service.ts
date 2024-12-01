@@ -4,8 +4,8 @@ import Redis from 'ioredis';
 const REDIS_CLIENT_TOKEN = 'REDIS_CLIENT';
 
 type RedisPage = {
-  title: string;
-  content: string;
+  title?: string;
+  content?: string
 };
 @Injectable()
 export class RedisService {
@@ -15,8 +15,12 @@ export class RedisService {
     @Inject(REDIS_CLIENT_TOKEN) private readonly redisClient: Redis,
   ) {}
 
-  async getAllKeys() {
-    return await this.redisClient.keys('*');
+  async getAllKeys(pattern) {
+    return await this.redisClient.keys(pattern);
+  }
+
+  createStream() {
+    return this.redisClient.scanStream();
   }
 
   async get(key: string) {
