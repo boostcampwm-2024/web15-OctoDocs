@@ -37,6 +37,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
+
         // type: 'sqlite',
         // database: 'db.sqlite',
         type: 'postgres',
