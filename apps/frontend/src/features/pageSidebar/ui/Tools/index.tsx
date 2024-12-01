@@ -45,7 +45,10 @@ export function Tools() {
                 id: res.pageId,
                 emoji: "",
               },
-              position: { x: 0, y: 0 },
+              position: {
+                x: Math.random() * 500,
+                y: Math.random() * 500,
+              },
               selected: false,
               isHolding: false,
             });
