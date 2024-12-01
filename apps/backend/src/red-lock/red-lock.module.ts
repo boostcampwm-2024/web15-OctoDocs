@@ -6,7 +6,7 @@ const RED_LOCK_TOKEN = 'RED_LOCK';
 const REDIS_CLIENT_TOKEN = 'REDIS_CLIENT';
 
 @Module({
-  imports: [forwardRef(()=>RedisModule)],
+  imports: [forwardRef(() => RedisModule)],
   providers: [
     {
       provide: RED_LOCK_TOKEN,

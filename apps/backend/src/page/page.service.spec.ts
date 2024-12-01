@@ -12,7 +12,7 @@ import { WorkspaceRepository } from '../workspace/workspace.repository';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 const RED_LOCK_TOKEN = 'RED_LOCK';
 type RedisLock = {
-  acquire(): Promise<{ release: Function }>;
+  acquire(): Promise<{ release: () => void }>;
 };
 
 describe('PageService', () => {
