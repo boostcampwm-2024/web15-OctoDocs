@@ -28,6 +28,7 @@ describe('PageService', () => {
             save: jest.fn(),
             delete: jest.fn(),
             findOneBy: jest.fn(),
+            findOne: jest.fn(),
             findPagesByWorkspace: jest.fn(),
           },
         },
@@ -135,6 +136,7 @@ describe('PageService', () => {
         content: {} as JSON,
         emoji: undefined,
         workspace: workspace1,
+        node: newNode,
       });
     });
   });
@@ -235,19 +237,22 @@ describe('PageService', () => {
         emoji: null,
         workspace: null,
       };
-      jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(expectedPage);
+      jest.spyOn(pageRepository, 'findOne').mockResolvedValue(expectedPage);
 
       await expect(service.findPageById(1)).resolves.toEqual(expectedPage);
     });
 
     it('id에 해당하는 페이지가 없을 경우 PageNotFoundException을 throw한다.', async () => {
-      jest.spyOn(pageRepository, 'findOneBy').mockResolvedValue(undefined);
+      jest.spyOn(pageRepository, 'findOne').mockResolvedValue(undefined);
 
       await expect(service.findPageById(1)).rejects.toThrow(
         PageNotFoundException,
       );
 
-      expect(pageRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(pageRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['node'],
+      });
     });
   });
 

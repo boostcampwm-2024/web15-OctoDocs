@@ -8,7 +8,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   VersionColumn,
-  IsNull,
 } from 'typeorm';
 import { Node } from '../node/node.entity';
 import { Workspace } from '../workspace/workspace.entity';

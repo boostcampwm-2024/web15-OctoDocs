@@ -9,13 +9,13 @@ import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { MoveNodeDto } from './dtos/moveNode.dto';
 import { WorkspaceRepository } from '../workspace/workspace.repository';
+import { Workspace } from '../workspace/workspace.entity';
 
 describe('NodeService', () => {
   let service: NodeService;
   let nodeRepository: jest.Mocked<NodeRepository>;
   let pageRepository: jest.Mocked<PageRepository>;
   let workspaceRepository: jest.Mocked<WorkspaceRepository>;
-
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

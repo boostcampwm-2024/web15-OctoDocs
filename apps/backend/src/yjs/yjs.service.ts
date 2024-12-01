@@ -17,10 +17,11 @@ import {
 } from 'y-prosemirror';
 import { novelEditorSchema } from './yjs.schema';
 import { EdgeService } from '../edge/edge.service';
-import { Node } from 'src/node/node.entity';
-import { Edge } from 'src/edge/edge.entity';
+import { Node } from '../node/node.entity';
+import { Edge } from '../edge/edge.entity';
 import { YMapEdge } from './yjs.type';
 import { RedisService } from '../redis/redis.service';
+import { PageNotFoundException } from '../exception/page.exception';
 
 // Y.Doc에는 name 컬럼이 없어서 생성했습니다.
 class CustomDoc extends Y.Doc {
@@ -36,7 +37,7 @@ class CustomDoc extends Y.Doc {
 export class YjsService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private logger = new Logger('YjsGateway');
+  private logger = new Logger(YjsService.name);
   private ysocketio: YSocketIO;
 
   constructor(
@@ -74,18 +75,39 @@ export class YjsService
       // 노드를 클릭해 페이지를 열었을 때만 해당 페이지 값을 가져와서 초기 데이터로 세팅해줍니다.
       if (customDoc.name?.startsWith('document-')) {
         const pageId = parseInt(customDoc.name.split('-')[1]);
-        const findPage = await this.pageService.findPageById(pageId);
+
+        // 초기 세팅할 page content
+        let pageContent: JSON;
+        try {
+          const findPage = await this.pageService.findPageById(pageId);
+          pageContent = JSON.parse(JSON.stringify(findPage.content));
+        } catch (exception) {
+          // 에러 스택 출력
+          this.logger.error(exception.stack);
+
+          // 만약 존재하지 않는 페이지에 접근한다면 비어있는 content를 전달한다.
+          if (exception instanceof PageNotFoundException) {
+            pageContent = JSON.parse('{}');
+            return;
+          }
+
+          throw exception;
+        }
 
         // content가 비어있다면 내부 구조가 novel editor schema를 따르지 않기 때문에 오류가 납니다.
         // content가 존재할 때만 넣어줍니다.
-        const pageContent = JSON.parse(JSON.stringify(findPage.content));
-        const novelEditorContent = {
-          type: 'doc',
-          content: pageContent,
-        };
-        pageContent.length > 0 &&
-          // JSON.parse(findPage.content).length > 0 &&
-          this.initializePageContent(novelEditorContent, editorDoc);
+        // const pageContent = JSON.parse(JSON.stringify(findPage.content));
+        // const novelEditorContent = {
+        //   type: 'doc',
+        //   content: pageContent,
+        // };
+
+        if (Object.keys(pageContent).length > 0) {
+          this.transformText(pageContent);
+          // this.logger.error(this.transformText(pageContent));
+          this.initializePageContent(pageContent, editorDoc);
+        }
+        // JSON.parse(findPage.content).length > 0 &&
 
         // 페이지 내용 변경 사항을 감지해서 데이터베이스에 갱신합니다.
         editorDoc.observeDeep(() => {
@@ -166,11 +188,20 @@ export class YjsService
             if (node.type !== 'note') {
               continue;
             }
-            const { title, id } = node.data; // TODO: 이모지 추가
+
+            // node.data는 페이지에 대한 정보
+            const { title, id } = node.data;
             const { x, y } = node.position;
             const isHolding = node.isHolding;
+            this.logger.log('log', node);
             if (!isHolding) {
-              await this.nodeService.updateNode(id, { title, x, y });
+              // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
+              const findPage = await this.pageService.findPageById(id);
+              await this.nodeService.updateNode(findPage.node.id, {
+                title,
+                x,
+                y,
+              });
             }
           }
         }
@@ -205,6 +236,10 @@ export class YjsService
     yTitleMap: Y.Map<unknown>,
     yEmojiMap: Y.Map<unknown>,
   ): void {
+    // 초기화
+    yNodeMap.clear();
+    yTitleMap.clear();
+    yEmojiMap.clear();
     nodes.forEach((node) => {
       const nodeId = node.id.toString(); // id를 string으로 변환
 
@@ -259,7 +294,7 @@ export class YjsService
   }
 
   // yXmlFragment에 content를 넣어준다.
-  initializePageContent(content: unknown, yXmlFragment: Y.XmlFragment) {
+  initializePageContent(content: JSON, yXmlFragment: Y.XmlFragment) {
     prosemirrorJSONToYXmlFragment(novelEditorSchema, content, yXmlFragment);
   }
 
@@ -267,6 +302,19 @@ export class YjsService
     this.logger.log('접속');
   }
 
+  // editor에서 paragraph 내부 text 노드의 text 값의 빈 문자열을 제거한다.
+  // text 값이 빈 문자열이면 empty text nodes are not allowed 에러가 발생합니다.
+  transformText(doc: any) {
+    doc.content.forEach((paragraph) => {
+      if (paragraph.type === 'paragraph' && Array.isArray(paragraph.content)) {
+        paragraph.content.forEach((textNode) => {
+          if (textNode.type === 'text' && textNode.text === '') {
+            textNode.text = ' '; // 빈 문자열을 공백으로 대체
+          }
+        });
+      }
+    });
+  }
   handleDisconnect() {
     this.logger.log('접속 해제');
   }

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { NaverStrategy } from './strategies/naver.strategy';
