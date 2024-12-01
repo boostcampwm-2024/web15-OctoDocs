@@ -50,16 +50,6 @@ export class PageService {
     return page;
   }
 
-  async createLinkedPage(title: string, nodeId: number): Promise<Page> {
-    // 노드를 조회한다.
-    const existingNode = await this.nodeRepository.findOneBy({ id: nodeId });
-    // 페이지를 생성한다.
-    const page = await this.pageRepository.save({ title, content: {} });
-
-    page.node = existingNode;
-    return await this.pageRepository.save(page);
-  }
-
   async deletePage(id: number): Promise<void> {
     // 페이지를 삭제한다.
     const deleteResult = await this.pageRepository.delete(id);

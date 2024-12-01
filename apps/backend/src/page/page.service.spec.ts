@@ -10,6 +10,7 @@ import { UpdatePageDto } from './dtos/updatePage.dto';
 import { PageNotFoundException } from '../exception/page.exception';
 import { WorkspaceRepository } from '../workspace/workspace.repository';
 import { WorkspaceNotFoundException } from '../exception/workspace.exception';
+const RED_LOCK_TOKEN = 'RED_LOCK';
 
 describe('PageService', () => {
   let service: PageService;
@@ -44,6 +45,12 @@ describe('PageService', () => {
           useValue: {
             save: jest.fn(),
             findOneBy: jest.fn(),
+          },
+        },
+        {
+          provide: RED_LOCK_TOKEN,
+          useValue: {
+            acquire: jest.fn(),
           },
         },
       ],
@@ -139,10 +146,6 @@ describe('PageService', () => {
         node: newNode,
       });
     });
-  });
-
-  describe('createLinkedPage', () => {
-    it('', () => {});
   });
 
   describe('deletePage', () => {
