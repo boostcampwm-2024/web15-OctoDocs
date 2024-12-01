@@ -38,6 +38,7 @@ import { RedLockModule } from './red-lock/red-lock.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
+
         // type: 'sqlite',
         // database: 'db.sqlite',
         type: 'postgres',

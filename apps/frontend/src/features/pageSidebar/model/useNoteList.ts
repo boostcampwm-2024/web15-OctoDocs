@@ -41,7 +41,10 @@ export const useNoteList = () => {
       return;
     }
 
+    const nodesMap = ydoc.getMap("nodes");
+    nodesMap.delete(noteIdToDelete.toString());
     deleteMutation.mutate({ id: noteIdToDelete });
+
     setIsModalOpen(false);
     setCurrentPage(null);
   };

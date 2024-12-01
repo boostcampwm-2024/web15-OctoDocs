@@ -38,7 +38,6 @@ export function Canvas({ className }: CanvasProps) {
     onNodeDragStart,
     onNodeDragStop,
     onConnect,
-    sortNodes,
     cursors,
   } = useCanvas();
 
@@ -63,7 +62,7 @@ export function Canvas({ className }: CanvasProps) {
       >
         <Controls />
         <div className="fixed bottom-5 left-16 z-30 h-4 w-4 text-neutral-50 hover:cursor-pointer">
-          <button onClick={sortNodes}>Sort</button>
+          {/* <button onClick={sortNodes}>Sort</button> */}
         </div>
         <MiniMap />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />

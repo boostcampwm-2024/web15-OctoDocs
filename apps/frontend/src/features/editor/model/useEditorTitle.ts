@@ -1,9 +1,8 @@
 import { useState } from "react";
-
 import Emoji from "@/shared/ui/Emoji";
-
 import useYDocStore from "@/shared/model/ydocStore";
 import { useYText } from "@/shared/model/useYText";
+import { YNode } from "@/features/canvas/model/useCanvas";
 
 interface Emoji {
   id: string;
@@ -22,10 +21,61 @@ export const useEditorTitle = (currentPage: number) => {
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setYTitle(e.target.value);
+
+    const nodesMap = ydoc.getMap("nodes");
+    const existingNode = nodesMap.get(currentPage.toString()) as YNode;
+
+    if (existingNode) {
+      const updatedNode = {
+        ...existingNode,
+        data: {
+          ...existingNode.data,
+          title: e.target.value,
+        },
+      };
+      nodesMap.set(currentPage.toString(), updatedNode);
+    }
   };
 
   const handleEmojiClick = ({ native }: Emoji) => {
     setYEmoji(native);
+
+    const nodesMap = ydoc.getMap("nodes");
+    const existingNode = nodesMap.get(currentPage.toString()) as YNode;
+
+    if (existingNode) {
+      const updatedNode = {
+        ...existingNode,
+        data: {
+          ...existingNode.data,
+          emoji: native,
+        },
+      };
+      nodesMap.set(currentPage.toString(), updatedNode);
+    }
+
+    setIsEmojiPickerOpen(false);
+  };
+
+  const handleRemoveIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    setYEmoji("");
+
+    const nodesMap = ydoc.getMap("nodes");
+    const existingNode = nodesMap.get(currentPage.toString()) as YNode;
+
+    if (existingNode) {
+      const updatedNode = {
+        ...existingNode,
+        data: {
+          ...existingNode.data,
+          emoji: "",
+        },
+      };
+      nodesMap.set(currentPage.toString(), updatedNode);
+    }
+
     setIsEmojiPickerOpen(false);
   };
 
@@ -35,14 +85,6 @@ export const useEditorTitle = (currentPage: number) => {
 
   const handleEmojiOutsideClick = () => {
     if (!isEmojiPickerOpen) return;
-
-    setIsEmojiPickerOpen(false);
-  };
-
-  const handleRemoveIconClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-
-    setYEmoji("");
     setIsEmojiPickerOpen(false);
   };
 
