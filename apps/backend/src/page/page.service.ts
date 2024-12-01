@@ -64,7 +64,7 @@ export class PageService {
 
   async deletePage(id: number): Promise<void> {
     // 락을 획득할 때까지 기다린다.
-    const lock = await this.redisLock.acquire([id.toString()], 1000);
+    const lock = await this.redisLock.acquire([`user:${id.toString()}`], 1000);
     try {
       // 페이지를 삭제한다.
       const deleteResult = await this.pageRepository.delete(id);
@@ -81,7 +81,7 @@ export class PageService {
 
   async updatePage(id: number, dto: UpdatePageDto): Promise<Page> {
     // 락을 획득할 때까지 기다린다.
-    const lock = await this.redisLock.acquire(['user:' + id.toString()], 1000);
+    const lock = await this.redisLock.acquire([`user:${id.toString()}`], 1000);
     try {
       // 갱신할 페이지를 조회한다.
       // 페이지를 조회한다.

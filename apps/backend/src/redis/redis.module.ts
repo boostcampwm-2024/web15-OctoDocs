@@ -1,13 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisService } from './redis.service';
 import Redis from 'ioredis';
+import { RedLockModule } from '../red-lock/red-lock.module';
 
 // 의존성 주입할 때 redis client를 식별할 토큰
 const REDIS_CLIENT_TOKEN = 'REDIS_CLIENT';
 
 @Module({
-  imports: [ConfigModule], // ConfigModule 추가
+  imports: [ConfigModule, forwardRef(() => RedLockModule)], // ConfigModule 추가
   providers: [
     RedisService,
     {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import Redis from 'ioredis';
 import Redlock from 'redlock';
 import { RedisModule } from '../redis/redis.module';
@@ -6,7 +6,7 @@ const RED_LOCK_TOKEN = 'RED_LOCK';
 const REDIS_CLIENT_TOKEN = 'REDIS_CLIENT';
 
 @Module({
-  imports: [RedisModule],
+  imports: [forwardRef(()=>RedisModule)],
   providers: [
     {
       provide: RED_LOCK_TOKEN,
