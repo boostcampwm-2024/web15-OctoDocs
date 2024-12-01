@@ -117,7 +117,7 @@ export class YjsService
           // );
 
           this.redisService.setField(
-            pageId.toString(),
+            `page:${pageId.toString()}`,
             'content',
             JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
           );
@@ -153,6 +153,7 @@ export class YjsService
       // title의 변경 사항을 감지한다.
       title.observeDeep(async (event) => {
         // path가 존재할 때만 페이지 갱신
+        
         event[0].path.toString().split('_')[1] &&
           // this.pageService.updatePage(
           //   parseInt(event[0].path.toString().split('_')[1]),
@@ -161,7 +162,7 @@ export class YjsService
           //   },
           // );
           this.redisService.setField(
-            event[0].path.toString().split('_')[1],
+            `page:${event[0].path.toString().split('_')[1]}`,
             'title',
             event[0].target.toString(),
           );
