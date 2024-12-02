@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TokenService } from './token.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModule } from '../../user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     ConfigModule, // ConfigModule 등록
     JwtModule.registerAsync({
       imports: [ConfigModule], // ConfigModule에서 환경 변수 로드

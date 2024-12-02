@@ -108,8 +108,8 @@ export class WorkspaceService {
     return userRoles.map((role) => ({
       workspaceId: role.workspace.snowflakeId,
       title: role.workspace.title,
-      description: role.workspace.description || null,
-      thumbnailUrl: role.workspace.thumbnailUrl || null,
+      description: role.workspace.description,
+      thumbnailUrl: role.workspace.thumbnailUrl,
       role: role.role as 'owner' | 'guest',
       visibility: role.workspace.visibility as 'public' | 'private',
     }));
@@ -170,7 +170,10 @@ export class WorkspaceService {
     });
   }
 
-  async checkAccess(userId: string | null, workspaceId: string): Promise<void> {
+  async getWorkspaceData(
+    userId: string | null,
+    workspaceId: string,
+  ): Promise<UserWorkspaceDto> {
     // workspace가 존재하는지 확인
     const workspace = await this.workspaceRepository.findOne({
       where: { snowflakeId: workspaceId },
@@ -182,7 +185,14 @@ export class WorkspaceService {
 
     // 퍼블릭 워크스페이스인 경우
     if (workspace.visibility === 'public') {
-      return;
+      return {
+        workspaceId: workspace.snowflakeId,
+        title: workspace.title,
+        description: workspace.description,
+        thumbnailUrl: workspace.thumbnailUrl,
+        role: null,
+        visibility: 'public',
+      };
     }
 
     if (userId === null) {
@@ -195,7 +205,6 @@ export class WorkspaceService {
 
     if (!user) {
       throw new UserNotFoundException();
-    }
 
     // workspace와 user에 대한 role 확인
     const role = await this.roleRepository.findOne({
@@ -206,6 +215,15 @@ export class WorkspaceService {
       // 권한이 없으면 예외 발생
       throw new ForbiddenAccessException();
     }
+  
+    return {
+      workspaceId: workspace.snowflakeId,
+      title: workspace.title,
+      description: workspace.description,
+      thumbnailUrl: workspace.thumbnailUrl,
+      role: role.role as 'owner' | 'guest',
+      visibility: 'private',
+    };
   }
 
   /**

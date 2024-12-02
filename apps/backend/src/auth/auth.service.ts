@@ -45,4 +45,20 @@ export class AuthService {
     const newPage = Object.assign({}, findUser, dto);
     await this.userRepository.save(newPage);
   }
+
+  async compareStoredRefreshToken(
+    id: number,
+    refreshToken: string,
+  ): Promise<boolean> {
+    // 유저를 찾는다.
+    const user = await this.userRepository.findOneBy({ id });
+
+    // 유저가 없으면 오류
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    // DB에 있는 값과 일치하는지 비교한다
+    return user.refreshToken === refreshToken;
+  }
 }

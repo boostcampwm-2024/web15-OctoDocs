@@ -41,11 +41,11 @@ export class AuthController {
     // 네이버 인증 후 사용자 정보 반환
     const user = req.user;
 
-    // primary Key인 id 포함 payload 생성함
-    // TODO: 여기서 권한 추가해야함
-    const payload = { sub: user.id };
-    const accessToken = this.tokenService.generateAccessToken(payload);
-    const refreshToken = this.tokenService.generateRefreshToken(payload);
+    // access token 만들기
+    const accessToken = this.tokenService.generateAccessToken(user.id);
+
+    // refresh token 만들어서 db에도 저장
+    const refreshToken = await this.tokenService.generateRefreshToken(user.id);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
     this.tokenService.setAccessTokenCookie(res, accessToken);
@@ -67,11 +67,11 @@ export class AuthController {
     /// 카카오 인증 후 사용자 정보 반환
     const user = req.user;
 
-    // primary Key인 id 포함 payload 생성함
-    // TODO: 여기서 권한 추가해야함
-    const payload = { sub: user.id };
-    const accessToken = this.tokenService.generateAccessToken(payload);
-    const refreshToken = this.tokenService.generateRefreshToken(payload);
+    // access token 만들기
+    const accessToken = this.tokenService.generateAccessToken(user.id);
+
+    // refresh token 만들어서 db에도 저장
+    const refreshToken = await this.tokenService.generateRefreshToken(user.id);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
     this.tokenService.setAccessTokenCookie(res, accessToken);
@@ -84,9 +84,11 @@ export class AuthController {
   @ApiOperation({ summary: '사용자가 로그아웃합니다.' })
   @Post('logout')
   @UseGuards(JwtAuthGuard) // JWT 인증 검사
-  logout(@Res() res: Response) {
+  logout(@Req() req, @Res() res: Response) {
     // 쿠키 삭제 (옵션이 일치해야 삭제됨)
     this.tokenService.clearCookies(res);
+    // 현재 자동로그인에 사용되는 refresh Token db에서 삭제
+    this.tokenService.deleteRefreshToken(req.user.sub);
     return res.status(200).json({
       message: AuthResponseMessage.AUTH_LOGGED_OUT,
     });
@@ -94,7 +96,6 @@ export class AuthController {
 
   // 클라이언트가 사용자의 외부 id(snowflakeId) + 이름을 알 수 있는 엔드포인트
   // auth/profile
-  // TODO: 사용자 지정 닉네임 + 프로필 이미지도 return하게 확장
   @Get('profile')
   @UseGuards(JwtAuthGuard) // JWT 인증 검사
   async getProfile(@Req() req) {
