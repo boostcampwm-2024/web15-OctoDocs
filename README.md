@@ -22,7 +22,7 @@
 ### 🕸️ 관계형 지식 관리 툴 
 
 
-> 문서들을 작성하고 연결하면서 문서들 간의 연간 관계를 시각적으로 확인 가능.
+> 문서들을 작성하고 연결하면서 문서들 간의 연관 관계를 시각적으로 확인 가능.
 
 https://github.com/user-attachments/assets/1ac81d56-a0ce-403c-9e3f-7ba092b6a5b6
 
@@ -64,26 +64,26 @@ https://github.com/user-attachments/assets/ad1f6dc9-50af-46e4-bac4-267b1432b301
 
 # 🗺️ 프로젝트 타임라인
 
-![project-timeline](https://github.com/user-attachments/assets/2ae32844-ac61-4fc6-bb19-93c40f4f8f23)
+![Overview-variant (18)](https://github.com/user-attachments/assets/a503f8fe-bab9-4cf3-8d9d-98ff43ab0c3e)
 
 
 # 🚧 문제와 해결과정
 
 ### 실시간 편집 구현 과정
 
-Octodocs 팀은 핵심 기능인 에디터와 노드 캔버스의 **실시간 편집**을 위해 **CRDT** 라이브러리인 **YJS**와 **SocketIO**를 어떻게 활용 했을까요? [🔗 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
+Octodocs 팀은 핵심 기능인 에디터와 노드 캔버스의 **실시간 편집**을 위해 **CRDT** 라이브러리인 **YJS**와 **SocketIO**를 어떻게 활용 했을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 ### 데이터 흐름 변경
 
-YDoc과 소켓을 사용하면서도 RESTful 방식으로 일부 상태를 관리하던 구조를, YDoc 중심의 **단일 truth source**와 소켓 기반 **단방향 흐름**으로 단순화했습니다. 그 결과 모든 상태가 YDoc을 통해 일관성 있게 관리되며, 클라이언트와 서버 간 데이터 흐름도 간소화되었습니다. 중복 관리와 데이터 충돌을 줄이기 위한 이런 **data flow 변화**의 핵심은 무엇이었을까요? [🔗 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
+YDoc과 소켓을 사용하면서도 RESTful 방식으로 일부 상태를 관리하던 구조를, YDoc 중심의 **단일 truth source**와 소켓 기반 **단방향 흐름**으로 단순화했습니다. 그 결과 모든 상태가 YDoc을 통해 일관성 있게 관리되며, 클라이언트와 서버 간 데이터 흐름도 간소화되었습니다. 중복 관리와 데이터 충돌을 줄이기 위한 이런 **data flow 변화**의 핵심은 무엇이었을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 ### FE 프로젝트 구조 개선 과정
 
-Octodocs 팀은 기존 **프로젝트 구조**의 문제점을 어떻게 파악했고, 어떤 방법으로 개선을 했을까요? [🔗 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
+Octodocs 팀은 기존 **프로젝트 구조**의 문제점을 어떻게 파악했고, 어떤 방법으로 개선을 했을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 ### 드래그 이벤트 발생 시 생기는 쿼리 최적화
 
-**노트 카드를 드래그** 할 때, 그 위치를 DB에 저장하기 위해 **너무 많은 쿼리가 발생**하는 문제가 있었습니다. 이를 위해 **쿼리를 최적화**해야할 필요성이 생겼는데 이를 어떻게 해결할 수 있었을까요? [🔗 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
+**노트 카드를 드래그** 할 때, 그 위치를 DB에 저장하기 위해 **너무 많은 쿼리가 발생**하는 문제가 있었습니다. 이를 위해 **쿼리를 최적화**해야할 필요성이 생겼는데 이를 어떻게 해결할 수 있었을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 ### redis 캐싱으로 데이터베이스 부하 감소
 
@@ -91,7 +91,7 @@ Octodocs 팀은 기존 **프로젝트 구조**의 문제점을 어떻게 파악�
 
 ### 개발 환경, 배포 환경 및 CI/CD에 대한 개선 과정
 
-Octodocs 팀은 사용자 경험 향상은 물론, 일관된 코드 품질 유지와 개발자 친화적인 쾌적한 개발 환경 조성을 위해 많은 노력을 기울였습니다. 멀티 레포에서 모노레포로의 전환, GitHub Actions를 활용한 CI/CD 구축, Docker와 Docker Compose의 도입까지—우리는 어떤 변화를 거쳤을까요? [🔗 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
+Octodocs 팀은 사용자 경험 향상은 물론, 일관된 코드 품질 유지와 개발자 친화적인 쾌적한 개발 환경 조성을 위해 많은 노력을 기울였습니다. 멀티 레포에서 모노레포로의 전환, GitHub Actions를 활용한 CI/CD 구축, Docker와 Docker Compose의 도입까지—우리는 어떤 변화를 거쳤을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 # 🧸 팀원 소개
 | [J032_김동준](https://github.com/djk01281) | [J075_김현준](https://github.com/Tolerblanc) | [J097_민서진](https://github.com/summersummerwhy) | [J162_유성민](https://github.com/ezcolin2) | [J248_진예원](https://github.com/yewonJin) |
