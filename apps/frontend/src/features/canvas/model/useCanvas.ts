@@ -19,6 +19,7 @@ import { usePageStore } from "@/entities/page";
 import { createSocketIOProvider } from "@/shared/api";
 import { useWorkspace } from "@/shared/lib";
 import { useYDocStore } from "@/shared/model";
+import { useUserStore } from "@/entities/user";
 
 export interface YNode extends Node {
   isHolding: boolean;
@@ -29,7 +30,6 @@ export const useCanvas = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const workspace = useWorkspace();
   const { ydoc } = useYDocStore();
-
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({
       ydoc,
@@ -39,6 +39,7 @@ export const useCanvas = () => {
   const holdingNodeRef = useRef<string | null>(null);
 
   const { currentPage, setCurrentPage } = usePageStore();
+  const { users } = useUserStore();
 
   const { fitView } = useReactFlow();
 
@@ -283,10 +284,17 @@ export const useCanvas = () => {
     [ydoc],
   );
 
+  const handleNodeClick = useCallback((id: number) => {
+    setCurrentPage(id);
+  }, []);
+
   return {
-    handleMouseMove,
+    currentPage,
     nodes,
     edges,
+    users,
+    setCurrentPage,
+    handleMouseMove,
     handleNodesChange,
     handleEdgesChange,
     handleMouseLeave,
@@ -294,6 +302,7 @@ export const useCanvas = () => {
     onNodeDragStart,
     onNodeDragStop,
     onConnect,
+    handleNodeClick,
     cursors,
   };
 };

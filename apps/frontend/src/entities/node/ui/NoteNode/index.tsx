@@ -1,34 +1,25 @@
-import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { Handle, NodeProps, Position } from "@xyflow/react";
 
 import { NoteNodeType } from "../../model/nodeTypes";
-import { usePageStore } from "@/entities/page";
-import { useUserStore } from "@/entities/user";
+import { type User } from "@/entities/user";
 import { ActiveUser, Emoji } from "@/shared/ui";
 
-export function NoteNode({ data }: NodeProps<NoteNodeType>) {
-  const { currentPage, setCurrentPage } = usePageStore();
-  const { users } = useUserStore();
+interface NoteNodeProps extends NodeProps<NoteNodeType> {
+  isClicked: boolean;
+  handleNodeClick: () => void;
+  users: User[];
+}
 
-  const [activeUsers, setActiveUsers] = useState(users);
-
-  useEffect(() => {
-    setActiveUsers(users);
-  }, [users]);
-
-  const handleNodeClick = () => {
-    const id = data.id;
-    if (id === undefined || id === null) {
-      return;
-    }
-
-    setCurrentPage(id);
-  };
-
+export function NoteNode({
+  data,
+  isClicked,
+  users,
+  handleNodeClick,
+}: NoteNodeProps) {
   return (
     <div
-      className={`h-24 w-48 rounded-lg border-[1px] ${currentPage === data.id ? "border-[#8dbaef]" : "border-[#eaeaea]"} bg-white p-3 shadow-sm`}
+      className={`h-24 w-48 rounded-lg border-[1px] ${isClicked ? "border-[#8dbaef]" : "border-[#eaeaea]"} bg-white p-3 shadow-sm`}
       onClick={handleNodeClick}
     >
       <Handle
@@ -68,12 +59,7 @@ export function NoteNode({ data }: NodeProps<NoteNodeType>) {
           )}
           <div className="w-full truncate">{data.title}</div>
         </div>
-        <ActiveUser
-          className="self-end"
-          users={activeUsers.filter(
-            (user) => user.currentPageId === data.id.toString(),
-          )}
-        />
+        <ActiveUser className="self-end" users={users} />
       </div>
     </div>
   );

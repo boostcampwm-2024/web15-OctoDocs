@@ -6,20 +6,14 @@ import {
   Background,
   BackgroundVariant,
   ConnectionMode,
-  type Node,
+  NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { CollaborativeCursors } from "../CollaborativeCursors";
 import { useCanvas } from "../../model/useCanvas";
-import { MemoizedGroupNode, NoteNode } from "@/entities/node";
+import { MemoizedGroupNode, NoteNode, NoteNodeType } from "@/entities/node";
 import { cn } from "@/shared/lib";
-
-const proOptions = { hideAttribution: true };
-
-export interface YNode extends Node {
-  isHolding: boolean;
-}
 
 interface CanvasProps {
   className?: string;
@@ -27,9 +21,13 @@ interface CanvasProps {
 
 export function Canvas({ className }: CanvasProps) {
   const {
-    handleMouseMove,
+    currentPage,
     nodes,
     edges,
+    users,
+    cursors,
+    handleNodeClick,
+    handleMouseMove,
     handleNodesChange,
     handleEdgesChange,
     handleMouseLeave,
@@ -37,13 +35,27 @@ export function Canvas({ className }: CanvasProps) {
     onNodeDragStart,
     onNodeDragStop,
     onConnect,
-    cursors,
   } = useCanvas();
 
-  const nodeTypes = useMemo(
-    () => ({ note: NoteNode, group: MemoizedGroupNode }),
-    [],
-  );
+  const proOptions = { hideAttribution: true };
+
+  const nodeTypes = useMemo(() => {
+    return {
+      note: (props: NodeProps<NoteNodeType>) => {
+        return (
+          <NoteNode
+            {...props}
+            isClicked={currentPage === props.data.id}
+            handleNodeClick={() => handleNodeClick(props.data.id)}
+            users={users.filter(
+              (user) => user.currentPageId === props.data.id.toString(),
+            )}
+          />
+        );
+      },
+      group: MemoizedGroupNode,
+    };
+  }, [users]);
 
   return (
     <div className={cn("", className)} onMouseMove={handleMouseMove}>
