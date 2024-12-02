@@ -3,8 +3,12 @@ import { Switch } from "@/shared/ui/Switch";
 import { Globe2, Lock, Copy, CheckCheck } from "lucide-react";
 import { useCreateWorkspaceInviteLink } from "../../model/useWorkspaceInvite";
 import { useCurrentWorkspace } from "../../model/useWorkspace";
-import { useToggleWorkspaceStatus } from "../../model/useWorkspaceStatus";
+import {
+  useToggleWorkspaceStatus,
+  useWorkspaceStatus,
+} from "../../model/useWorkspaceStatus";
 import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { useGetUser } from "@/features/auth";
 
 const createFrontendUrl = (apiUrl: string, currentWorkspaceId: string) => {
   const searchParams = new URLSearchParams();
@@ -15,22 +19,27 @@ const createFrontendUrl = (apiUrl: string, currentWorkspaceId: string) => {
 
 export function SharePanel() {
   const workspaceId = useWorkspace();
-  const { data: currentWorkspace, isPending: isWorkspaceLoading } =
+  const { isLoading: isUserLoading } = useGetUser();
+  const { data: currentWorkspace, isLoading: isWorkspaceLoading } =
     useCurrentWorkspace();
+  const workspaceVisibility = useWorkspaceStatus();
   const [copied, setCopied] = useState(false);
+
   const createInviteLinkMutation = useCreateWorkspaceInviteLink();
-  const toggleStatusMutation = useToggleWorkspaceStatus(
-    currentWorkspace?.workspace?.visibility,
-  );
+  const toggleStatusMutation = useToggleWorkspaceStatus(workspaceVisibility);
 
   const PUBLIC_URL = window.location.href;
 
   const isPending =
-    isWorkspaceLoading ||
+    isUserLoading ||
     createInviteLinkMutation.isPending ||
     toggleStatusMutation.isPending;
-  const isPublic = currentWorkspace?.workspace?.visibility === "public";
-  const isGuest = currentWorkspace?.workspace?.role === "guest";
+
+  const isPublic =
+    workspaceId === "main" ? true : workspaceVisibility === "public";
+
+  const isGuest =
+    workspaceId === "main" || currentWorkspace?.workspace?.role === "guest";
 
   const handlePublicToggle = async () => {
     if (isGuest) return;
@@ -42,25 +51,26 @@ export function SharePanel() {
   };
 
   const getCurrentUrl = () => {
-    if (isWorkspaceLoading) return "워크스페이스를 불러오는 중...";
+    if (isUserLoading || isWorkspaceLoading)
+      return "워크스페이스를 불러오는 중...";
     if (isPending) return "처리 중...";
     if (isPublic) return PUBLIC_URL;
     if (createInviteLinkMutation.data) {
       return createFrontendUrl(createInviteLinkMutation.data, workspaceId);
     }
-    return "링크 생성 중...";
+    return "권한이 없습니다";
   };
 
   const handleCopy = async () => {
     const urlToCopy = getCurrentUrl();
-    if (!isPending) {
+    if (!isPending && !isWorkspaceLoading) {
       await navigator.clipboard.writeText(urlToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  const isDisabled = !currentWorkspace?.workspace || isGuest || isPending;
+  const isDisabled = isGuest || isPending;
 
   return (
     <div className="w-full">
@@ -73,7 +83,7 @@ export function SharePanel() {
               onChange={handlePublicToggle}
               CheckedIcon={Globe2}
               UncheckedIcon={Lock}
-              disabled={!currentWorkspace?.workspace || isPending || isGuest}
+              disabled={isDisabled || isUserLoading}
             />
           </div>
         </div>
@@ -93,7 +103,7 @@ export function SharePanel() {
           onClick={handleCopy}
           className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-gray-100 disabled:cursor-not-allowed disabled:hover:bg-transparent"
           aria-label="Copy URL"
-          disabled={isDisabled}
+          disabled={isDisabled || isUserLoading || isWorkspaceLoading}
         >
           {copied ? (
             <CheckCheck className="h-4 w-4 text-green-500" />

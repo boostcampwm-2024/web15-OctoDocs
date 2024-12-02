@@ -4,13 +4,13 @@ import { useCurrentWorkspace } from "@/features/workspace/model/useWorkspace";
 
 export const useProtectedWorkspace = () => {
   const navigate = useNavigate();
-  const { data: workspaceData, isLoading } = useCurrentWorkspace();
+  const { data: workspaceData, isLoading, error } = useCurrentWorkspace();
 
   useEffect(() => {
-    if (!isLoading && !workspaceData) {
+    if (!isLoading && (error || !workspaceData)) {
       navigate({ to: "/" });
     }
-  }, [isLoading, workspaceData, navigate]);
+  }, [isLoading, workspaceData, error, navigate]);
 
   return {
     isLoading,
