@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { useDeletePage } from "../api/usePages";
 import { Node, NoteNodeData } from "@/entities/node";
-import { usePageStore } from "@/entities/page";
+import { useDeletePage, usePageStore } from "@/entities/page";
 import { useYDocStore } from "@/shared/model";
 
 export const useNoteList = () => {

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { CreatePageRequest, createPage, deletePage } from "@/entities/page";
+import { CreatePageRequest } from "./pageTypes";
+import { createPage, deletePage } from "../api/pageApi";
 
 export const useCreatePage = () => {
   return useMutation({

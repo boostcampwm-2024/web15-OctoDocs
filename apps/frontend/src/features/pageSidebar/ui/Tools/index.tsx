@@ -1,7 +1,6 @@
 import { PencilLine } from "lucide-react";
 
-import { useCreatePage } from "../../api/usePages";
-import { usePageStore } from "@/entities/page";
+import { useCreatePage, usePageStore } from "@/entities/page";
 import { useYDocStore, initializeYText } from "@/shared/model";
 import { Button } from "@/shared/ui";
 
