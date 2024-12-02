@@ -42,14 +42,14 @@ export const useRemoveWorkspace = () => {
 
 export const useCurrentWorkspace = () => {
   const workspaceId = useWorkspace();
-  const { data: user, isError, isSuccess } = useGetUser();
+  const { data: user, isError } = useGetUser();
 
   const snowflakeId = isError ? "null" : (user?.snowflakeId ?? "null");
 
   return useQuery({
     queryKey: ["currentWorkspace", workspaceId, snowflakeId],
     queryFn: () => getCurrentWorkspace(workspaceId, snowflakeId),
-    enabled: Boolean(workspaceId) && isSuccess,
+    enabled: Boolean(workspaceId),
     retry: false,
     refetchOnWindowFocus: false,
   });
