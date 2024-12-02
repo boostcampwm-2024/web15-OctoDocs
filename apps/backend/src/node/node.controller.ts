@@ -45,6 +45,7 @@ export class NodeController {
   @HttpCode(HttpStatus.OK)
   async getNodeById(@Param('id', ParseIntPipe) id: number) {
     const node = await this.nodeService.findNodeById(id);
+
     return {
       message: NodeResponseMessage.NODE_RETURNED,
       node: node,
@@ -59,6 +60,7 @@ export class NodeController {
   @HttpCode(HttpStatus.CREATED)
   async createNode(@Body() body: CreateNodeDto) {
     await this.nodeService.createNode(body);
+
     return {
       message: NodeResponseMessage.NODE_CREATED,
     };
@@ -76,6 +78,7 @@ export class NodeController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
     await this.nodeService.deleteNode(id);
+
     return {
       message: NodeResponseMessage.NODE_DELETED,
     };
@@ -92,6 +95,7 @@ export class NodeController {
     @Body() body: UpdateNodeDto,
   ): Promise<{ message: string }> {
     await this.nodeService.updateNode(id, body);
+
     return {
       message: NodeResponseMessage.NODE_UPDATED,
     };
@@ -105,6 +109,7 @@ export class NodeController {
   @HttpCode(HttpStatus.OK)
   async getCoordinates(@Param('id', ParseIntPipe) id: number) {
     const coordinate = await this.nodeService.getCoordinates(id);
+
     return {
       message: NodeResponseMessage.NODE_GET_COORDINAE,
       coordinate: coordinate,
@@ -118,6 +123,7 @@ export class NodeController {
     @Body() body: MoveNodeDto,
   ) {
     await this.nodeService.moveNode(id, body);
+
     return {
       message: NodeResponseMessage.NODE_MOVED,
     };
@@ -133,6 +139,7 @@ export class NodeController {
     @Param('workspaceId') workspaceId: string, // Snowflake ID
   ): Promise<FindNodesResponseDto> {
     const nodes = await this.nodeService.findNodesByWorkspace(workspaceId);
+
     return {
       message: NodeResponseMessage.NODES_RETURNED,
       nodes,

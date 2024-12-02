@@ -11,6 +11,7 @@ import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 import Redlock from 'redlock';
 
 const RED_LOCK_TOKEN = 'RED_LOCK';
+
 @Injectable()
 export class PageService {
   constructor(

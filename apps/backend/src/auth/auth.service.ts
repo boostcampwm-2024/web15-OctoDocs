@@ -31,6 +31,7 @@ export class AuthService {
   async findUserById(id: number): Promise<User | null> {
     return await this.userRepository.findOneBy({ id });
   }
+
   async updateUser(id: number, dto: UpdateUserDto) {
     // 유저를 찾는다.
     const findUser = await this.userRepository.findOneBy({ id });

@@ -56,6 +56,7 @@ export class WorkspaceController {
       userId,
       createWorkspaceDto,
     );
+
     return {
       message: WorkspaceResponseMessage.WORKSPACE_CREATED,
       workspaceId: newWorkspace.snowflakeId,
@@ -91,6 +92,7 @@ export class WorkspaceController {
   async getUserWorkspaces(@Request() req) {
     const userId = req.user.sub; // 인증된 사용자의 ID
     const workspaces = await this.workspaceService.getUserWorkspaces(userId);
+
     return {
       message: WorkspaceResponseMessage.WORKSPACES_RETURNED,
       workspaces,

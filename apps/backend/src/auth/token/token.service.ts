@@ -26,6 +26,7 @@ export class TokenService {
   generateInviteToken(workspaceId: number, role: string): string {
     // 초대용 JWT 토큰 생성
     const payload = { workspaceId, role };
+
     return this.jwtService.sign(payload, {
       expiresIn: DAY, // 초대 유효 기간: 1일
       secret: process.env.JWT_SECRET,
@@ -38,8 +39,6 @@ export class TokenService {
     });
   }
 
-  // 후에 DB 로직 (지금은 refreshToken이 DB로 관리 X)
-  // 추가될 때를 위해 일단 비동기 선언
   async refreshAccessToken(refreshToken: string): Promise<string> {
     // refreshToken을 검증한다
     const decoded = this.jwtService.verify(refreshToken, {
@@ -76,6 +75,7 @@ export class TokenService {
       secure: true,
       sameSite: 'strict',
     });
+
     response.clearCookie('refreshToken', {
       httpOnly: true,
       secure: true,

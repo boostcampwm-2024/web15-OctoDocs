@@ -23,6 +23,7 @@ export class UploadController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ImageUploadResponseDto> {
     const result = await this.uploadService.uploadImageToCloud(file);
+
     return {
       message: UploadResponseMessage.UPLOAD_IMAGE_SUCCESS,
       url: result,

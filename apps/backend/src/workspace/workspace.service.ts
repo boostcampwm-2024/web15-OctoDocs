@@ -12,6 +12,7 @@ import { TokenService } from '../auth/token/token.service';
 import { ForbiddenAccessException } from '../exception/access.exception';
 import { UserAlreadyInWorkspaceException } from '../exception/role-duplicate.exception';
 import { Snowflake } from '@theinternetfolks/snowflake';
+import { ConfigService } from '@nestjs/config';
 
 enum MainWorkspace {
   OWNER_SNOWFLAKEID = 'admin',
@@ -33,6 +34,7 @@ export class WorkspaceService {
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
     private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
   ) {
     if (process.env.NODE_ENV !== 'test') {
       this.initializeMainWorkspace();
@@ -140,8 +142,8 @@ export class WorkspaceService {
     // 게스트용 초대용 토큰 생성
     const token = this.tokenService.generateInviteToken(workspace.id, 'guest');
 
-    // TODO: 하드코딩 -> 바꿔야할듯?
-    return `https://octodocs.local/api/workspace/join?token=${token}`;
+    const origin = this.configService.get<string>('origin');
+    return `${origin}/api/workspace/join?token=${token}`;
   }
 
   async processInviteUrl(userId: number, token: string): Promise<void> {
@@ -183,31 +185,32 @@ export class WorkspaceService {
       return;
     }
 
-    // 사용자 인증 필요
-    if (userId !== null) {
-      const user = await this.userRepository.findOneBy({
-        snowflakeId: userId,
-      });
-      if (!user) {
-        throw new UserNotFoundException();
-      }
-
-      // workspace와 user에 대한 role 확인
-      const role = await this.roleRepository.findOne({
-        where: { userId: user.id, workspaceId: workspace.id },
-      });
-
-      // role이 존재하면 접근 허용
-      if (role) {
-        return;
-      }
+    if (userId === null) {
+      throw new ForbiddenAccessException();
     }
 
-    // 권한이 없으면 예외 발생
-    throw new ForbiddenAccessException();
+    const user = await this.userRepository.findOneBy({
+      snowflakeId: userId,
+    });
+
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    // workspace와 user에 대한 role 확인
+    const role = await this.roleRepository.findOne({
+      where: { userId: user.id, workspaceId: workspace.id },
+    });
+
+    if (!role) {
+      // 권한이 없으면 예외 발생
+      throw new ForbiddenAccessException();
+    }
   }
 
-  // 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
+  /**
+   * 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
+   */
   async initializeMainWorkspace() {
     let findOwner = await this.userRepository.findOneBy({
       snowflakeId: MainWorkspace.OWNER_SNOWFLAKEID,
@@ -285,6 +288,7 @@ export class WorkspaceService {
       userId: userId,
       role: 'owner',
     });
+
     // 아니면 exception 뱉기
     if (!role) {
       throw new NotWorkspaceOwnerException();

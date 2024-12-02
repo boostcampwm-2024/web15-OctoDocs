@@ -22,6 +22,7 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
       provider: 'naver',
       email: profile._json.email,
     };
+
     let user = await this.authService.findUser(createUserDto);
     if (!user) {
       user = await this.authService.signUp(createUserDto);
