@@ -8,6 +8,7 @@ const RED_LOCK_TOKEN = 'RED_LOCK';
 type RedisPage = {
   title?: string;
   content?: string;
+  emoji?: string;
 };
 
 @Injectable()

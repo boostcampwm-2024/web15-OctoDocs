@@ -5,6 +5,46 @@ import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Page } from 'src/page/page.entity';
 
+/**
+TODO Coordinate
+this.redisService.setField(`node:${findPage.node.id}`, 'x', x);
+this.redisService.setField(`node:${findPage.node.id}`, 'y', y);
+
+TODO AddEdge
+this.redisService.setField(
+    `edge:${edge.source}-${edge.target}`,
+    'fromNode',
+    edge.source,
+);
+this.redisService.setField(
+    `edge:${edge.source}-${edge.target}`,
+    'toNode',
+    edge.target,
+);
+this.redisService.setField(
+    `edge:${edge.source}-${edge.target}`,
+    'type',
+    'add',
+);
+
+TODO DeleteEdge
+this.redisService.setField(
+    `edge:${edge.source}-${edge.target}`,
+    'fromNode',
+    edge.source,
+);
+this.redisService.setField(
+    `edge:${edge.source}-${edge.target}`,
+    'toNode',
+    edge.target,
+);
+this.redisService.setField(
+    `edge:${edge.source}-${edge.target}`,
+    'type',
+    'delete',
+);
+*/
+
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
@@ -28,12 +68,17 @@ export class TasksService {
           throw new Error(`redis에 ${key}에 해당하는 데이터가 없습니다.`);
         }
 
-        const { title, content } = redisData;
+        const { title, content, emoji } = redisData;
 
-        const updateData: Partial<{ title: string; content: any }> = {};
+        const updateData: Partial<{
+          title: string;
+          content: any;
+          emoji: string;
+        }> = {};
 
         if (title) updateData.title = title;
         if (content) updateData.content = JSON.parse(content);
+        if (emoji) updateData.emoji = emoji;
 
         // 업데이트 대상이 없다면 리턴
         if (Object.keys(updateData).length === 0) return;
@@ -56,7 +101,10 @@ export class TasksService {
       });
   }
 
-  async migrate(key: string, updateData:Partial<{ title: string; content: any }>) {
+  async migrate(
+    key: string,
+    updateData: Partial<{ title: string; content: any; emoji: string }>,
+  ) {
     const pageId = parseInt(key.split(':')[1]);
 
     // 트랜잭션 시작
@@ -79,8 +127,12 @@ export class TasksService {
       // 실패하면 postgres는 roll back하고 redis의 값을 살린다.
       this.logger.error(err.stack);
       await queryRunner.rollbackTransaction();
-      updateData.title && (await this.redisService.setField(key, 'title', updateData.title));
-      updateData.content && (await this.redisService.setField(key, 'content', updateData.content));
+      updateData.title &&
+        (await this.redisService.setField(key, 'title', updateData.title));
+      updateData.content &&
+        (await this.redisService.setField(key, 'content', updateData.content));
+      updateData.emoji &&
+        (await this.redisService.setField(key, 'emoji', updateData.emoji));
 
       // Promise.all에서 실패를 인식하기 위해 에러를 던진다.
       throw err;
