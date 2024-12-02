@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
-import { Handle, NodeProps, Position, type Node } from "@xyflow/react";
+import { Handle, NodeProps, Position } from "@xyflow/react";
 
-import { useUserStore } from "@/entities/user";
+import { NoteNodeType } from "../../model/nodeTypes";
 import { usePageStore } from "@/entities/page";
+import { useUserStore } from "@/entities/user";
 import { ActiveUser, Emoji } from "@/shared/ui";
-
-export type NoteNodeData = { title: string; id: number; emoji: string };
-export type NoteNodeType = Node<NoteNodeData, "note">;
 
 export function NoteNode({ data }: NodeProps<NoteNodeType>) {
   const { currentPage, setCurrentPage } = usePageStore();

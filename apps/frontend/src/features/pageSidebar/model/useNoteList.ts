@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 
 import { useDeletePage } from "../api/usePages";
+import { Node, NoteNodeData } from "@/entities/node";
 import { usePageStore } from "@/entities/page";
-// TODO: Node entity 만들어야할듯?
-import { YNode } from "@/features/canvas/model/useCanvas";
-import { NoteNodeData } from "@/features/canvas/ui/Node/NoteNode";
 import { useYDocStore } from "@/shared/model";
 
 export const useNoteList = () => {
@@ -17,7 +15,7 @@ export const useNoteList = () => {
   // TODO: 최적화 필요
   useEffect(() => {
     nodesMap.observe(() => {
-      const yNodes = Array.from(nodesMap.values()) as YNode[];
+      const yNodes = Array.from(nodesMap.values()) as Node[];
       const data = yNodes.map((yNode) => yNode.data) as NoteNodeData[];
       setPages(data);
     });

@@ -7,7 +7,7 @@ const controlStyle = {
   border: "none",
 };
 
-export function GroupNode() {
+function GroupNode() {
   return (
     <>
       <NodeResizeControl style={controlStyle} minWidth={100} minHeight={50}>
@@ -20,4 +20,4 @@ export function GroupNode() {
   );
 }
 
-export default memo(GroupNode);
+export const MemoizedGroupNode = memo(GroupNode);

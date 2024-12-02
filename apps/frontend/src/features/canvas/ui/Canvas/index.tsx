@@ -11,8 +11,8 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { CollaborativeCursors } from "../CollaborativeCursors";
-import { NoteNode, GroupNode } from "../Node";
 import { useCanvas } from "../../model/useCanvas";
+import { MemoizedGroupNode, NoteNode } from "@/entities/node";
 import { cn } from "@/shared/lib";
 
 const proOptions = { hideAttribution: true };
@@ -40,7 +40,10 @@ export function Canvas({ className }: CanvasProps) {
     cursors,
   } = useCanvas();
 
-  const nodeTypes = useMemo(() => ({ note: NoteNode, group: GroupNode }), []);
+  const nodeTypes = useMemo(
+    () => ({ note: NoteNode, group: MemoizedGroupNode }),
+    [],
+  );
 
   return (
     <div className={cn("", className)} onMouseMove={handleMouseMove}>
