@@ -41,13 +41,11 @@ export class AuthController {
     // 네이버 인증 후 사용자 정보 반환
     const user = req.user;
 
-    // primary Key인 id 포함 payload 생성, access token 만들기
-    const payload = { sub: user.id };
-    const accessToken = this.tokenService.generateAccessToken(payload);
+    // access token 만들기
+    const accessToken = this.tokenService.generateAccessToken(user.id);
 
-    // access token 만들어서 db에도 저장
-    const refreshToken = this.tokenService.generateRefreshToken();
-    this.authService.updateRefreshToken(user.id, refreshToken);
+    // refresh token 만들어서 db에도 저장
+    const refreshToken = await this.tokenService.generateRefreshToken(user.id);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
     this.tokenService.setAccessTokenCookie(res, accessToken);
@@ -69,13 +67,11 @@ export class AuthController {
     /// 카카오 인증 후 사용자 정보 반환
     const user = req.user;
 
-    // primary Key인 id 포함 payload 생성, access token 만들기
-    const payload = { sub: user.id };
-    const accessToken = this.tokenService.generateAccessToken(payload);
+    // access token 만들기
+    const accessToken = this.tokenService.generateAccessToken(user.id);
 
-    // access token 만들어서 db에도 저장
-    const refreshToken = this.tokenService.generateRefreshToken();
-    this.authService.updateRefreshToken(user.id, refreshToken);
+    // refresh token 만들어서 db에도 저장
+    const refreshToken = await this.tokenService.generateRefreshToken(user.id);
 
     // 토큰을 쿠키에 담아서 메인 페이지로 리디렉션
     this.tokenService.setAccessTokenCookie(res, accessToken);

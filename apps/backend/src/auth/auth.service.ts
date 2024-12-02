@@ -61,18 +61,4 @@ export class AuthService {
     // DB에 있는 값과 일치하는지 비교한다
     return user.refreshToken === refreshToken;
   }
-
-  async updateRefreshToken(id: number, refreshToken: string) {
-    // 유저를 찾는다.
-    const user = await this.userRepository.findOneBy({ id });
-
-    // 유저가 없으면 오류
-    if (!user) {
-      throw new UserNotFoundException();
-    }
-
-    // 유저의 현재 REFRESH TOKEN 갱신
-    user.refreshToken = refreshToken;
-    await this.userRepository.save(user);
-  }
 }
