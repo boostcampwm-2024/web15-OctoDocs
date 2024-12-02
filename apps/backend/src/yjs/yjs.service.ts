@@ -67,6 +67,7 @@ export class YjsService
       const editorDoc = doc.getXmlFragment('default');
       const customDoc = editorDoc.doc as CustomDoc;
 
+      // 만약 users document라면 초기화하지 않습니다.
       if (customDoc.name === 'users') {
         return;
       }
@@ -78,24 +79,24 @@ export class YjsService
         this.initializePage(pageId, editorDoc);
       }
 
-      // 만약 페이지가 아닌 모든 노드들을 볼 수 있는 document라면 node, edge 초기 데이터를 세팅해줍니다.
-      // node, edge, page content 가져오기
-
-      // TODO: 서비스 함수 workspaceId 입력해야하도록 수정되었습니다!!
-
       if (!customDoc.name?.startsWith('flow-room-')) {
         return;
       }
 
+      // TODO: workspaceId 파싱 로직 추가하기
       const workspaceId = 'main';
+      // 만약 workspace document라면 node, edge 초기 데이터를 세팅해줍니다.
       this.initializeWorkspace(workspaceId, doc);
     });
   }
 
-  // yXmlFragment에 content를 넣어준다.
+  /**
+   * yXmlFragment에 content를 넣어준다.
+   */
   private async initializePage(pageId: number, editorDoc: Y.XmlFragment) {
     // 초기 세팅할 page content
     let pageContent: JSON;
+
     try {
       const findPage = await this.pageService.findPageById(pageId);
       pageContent = JSON.parse(JSON.stringify(findPage.content));
@@ -116,7 +117,6 @@ export class YjsService
     // content가 존재할 때만 넣어줍니다.
     if (Object.keys(pageContent).length > 0) {
       this.transformText(pageContent);
-      // this.logger.error(this.transformText(pageContent));
       prosemirrorJSONToYXmlFragment(novelEditorSchema, pageContent, editorDoc);
     }
 
@@ -138,8 +138,7 @@ export class YjsService
    * initialize 관련 메소드
    */
   private async initializeWorkspace(workspaceId: string, doc: Y.Doc) {
-    // const workspaceId = customDoc.name.split('-')[2];
-    // console.log('======', workspaceId);
+    // workspaceId에 속한 모든 노드와 엣지를 가져온다.
     const nodes = await this.nodeService.findNodesByWorkspace(workspaceId);
     const edges = await this.edgeService.findEdgesByWorkspace(workspaceId);
     const nodesMap = doc.getMap('nodes');
@@ -151,10 +150,10 @@ export class YjsService
     this.initializeYEdgeMap(edges, edgesMap);
 
     // title의 변경 사항을 감지한다.
-    title.observeDeep(this.observeTitle);
+    title.observeDeep(this.observeTitle.bind(this));
 
     // emoji의 변경 사항을 감지한다.
-    emoji.observeDeep(this.observeEmoji);
+    emoji.observeDeep(this.observeEmoji.bind(this));
 
     // node의 변경 사항을 감지한다.
     nodesMap.observe((event) => {
@@ -166,17 +165,21 @@ export class YjsService
       this.observeEdgeMap(event, edgesMap);
     });
   }
-  // YMap에 노드 정보를 넣어준다.
+
+  /**
+   * YMap에 노드 정보를 넣어준다.
+   */
   private initializeYNodeMap(
     nodes: Node[],
     yNodeMap: Y.Map<unknown>,
     yTitleMap: Y.Map<unknown>,
     yEmojiMap: Y.Map<unknown>,
   ): void {
-    // 초기화
+    // Y.Map 초기화
     yNodeMap.clear();
     yTitleMap.clear();
     yEmojiMap.clear();
+
     nodes.forEach((node) => {
       const nodeId = node.id.toString(); // id를 string으로 변환
 
@@ -202,6 +205,7 @@ export class YjsService
       const pageId = node.page.id.toString(); // id를 string으로 변환
       const yTitleText = new Y.Text();
       yTitleText.insert(0, node.page.title);
+
       // Y.Map에 데이터를 삽입
       yTitleMap.set(`title_${pageId}`, yTitleText);
 
@@ -209,12 +213,15 @@ export class YjsService
       const yEmojiText = new Y.Text();
       const emoji = node.page.emoji ?? '📄';
       yEmojiText.insert(0, emoji);
+
       // Y.Map에 데이터를 삽입
       yEmojiMap.set(`emoji_${pageId}`, yEmojiText);
     });
   }
 
-  // yMap에 edge 정보를 넣어준다.
+  /**
+   * yMap에 edge 정보를 넣어준다.
+   */
   private initializeYEdgeMap(edges: Edge[], yMap: Y.Map<unknown>): void {
     edges.forEach((edge) => {
       const edgeId = edge.id.toString(); // id를 string으로 변환
@@ -235,7 +242,6 @@ export class YjsService
    */
   private async observeTitle(event: Y.YEvent<any>[]) {
     // path가 존재할 때만 페이지 갱신
-
     event[0].path.toString().split('_')[1] &&
       this.redisService.setField(
         `page:${event[0].path.toString().split('_')[1]}`,
@@ -254,51 +260,55 @@ export class YjsService
         },
       );
   }
+
   private async observeNodeMap(
     event: Y.YMapEvent<unknown>,
     nodesMap: Y.Map<unknown>,
   ) {
     for (const [key, change] of event.changes.keys) {
-      if (change.action === 'update') {
-        const node: any = nodesMap.get(key);
-        if (node.type !== 'note') {
-          continue;
-        }
+      // TODO: change.action이 'add', 'delete'일 때 처리를 추가하여 REST API 사용 제거
+      if (change.action !== 'update') continue;
 
-        // node.data는 페이지에 대한 정보
-        const { title, id } = node.data;
-        const { x, y } = node.position;
-        const isHolding = node.isHolding;
-        if (!isHolding) {
-          // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
-          const findPage = await this.pageService.findPageById(id);
-          await this.nodeService.updateNode(findPage.node.id, {
-            title,
-            x,
-            y,
-          });
-        }
-      }
+      const node: any = nodesMap.get(key);
+      if (node.type !== 'note') continue;
+
+      // node.data는 페이지에 대한 정보
+      const { title, id } = node.data;
+      const { x, y } = node.position;
+      const isHolding = node.isHolding;
+      if (isHolding) continue;
+
+      // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
+      const findPage = await this.pageService.findPageById(id);
+      await this.nodeService.updateNode(findPage.node.id, {
+        title,
+        x,
+        y,
+      });
     }
   }
+
   private async observeEdgeMap(
     event: Y.YMapEvent<unknown>,
     edgesMap: Y.Map<unknown>,
   ) {
     for (const [key, change] of event.changes.keys) {
-      if (change.action === 'add') {
-        const edge = edgesMap.get(key) as YMapEdge;
-        const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
-          parseInt(edge.source),
-          parseInt(edge.target),
-        );
+      const edge = edgesMap.get(key) as YMapEdge;
+      const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
+        parseInt(edge.source),
+        parseInt(edge.target),
+      );
+
+      if (change.action === 'add' && !findEdge) {
         // 연결된 노드가 없을 때만 edge 생성
-        if (!findEdge) {
-          await this.edgeService.createEdge({
-            fromNode: parseInt(edge.source),
-            toNode: parseInt(edge.target),
-          });
-        }
+        await this.edgeService.createEdge({
+          fromNode: parseInt(edge.source),
+          toNode: parseInt(edge.target),
+        });
+      }
+      if (change.action === 'delete') {
+        // 엣지가 존재하면 삭제
+        await this.edgeService.deleteEdge(findEdge.id);
       }
     }
   }
@@ -315,8 +325,10 @@ export class YjsService
     return;
   }
 
-  // editor에서 paragraph 내부 text 노드의 text 값의 빈 문자열을 제거한다.
-  // text 값이 빈 문자열이면 empty text nodes are not allowed 에러가 발생합니다.
+  /**
+   * editor에서 paragraph 내부 text 노드의 text 값의 빈 문자열을 제거한다.
+   *text 값이 빈 문자열이면 empty text nodes are not allowed 에러가 발생합니다.
+   */
   private transformText(doc: any) {
     doc.content.forEach((paragraph) => {
       if (paragraph.type === 'paragraph' && Array.isArray(paragraph.content)) {
