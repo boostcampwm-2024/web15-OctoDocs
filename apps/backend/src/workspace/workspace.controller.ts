@@ -175,6 +175,7 @@ export class WorkspaceController {
   async makeWorkspacePublic(@Request() req, @Param('id') id: string) {
     const userId = req.user.sub; // 인증된 사용자 ID
     await this.workspaceService.updateVisibility(userId, id, 'public');
+
     return { message: WorkspaceResponseMessage.WORKSPACE_UPDATED_TO_PUBLIC };
   }
 
@@ -190,6 +191,7 @@ export class WorkspaceController {
   async makeWorkspacePrivate(@Request() req, @Param('id') id: string) {
     const userId = req.user.sub; // 인증된 사용자 ID
     await this.workspaceService.updateVisibility(userId, id, 'private');
+
     return { message: WorkspaceResponseMessage.WORKSPACE_UPDATED_TO_PRIVATE };
   }
 }

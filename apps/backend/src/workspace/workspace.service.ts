@@ -205,6 +205,7 @@ export class WorkspaceService {
 
     if (!user) {
       throw new UserNotFoundException();
+    }
 
     // workspace와 user에 대한 role 확인
     const role = await this.roleRepository.findOne({
@@ -225,6 +226,7 @@ export class WorkspaceService {
       visibility: 'private',
     };
   }
+
 
   /**
    * 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
@@ -282,9 +284,9 @@ export class WorkspaceService {
         workspace: findWorkspace,
         user: findOwner,
         role: 'owner',
-      });
+      });}
     }
-  }
+  
 
   async updateVisibility(
     userId: number,
