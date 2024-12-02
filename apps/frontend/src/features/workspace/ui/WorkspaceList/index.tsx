@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Check, Trash2 } from "lucide-react";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 
-import { useRemoveWorkspace, useUserWorkspace } from "../../model/useWorkspace";
+import { useRemoveWorkspace } from "../../model/workspaceMutations";
+import { useUserWorkspace } from "../../model/workspaceQuries";
 import { WorkspaceRemoveModal } from "./WorkspaceRemoveModal";
 import { usePopover } from "@/shared/model";
 

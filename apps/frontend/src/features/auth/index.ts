@@ -1,6 +1,5 @@
-export * from "./api/authApi";
+export { useLogout } from "./model/authMutations";
+export { useGetUser } from "./model/authQueries";
 
-export * from "./model/useAuth";
-
-export * from "./ui/LoginForm";
-export * from "./ui/Logout";
+export { LoginForm } from "./ui/LoginForm";
+export { Logout } from "./ui/Logout";

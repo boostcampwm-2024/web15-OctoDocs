@@ -5,7 +5,7 @@ type UploadImageResponse = {
   url: string;
 };
 
-export const onUpload = async (file: File) => {
+export const onUploadImage = async (file: File) => {
   const url = `/api/upload/image`;
 
   const formData = new FormData();

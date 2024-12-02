@@ -1,4 +1,4 @@
-export { onUpload } from "./api/imageUpload";
+export { onUploadImage } from "./api/uploadApi";
 
 export { useEditorStore } from "./model/editorStore";
 

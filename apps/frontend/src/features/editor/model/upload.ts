@@ -1,10 +1,10 @@
 import { createImageUpload } from "novel/plugins";
 
-// TODO: 수정해야할듯
-import { onUpload } from "@/features/editor";
+import { onUploadImage } from "../api/uploadApi";
 
+// TODO: validateFn 수정해야할듯?
 export const uploadFn = createImageUpload({
-  onUpload,
+  onUpload: onUploadImage,
   validateFn: (file) => {
     if (!file.type.includes("image/")) {
       console.log("File type not supported.");

@@ -15,7 +15,7 @@ import {
 import { createSuggestionItems } from "novel/extensions";
 import { Command, renderItems } from "novel/extensions";
 
-import { onUpload } from "@/features/editor";
+import { onUploadImage } from "@/features/editor";
 
 export const suggestionItems = createSuggestionItems([
   {
@@ -137,7 +137,7 @@ export const suggestionItems = createSuggestionItems([
       input.onchange = async () => {
         if (input.files?.length) {
           const file = input.files[0];
-          const url = await onUpload(file);
+          const url = await onUploadImage(file);
 
           editor.commands.setImage({
             src: url as string,

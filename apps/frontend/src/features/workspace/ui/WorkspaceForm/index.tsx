@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { CreateWorkSpaceResquest } from "../../model/workspaceTypes";
-import { useCreateWorkspace } from "../../model/useWorkspace";
+import { useCreateWorkspace } from "../../model/workspaceMutations";
 import { Button, Dialog, FormField } from "@/shared/ui";
 
 const initialFormInput: CreateWorkSpaceResquest = {

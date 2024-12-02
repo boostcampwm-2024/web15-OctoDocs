@@ -1,6 +1,6 @@
 import { LogOut } from "lucide-react";
 
-import { useLogout } from "../../model/useAuth";
+import { useLogout } from "../../model/authMutations";
 import { Button } from "@/shared/ui";
 import { usePopover } from "@/shared/model";
 

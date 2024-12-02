@@ -1,4 +1,4 @@
-export { useUserWorkspace } from "./model/useWorkspace";
+export { useUserWorkspace } from "./model/workspaceQuries";
 
 export { ShareTool } from "./ui/ShareTool";
 export { WorkspaceAddButton } from "./ui/WorkspaceAddButton";
