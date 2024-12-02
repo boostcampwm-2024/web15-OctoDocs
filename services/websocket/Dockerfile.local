@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install
+
+# Copy source
+COPY . .
+
+# Install app dependencies
+WORKDIR /app/apps/websocket
+RUN yarn install
+
+EXPOSE 4242
+
+# Start the application
+CMD ["yarn", "dev"] 
