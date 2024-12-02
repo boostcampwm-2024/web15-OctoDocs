@@ -1,27 +1,15 @@
 import { Module } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { NaverStrategy } from './strategies/naver.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
-import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TokenModule } from './token/token.module';
 
 @Module({
-  imports: [
-    UserModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
-      }),
-    }),
-  ],
+  imports: [UserModule, TokenModule],
   controllers: [AuthController],
   providers: [
     AuthService,

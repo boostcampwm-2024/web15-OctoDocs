@@ -8,11 +8,14 @@ import { Page } from '../page/page.entity';
 import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { MoveNodeDto } from './dtos/moveNode.dto';
+import { WorkspaceRepository } from '../workspace/workspace.repository';
+import { Workspace } from '../workspace/workspace.entity';
 
 describe('NodeService', () => {
   let service: NodeService;
   let nodeRepository: jest.Mocked<NodeRepository>;
   let pageRepository: jest.Mocked<PageRepository>;
+  let workspaceRepository: jest.Mocked<WorkspaceRepository>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,10 +30,18 @@ describe('NodeService', () => {
             findOneBy: jest.fn(),
             findOne: jest.fn(),
             update: jest.fn(),
+            findNodesByWorkspace: jest.fn(),
           },
         },
         {
           provide: PageRepository,
+          useValue: {
+            save: jest.fn(),
+            findOneBy: jest.fn(),
+          },
+        },
+        {
+          provide: WorkspaceRepository,
           useValue: {
             save: jest.fn(),
             findOneBy: jest.fn(),
@@ -42,10 +53,14 @@ describe('NodeService', () => {
     service = module.get<NodeService>(NodeService);
     nodeRepository = module.get(NodeRepository);
     pageRepository = module.get(PageRepository);
+    workspaceRepository = module.get(WorkspaceRepository);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(service).toBeDefined();
+    expect(nodeRepository).toBeDefined();
+    expect(pageRepository).toBeDefined();
+    expect(workspaceRepository).toBeDefined();
   });
 
   describe('createNode', () => {
@@ -59,6 +74,7 @@ describe('NodeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const page = { id: 1, title: 'Test Page', content: null } as Page;
 
@@ -173,6 +189,7 @@ describe('NodeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       jest.spyOn(nodeRepository, 'findOne').mockResolvedValue(node);
 
@@ -238,6 +255,29 @@ describe('NodeService', () => {
       jest.spyOn(nodeRepository, 'update').mockRejectedValue(new Error());
       await expect(service.moveNode(1, {} as any)).rejects.toThrow(
         NodeNotFoundException,
+      );
+    });
+  });
+
+  describe('findNodesByWorkspace', () => {
+    it('workspace에 해당하는 노드 조회 성공', async () => {
+      const currentDate = new Date();
+      const workspace = {
+        id: 1,
+        snowflakeId: '1234567890',
+        title: 'workspace',
+        description: 'workspace description',
+        visibility: 'private',
+        createdAt: currentDate,
+        updatedAt: currentDate,
+        thumbnailUrl: 'https://example.com/thumbnail.jpg',
+      } as Workspace;
+
+      jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(workspace);
+      await service.findNodesByWorkspace(workspace.snowflakeId);
+
+      expect(nodeRepository.findNodesByWorkspace).toHaveBeenCalledWith(
+        workspace.id,
       );
     });
   });

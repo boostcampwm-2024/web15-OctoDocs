@@ -12,4 +12,11 @@ export class NodeRepository extends Repository<Node> {
   async findById(id: number): Promise<Node | null> {
     return await this.findOneBy({ id });
   }
+
+  async findNodesByWorkspace(workspaceId: number): Promise<Node[]> {
+    return this.find({
+      where: { workspace: { id: workspaceId } },
+      relations: ['page'],
+    });
+  }
 }

@@ -24,7 +24,7 @@ export enum PageResponseMessage {
   PAGE_UPDATED = '페이지와 노드를 갱신했습니다.',
   PAGE_DELETED = '페이지와 노드를 삭제했습니다.',
   PAGE_RETURNED = '페이지를 가져왔습니다.',
-  PAGE_LIST_RETURNED = '페이지 목록을 가져왔습니다',
+  PAGES_RETURNED = '워크스페이스의 모든 페이지를 가져왔습니다',
 }
 
 @Controller('page')
@@ -87,13 +87,16 @@ export class PageController {
   @ApiResponse({
     type: FindPagesResponseDto,
   })
-  @ApiOperation({ summary: '모든 페이지를 가져옵니다.' })
-  @Get()
+  @ApiOperation({ summary: '특정 워크스페이스의 모든 페이지를 가져옵니다.' })
+  @Get('/workspace/:workspaceId')
   @HttpCode(HttpStatus.OK)
-  async findPages(): Promise<FindPagesResponseDto> {
+  async findPagesByWorkspace(
+    @Param('workspaceId') workspaceId: string, // Snowflake ID
+  ): Promise<FindPagesResponseDto> {
+    const pages = await this.pageService.findPagesByWorkspace(workspaceId);
     return {
-      message: PageResponseMessage.PAGE_LIST_RETURNED,
-      pages: await this.pageService.findPages(),
+      message: PageResponseMessage.PAGES_RETURNED,
+      pages,
     };
   }
 

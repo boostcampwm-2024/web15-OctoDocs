@@ -21,6 +21,7 @@ describe('EdgeController', () => {
             createEdge: jest.fn(),
             deleteEdge: jest.fn(),
             findEdges: jest.fn(),
+            findEdgesByWorkspace: jest.fn(),
           },
         },
       ],
@@ -73,8 +74,9 @@ describe('EdgeController', () => {
     });
   });
 
-  describe('findEdges', () => {
-    it('모든 엣지 목록을 반환한다.', async () => {
+  describe('findEdgesByWorkspace', () => {
+    it('특정 워크스페이스에 존재하는 엣지들을 반환한다.', async () => {
+      const workspaceId = 'workspace-id';
       const node3 = {
         id: 3,
         x: 0,
@@ -83,6 +85,7 @@ describe('EdgeController', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const node4 = {
         id: 4,
@@ -92,6 +95,7 @@ describe('EdgeController', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const node5 = {
         id: 5,
@@ -101,6 +105,7 @@ describe('EdgeController', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
 
       const expectedEdges = [
@@ -109,10 +114,17 @@ describe('EdgeController', () => {
       ] as Edge[];
       node3.outgoingEdges = [];
 
-      jest.spyOn(edgeService, 'findEdges').mockResolvedValue(expectedEdges);
+      jest
+        .spyOn(edgeService, 'findEdgesByWorkspace')
+        .mockResolvedValue(expectedEdges);
 
-      await expect(controller.findEdges()).resolves.toEqual({
-        message: EdgeResponseMessage.EDGE_ALL_RETURNED,
+      const result = await controller.findPagesByWorkspace(workspaceId);
+
+      expect(edgeService.findEdgesByWorkspace).toHaveBeenCalledWith(
+        workspaceId,
+      );
+      expect(result).toEqual({
+        message: EdgeResponseMessage.EDGES_RETURNED,
         edges: expectedEdges,
       });
     });

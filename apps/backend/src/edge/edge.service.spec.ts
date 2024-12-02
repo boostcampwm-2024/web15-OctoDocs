@@ -6,11 +6,15 @@ import { CreateEdgeDto } from './dtos/createEdge.dto';
 import { Edge } from './edge.entity';
 import { Node } from '../node/node.entity';
 import { EdgeNotFoundException } from '../exception/edge.exception';
+import { Workspace } from '../workspace/workspace.entity';
+import { WorkspaceRepository } from '../workspace/workspace.repository';
+import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 
 describe('EdgeService', () => {
   let service: EdgeService;
   let edgeRepository: jest.Mocked<EdgeRepository>;
   let nodeRepository: jest.Mocked<NodeRepository>;
+  let workspaceRepository: WorkspaceRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,11 +27,18 @@ describe('EdgeService', () => {
             save: jest.fn(),
             delete: jest.fn(),
             findOneBy: jest.fn(),
-            find: jest.fn(),
+            findEdgesByWorkspace: jest.fn(),
           },
         },
         {
           provide: NodeRepository,
+          useValue: {
+            save: jest.fn(),
+            findOneBy: jest.fn(),
+          },
+        },
+        {
+          provide: WorkspaceRepository,
           useValue: {
             save: jest.fn(),
             findOneBy: jest.fn(),
@@ -39,6 +50,7 @@ describe('EdgeService', () => {
     service = module.get<EdgeService>(EdgeService);
     edgeRepository = module.get(EdgeRepository);
     nodeRepository = module.get(NodeRepository);
+    workspaceRepository = module.get<WorkspaceRepository>(WorkspaceRepository);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
@@ -56,6 +68,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const toNode = {
         id: 5,
@@ -65,6 +78,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace: null,
       } as Node;
       const edge = {
         id: 1,
@@ -108,8 +122,23 @@ describe('EdgeService', () => {
     });
   });
 
-  describe('findEdges', () => {
-    it('존재하는 모든 엣지를 반환한다.', async () => {
+  describe('findEdgesByWorkspace', () => {
+    it('특정 워크스페이스에 존재하는 모든 엣지를 반환한다.', async () => {
+      const workspaceId = '123456789012345678'; // Snowflake ID
+      const workspace = {
+        id: 1,
+        snowflakeId: workspaceId,
+        owner: null,
+        title: 'Test Workspace',
+        description: null,
+        visibility: 'private',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        thumbnailUrl: null,
+        edges: [],
+        pages: [],
+        nodes: [],
+      } as Workspace;
       const node3 = {
         id: 3,
         x: 0,
@@ -118,6 +147,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace,
       } as Node;
       const node4 = {
         id: 4,
@@ -127,6 +157,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace,
       } as Node;
       const node5 = {
         id: 5,
@@ -136,6 +167,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace,
       } as Node;
       const node7 = {
         id: 7,
@@ -145,6 +177,7 @@ describe('EdgeService', () => {
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
+        workspace,
       } as Node;
 
       const expectedEdgeList = [
@@ -152,41 +185,75 @@ describe('EdgeService', () => {
           id: 1,
           fromNode: node3,
           toNode: node5,
+          workspace,
         } as Edge,
         {
           id: 2,
           fromNode: node3,
           toNode: node4,
+          workspace,
         } as Edge,
         {
           id: 3,
           fromNode: node3,
           toNode: node7,
+          workspace,
         } as Edge,
       ];
 
-      jest.spyOn(edgeRepository, 'find').mockResolvedValue(expectedEdgeList);
-      const result = await service.findEdges();
-      expect(result).toEqual(expectedEdgeList);
-      expect(edgeRepository.find).toHaveBeenCalledTimes(1);
-      expect(edgeRepository.find).toHaveBeenCalledWith({
-        relations: ['fromNode', 'toNode'],
-        select: {
-          id: true,
-          fromNode: {
-            id: true,
-          },
-          toNode: {
-            id: true,
-          },
-        },
-      });
-    });
+      jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(workspace);
+      jest
+        .spyOn(edgeRepository, 'findEdgesByWorkspace')
+        .mockResolvedValue(expectedEdgeList);
 
-    it('엣지가 없을 경우, 빈 배열을 던진다.', async () => {
-      jest.spyOn(edgeRepository, 'find').mockResolvedValue([]);
-      const result = await service.findEdges();
-      expect(result).toEqual([]);
+      const result = await service.findEdgesByWorkspace(workspaceId);
+
+      expect(result).toEqual(expectedEdgeList);
+      expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+        snowflakeId: workspaceId,
+      });
+      expect(edgeRepository.findEdgesByWorkspace).toHaveBeenCalledWith(
+        workspace.id,
+      );
     });
+  });
+
+  it('워크스페이스가 존재하지 않을 경우, WorkspaceNotFoundException을 던진다.', async () => {
+    const workspaceId = '123456789012345678';
+
+    jest.spyOn(workspaceRepository, 'findOneBy').mockResolvedValue(null);
+
+    await expect(service.findEdgesByWorkspace(workspaceId)).rejects.toThrow(
+      WorkspaceNotFoundException,
+    );
+
+    expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+      snowflakeId: workspaceId,
+    });
+    expect(edgeRepository.findEdgesByWorkspace).not.toHaveBeenCalled();
+  });
+
+  it('워크스페이스에 엣지가 없을 경우, 빈 배열을 반환한다.', async () => {
+    const workspaceId = '123456789012345678';
+    const workspace = {
+      id: 1,
+      snowflakeId: workspaceId,
+    };
+
+    jest
+      .spyOn(workspaceRepository, 'findOneBy')
+      .mockResolvedValue(workspace as Workspace);
+
+    jest.spyOn(edgeRepository, 'findEdgesByWorkspace').mockResolvedValue([]);
+
+    const result = await service.findEdgesByWorkspace(workspaceId);
+
+    expect(result).toEqual([]);
+    expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
+      snowflakeId: workspaceId,
+    });
+    expect(edgeRepository.findEdgesByWorkspace).toHaveBeenCalledWith(
+      workspace.id,
+    );
   });
 });

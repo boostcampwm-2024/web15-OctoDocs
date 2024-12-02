@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 개발 의존성 설치를 위한 파일들
+COPY package.json yarn.lock ./
+COPY turbo.json ./
+COPY apps/backend/package.json ./apps/backend/
+COPY apps/frontend/package.json ./apps/frontend/
+
+# 개발 의존성 설치 (프로덕션 플래그 제거)
+RUN yarn install
+
+# 소스 코드는 볼륨으로 마운트할 예정이므로 COPY 불필요
+
+EXPOSE 3000 1234
+
+# 개발 모드로 실행
+CMD ["yarn", "dev"]

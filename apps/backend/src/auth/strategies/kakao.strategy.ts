@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-kakao';
 import { AuthService } from '../auth.service';
-import { CreateUserDto } from '../dto/createUser.dto';
+import { SignUpDto } from '../dtos/signUp.dto';
 
 @Injectable()
 export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
@@ -17,14 +17,14 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
 
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
     // 카카오 인증 이후 사용자 정보 처리
-    const createUserDto: CreateUserDto = {
+    const createUserDto: SignUpDto = {
       providerId: profile.id,
       provider: 'kakao',
       email: profile._json.kakao_account.email,
     };
     let user = await this.authService.findUser(createUserDto);
     if (!user) {
-      user = await this.authService.createUser(createUserDto);
+      user = await this.authService.signUp(createUserDto);
     }
     return user; // req.user로 반환
   }

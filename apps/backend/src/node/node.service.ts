@@ -6,12 +6,15 @@ import { CreateNodeDto } from './dtos/createNode.dto';
 import { UpdateNodeDto } from './dtos/updateNode.dto';
 import { NodeNotFoundException } from '../exception/node.exception';
 import { MoveNodeDto } from './dtos/moveNode.dto';
+import { WorkspaceRepository } from '../workspace/workspace.repository';
+import { WorkspaceNotFoundException } from '../exception/workspace.exception';
 
 @Injectable()
 export class NodeService {
   constructor(
     private readonly nodeRepository: NodeRepository,
     private readonly pageRepository: PageRepository,
+    private readonly workspaceRepository: WorkspaceRepository,
   ) {}
 
   async createNode(dto: CreateNodeDto): Promise<Node> {
@@ -105,27 +108,6 @@ export class NodeService {
     return node;
   }
 
-  async findNodes(): Promise<Node[]> {
-    // 노드를 조회한다.
-    const nodes = await this.nodeRepository.find({
-      relations: ['page'],
-      select: {
-        id: true,
-        x: true,
-        y: true,
-        page: {
-          id: true,
-          title: true, // content 제외하고 title만 선택
-        },
-      },
-    });
-    // 노드가 없으면 NotFound 에러
-    if (!nodes) {
-      throw new NodeNotFoundException();
-    }
-    return nodes;
-  }
-
   async getCoordinates(id: number): Promise<{ x: number; y: number }> {
     // 노드를 조회한다.
     const node = await this.findNodeById(id);
@@ -149,5 +131,18 @@ export class NodeService {
 
     // UPDATE 쿼리를 실행한다.
     await this.nodeRepository.update(id, { x, y });
+  }
+
+  async findNodesByWorkspace(workspaceId: string): Promise<Node[]> {
+    // 워크스페이스 DB에서 해당 워크스페이스의 내부 id를 찾는다
+    const workspace = await this.workspaceRepository.findOneBy({
+      snowflakeId: workspaceId,
+    });
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundException();
+    }
+
+    return await this.nodeRepository.findNodesByWorkspace(workspace.id);
   }
 }
