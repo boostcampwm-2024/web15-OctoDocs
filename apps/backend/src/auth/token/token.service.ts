@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 const HOUR = 60 * 60;
 const DAY = 24 * 60 * 60;
@@ -17,7 +18,10 @@ export class TokenService {
     });
   }
 
-  generateRefreshToken(payload: any): string {
+  generateRefreshToken(): string {
+    const payload = {
+      jti: uuidv4(),
+    };
     return this.jwtService.sign(payload, {
       expiresIn: FIVE_MONTHS,
     });
