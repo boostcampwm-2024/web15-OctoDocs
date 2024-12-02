@@ -1,5 +1,5 @@
-import KakaoLogo from "../../../../../public/kakao.svg";
-import NaverLogo from "../../../../../public/naver.svg";
+import KakaoLogo from "/icons/kakao.svg";
+import NaverLogo from "/icons/naver.svg";
 
 export function LoginForm() {
   return (
