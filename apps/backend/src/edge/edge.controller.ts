@@ -31,6 +31,7 @@ export class EdgeController {
   @HttpCode(HttpStatus.CREATED)
   async createEdge(@Body() body: CreateEdgeDto) {
     await this.edgeService.createEdge(body);
+
     return {
       message: EdgeResponseMessage.EDGE_CREATED,
     };
@@ -44,6 +45,7 @@ export class EdgeController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
     await this.edgeService.deleteEdge(id);
+
     return {
       message: EdgeResponseMessage.EDGE_DELETED,
     };
@@ -59,6 +61,7 @@ export class EdgeController {
     @Param('workspaceId') workspaceId: string, // Snowflake ID
   ): Promise<FindEdgesResponseDto> {
     const edges = await this.edgeService.findEdgesByWorkspace(workspaceId);
+
     return {
       message: EdgeResponseMessage.EDGES_RETURNED,
       edges,

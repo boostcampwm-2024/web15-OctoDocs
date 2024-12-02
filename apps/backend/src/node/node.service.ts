@@ -34,6 +34,7 @@ export class NodeService {
   async createLinkedNode(x: number, y: number, pageId: number): Promise<Node> {
     // 페이지를 조회한다.
     const existingPage = await this.pageRepository.findOneBy({ id: pageId });
+
     // 노드를 생성한다.
     const node = this.nodeRepository.create({ x, y });
 
@@ -71,6 +72,7 @@ export class NodeService {
     if (!node) {
       throw new NodeNotFoundException();
     }
+
     // 노드와 연결된 페이지를 조회한다.
     const linkedPage = await this.pageRepository.findOneBy({
       id: node.page.id,

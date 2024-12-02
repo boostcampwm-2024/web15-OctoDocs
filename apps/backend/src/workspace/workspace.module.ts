@@ -9,6 +9,7 @@ import { RoleModule } from '../role/role.module';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TokenModule } from '../auth/token/token.module';
 import { TokenService } from '../auth/token/token.service';
+import { ConfigModule } from '@nestjs/config'; 
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TokenService } from '../auth/token/token.service';
     UserModule,
     RoleModule,
     TokenModule,
+    ConfigModule,
   ],
   controllers: [WorkspaceController],
   providers: [

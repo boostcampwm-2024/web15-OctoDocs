@@ -40,6 +40,7 @@ export class TokenService {
   generateInviteToken(workspaceId: number, role: string): string {
     // 초대용 JWT 토큰 생성
     const payload = { workspaceId, role };
+
     return this.jwtService.sign(payload, {
       expiresIn: DAY, // 초대 유효 기간: 1일
       secret: process.env.JWT_SECRET,
@@ -98,6 +99,7 @@ export class TokenService {
       secure: true,
       sameSite: 'strict',
     });
+
     response.clearCookie('refreshToken', {
       httpOnly: true,
       secure: true,

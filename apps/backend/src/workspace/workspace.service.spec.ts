@@ -14,6 +14,7 @@ import { TokenService } from '../auth/token/token.service';
 import { ForbiddenAccessException } from '../exception/access.exception';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
+import { ConfigService } from '@nestjs/config';
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
@@ -21,6 +22,7 @@ describe('WorkspaceService', () => {
   let userRepository: UserRepository;
   let roleRepository: RoleRepository;
   let tokenService: TokenService;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,6 +59,12 @@ describe('WorkspaceService', () => {
             verifyInviteToken: jest.fn(),
           },
         },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -65,12 +73,16 @@ describe('WorkspaceService', () => {
     userRepository = module.get<UserRepository>(UserRepository);
     roleRepository = module.get<RoleRepository>(RoleRepository);
     tokenService = module.get<TokenService>(TokenService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(service).toBeDefined();
     expect(workspaceRepository).toBeDefined();
     expect(userRepository).toBeDefined();
+    expect(roleRepository).toBeDefined();
+    expect(tokenService).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('createWorkspace', () => {
@@ -283,6 +295,10 @@ describe('WorkspaceService', () => {
       jest
         .spyOn(tokenService, 'generateInviteToken')
         .mockReturnValue(tokenMock);
+
+      jest
+        .spyOn(configService, 'get')
+        .mockReturnValue('https://octodocs.local');
 
       const result = await service.generateInviteUrl(userId, workspaceId);
 

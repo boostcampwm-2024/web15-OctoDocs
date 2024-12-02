@@ -45,6 +45,7 @@ export class PageController {
     @Body() body: CreatePageDto,
   ): Promise<CreatePageResponseDto> {
     const newPage = await this.pageService.createPage(body);
+
     return {
       message: PageResponseMessage.PAGE_CREATED,
       pageId: newPage.id,
@@ -63,6 +64,7 @@ export class PageController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<MessageResponseDto> {
     await this.pageService.deletePage(id);
+
     return {
       message: PageResponseMessage.PAGE_DELETED,
     };
@@ -79,6 +81,7 @@ export class PageController {
     @Body() body: UpdatePageDto,
   ): Promise<MessageResponseDto> {
     await this.pageService.updatePage(id, body);
+
     return {
       message: PageResponseMessage.PAGE_UPDATED,
     };
@@ -94,6 +97,7 @@ export class PageController {
     @Param('workspaceId') workspaceId: string, // Snowflake ID
   ): Promise<FindPagesResponseDto> {
     const pages = await this.pageService.findPagesByWorkspace(workspaceId);
+
     return {
       message: PageResponseMessage.PAGES_RETURNED,
       pages,
