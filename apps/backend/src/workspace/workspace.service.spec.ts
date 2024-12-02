@@ -62,9 +62,7 @@ describe('WorkspaceService', () => {
         {
           provide: ConfigService,
           useValue: {
-            useValue: {
-              get: jest.fn(),
-            },
+            get: jest.fn(),
           },
         },
       ],
