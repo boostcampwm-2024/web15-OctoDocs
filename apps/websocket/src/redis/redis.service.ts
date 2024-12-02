@@ -5,21 +5,9 @@ import Redlock from 'redlock';
 const REDIS_CLIENT_TOKEN = 'REDIS_CLIENT';
 const RED_LOCK_TOKEN = 'RED_LOCK';
 
-export type RedisPage = {
+type RedisPage = {
   title?: string;
   content?: string;
-  emoji?: string;
-};
-
-export type RedisNode = {
-  x: number;
-  y: number;
-};
-
-export type RedisEdge = {
-  fromNode: number;
-  toNode: number;
-  type: 'add' | 'delete';
 };
 
 @Injectable()
@@ -41,7 +29,7 @@ export class RedisService {
     const data = await this.redisClient.hgetall(key);
     return Object.fromEntries(
       Object.entries(data).map(([field, value]) => [field, value]),
-    );
+    ) as RedisPage;
   }
 
   async set(key: string, value: object) {

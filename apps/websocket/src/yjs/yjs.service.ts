@@ -9,19 +9,16 @@ import { Logger } from '@nestjs/common';
 import { Server } from 'socket.io';
 import { YSocketIO } from 'y-socket.io/dist/server';
 import * as Y from 'yjs';
-import { NodeService } from '../node/node.service';
-import { PageService } from '../page/page.service';
 import {
   yXmlFragmentToProsemirrorJSON,
   prosemirrorJSONToYXmlFragment,
 } from 'y-prosemirror';
 import { novelEditorSchema } from './yjs.schema';
-import { EdgeService } from '../edge/edge.service';
-import { Node } from '../node/node.entity';
-import { Edge } from '../edge/edge.entity';
 import { YMapEdge } from './yjs.type';
+import type { Node } from './types/node.entity';
+import type { Edge } from './types/edge.entity';
 import { RedisService } from '../redis/redis.service';
-import { PageNotFoundException } from '../exception/page.exception';
+import axios from 'axios';
 
 // Y.Doc에는 name 컬럼이 없어서 생성했습니다.
 class CustomDoc extends Y.Doc {
@@ -33,19 +30,14 @@ class CustomDoc extends Y.Doc {
   }
 }
 
-@WebSocketGateway(1234)
+@WebSocketGateway()
 export class YjsService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   private logger = new Logger(YjsService.name);
   private ysocketio: YSocketIO;
 
-  constructor(
-    private readonly nodeService: NodeService,
-    private readonly pageService: PageService,
-    private readonly edgeService: EdgeService,
-    private readonly redisService: RedisService,
-  ) {}
+  constructor(private readonly redisService: RedisService) {}
 
   @WebSocketServer()
   server: Server;
@@ -97,21 +89,15 @@ export class YjsService
     // 초기 세팅할 page content
     let pageContent: JSON;
 
-    try {
-      const findPage = await this.pageService.findPageById(pageId);
-      pageContent = JSON.parse(JSON.stringify(findPage.content));
-    } catch (exception) {
-      // 에러 스택 출력
-      this.logger.error(exception.stack);
-
-      // 만약 존재하지 않는 페이지에 접근한다면 비어있는 content를 전달한다.
-      if (exception instanceof PageNotFoundException) {
-        pageContent = JSON.parse('{}');
-        return;
-      }
-
-      throw exception;
+    const response = await axios.get(`http://backend:3000/api/page/${pageId}`);
+    if (response.status === 404) {
+      this.logger.error(`${pageId}번 페이지를 찾을 수 없습니다.`);
+      pageContent = JSON.parse('{}');
+      return;
     }
+
+    const findPage = response.data.page;
+    pageContent = JSON.parse(JSON.stringify(findPage.content));
 
     // content가 비어있다면 내부 구조가 novel editor schema를 따르지 않기 때문에 오류가 납니다.
     // content가 존재할 때만 넣어줍니다.
@@ -139,8 +125,16 @@ export class YjsService
    */
   private async initializeWorkspace(workspaceId: string, doc: Y.Doc) {
     // workspaceId에 속한 모든 노드와 엣지를 가져온다.
-    const nodes = await this.nodeService.findNodesByWorkspace(workspaceId);
-    const edges = await this.edgeService.findEdgesByWorkspace(workspaceId);
+    const nodeResponse = await axios.get(
+      `http://backend:3000/api/node/workspace/${workspaceId}`,
+    );
+    const nodes = nodeResponse.data.nodes;
+
+    const edgeResponse = await axios.get(
+      `http://backend:3000/api/edge/workspace/${workspaceId}`,
+    );
+    const edges = edgeResponse.data.edges;
+
     const nodesMap = doc.getMap('nodes');
     const title = doc.getMap('title');
     const emoji = doc.getMap('emoji');
@@ -253,11 +247,10 @@ export class YjsService
   private async observeEmoji(event: Y.YEvent<any>[]) {
     // path가 존재할 때만 페이지 갱신
     event[0].path.toString().split('_')[1] &&
-      this.pageService.updatePage(
-        parseInt(event[0].path.toString().split('_')[1]),
-        {
-          emoji: event[0].target.toString(),
-        },
+      this.redisService.setField(
+        `page:${event[0].path.toString().split('_')[1]}`,
+        'emoji',
+        event[0].target.toString(),
       );
   }
 
@@ -273,18 +266,24 @@ export class YjsService
       if (node.type !== 'note') continue;
 
       // node.data는 페이지에 대한 정보
-      const { title, id } = node.data;
+      const { id } = node.data;
       const { x, y } = node.position;
       const isHolding = node.isHolding;
       if (isHolding) continue;
 
       // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
-      const findPage = await this.pageService.findPageById(id);
-      await this.nodeService.updateNode(findPage.node.id, {
-        title,
-        x,
-        y,
-      });
+      // const findPage = await this.pageService.findPageById(id);
+      // await this.nodeService.updateNode(findPage.node.id, {
+      //   title,
+      //   x,
+      //   y,
+      // });
+      const pageResponse = await axios.get(
+        `http://backend:3000/api/page/${id}`,
+      );
+      const findPage = pageResponse.data.page;
+      this.redisService.setField(`node:${findPage.node.id}`, 'x', x);
+      this.redisService.setField(`node:${findPage.node.id}`, 'y', y);
     }
   }
 
@@ -293,22 +292,44 @@ export class YjsService
     edgesMap: Y.Map<unknown>,
   ) {
     for (const [key, change] of event.changes.keys) {
+      const [fromNode, toNode] = key.slice(1).split('-');
       const edge = edgesMap.get(key) as YMapEdge;
-      const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
-        parseInt(edge.source),
-        parseInt(edge.target),
-      );
 
-      if (change.action === 'add' && !findEdge) {
+      if (change.action === 'add') {
         // 연결된 노드가 없을 때만 edge 생성
-        await this.edgeService.createEdge({
-          fromNode: parseInt(edge.source),
-          toNode: parseInt(edge.target),
-        });
+        this.redisService.setField(
+          `edge:${edge.source}-${edge.target}`,
+          'fromNode',
+          edge.source,
+        );
+        this.redisService.setField(
+          `edge:${edge.source}-${edge.target}`,
+          'toNode',
+          edge.target,
+        );
+        this.redisService.setField(
+          `edge:${edge.source}-${edge.target}`,
+          'type',
+          'add',
+        );
       }
       if (change.action === 'delete') {
         // 엣지가 존재하면 삭제
-        await this.edgeService.deleteEdge(findEdge.id);
+        this.redisService.setField(
+          `edge:${fromNode}-${toNode}`,
+          'fromNode',
+          fromNode,
+        );
+        this.redisService.setField(
+          `edge:${fromNode}-${toNode}`,
+          'toNode',
+          toNode,
+        );
+        this.redisService.setField(
+          `edge:${fromNode}-${toNode}`,
+          'type',
+          'delete',
+        );
       }
     }
   }
