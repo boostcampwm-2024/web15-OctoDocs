@@ -75,12 +75,16 @@ describe('WorkspaceService', () => {
     userRepository = module.get<UserRepository>(UserRepository);
     roleRepository = module.get<RoleRepository>(RoleRepository);
     tokenService = module.get<TokenService>(TokenService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(service).toBeDefined();
     expect(workspaceRepository).toBeDefined();
     expect(userRepository).toBeDefined();
+    expect(roleRepository).toBeDefined();
+    expect(tokenService).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('createWorkspace', () => {
