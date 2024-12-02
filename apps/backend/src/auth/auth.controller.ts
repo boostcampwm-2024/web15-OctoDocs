@@ -84,9 +84,11 @@ export class AuthController {
   @ApiOperation({ summary: '사용자가 로그아웃합니다.' })
   @Post('logout')
   @UseGuards(JwtAuthGuard) // JWT 인증 검사
-  logout(@Res() res: Response) {
+  logout(@Req() req, @Res() res: Response) {
     // 쿠키 삭제 (옵션이 일치해야 삭제됨)
     this.tokenService.clearCookies(res);
+    // 현재 자동로그인에 사용되는 refresh Token db에서 삭제
+    this.tokenService.deleteRefreshToken(req.user.sub);
     return res.status(200).json({
       message: AuthResponseMessage.AUTH_LOGGED_OUT,
     });

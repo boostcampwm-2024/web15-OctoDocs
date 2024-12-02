@@ -26,6 +26,7 @@ export class TokenService {
   }
 
   async generateRefreshToken(userId: number): Promise<string> {
+    // 보안성을 높이기 위해 랜덤한 tokenId인 jti를 생성한다
     const payload = { sub: userId, jti: uuidv4() };
     const refreshToken = this.jwtService.sign(payload, {
       expiresIn: FIVE_MONTHS,
@@ -52,7 +53,7 @@ export class TokenService {
   }
 
   async refreshAccessToken(refreshToken: string): Promise<string> {
-    // refreshToken 1차 검증한다
+    // refreshToken 1차 검증
     const decoded = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_SECRET,
     });
@@ -60,6 +61,7 @@ export class TokenService {
     // 검증된 토큰에서 사용자 ID 추출
     const userId = decoded.sub;
 
+    // refreshToken 2차 검증
     // DB에 저장된 refreshToken과 비교
     const isValid = await this.compareStoredRefreshToken(userId, refreshToken);
     if (!isValid) {
@@ -130,6 +132,20 @@ export class TokenService {
 
     // 유저의 현재 REFRESH TOKEN 갱신
     user.refreshToken = refreshToken;
+    await this.userRepository.save(user);
+  }
+
+  async deleteRefreshToken(id: number) {
+    // 유저를 찾는다.
+    const user = await this.userRepository.findOneBy({ id });
+
+    // 유저가 없으면 오류
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    // 유저의 현재 REFRESH TOKEN 삭제
+    user.refreshToken = null;
     await this.userRepository.save(user);
   }
 }
