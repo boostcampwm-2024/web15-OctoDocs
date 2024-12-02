@@ -22,6 +22,7 @@ export class UploadService {
     });
 
     await this.s3Client.send(command);
+
     return `${this.configService.get('CLOUD_ENDPOINT')}/${this.configService.get('CLOUD_BUCKET_NAME')}/${key}`;
   }
 }

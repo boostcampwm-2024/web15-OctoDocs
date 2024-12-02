@@ -9,10 +9,9 @@ type RedisPage = {
   title?: string;
   content?: string;
 };
+
 @Injectable()
 export class RedisService {
-  // private readonly redisClient: Redis;
-
   constructor(
     @Inject(REDIS_CLIENT_TOKEN) private readonly redisClient: Redis,
     @Inject(RED_LOCK_TOKEN) private readonly redisLock: Redlock,

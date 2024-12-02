@@ -27,9 +27,6 @@ import { RedLockModule } from './red-lock/red-lock.module';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, '..', '..', 'frontend', 'dist'),
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: path.join(__dirname, '..', '.env'), // * nest 디렉터리 기준
@@ -38,9 +35,6 @@ import { RedLockModule } from './red-lock/red-lock.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-
-        // type: 'sqlite',
-        // database: 'db.sqlite',
         type: 'postgres',
         host: configService.get('DB_HOST'),
         port: configService.get('DB_PORT'),
@@ -48,8 +42,8 @@ import { RedLockModule } from './red-lock/red-lock.module';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [Node, Page, Edge, User, Workspace, Role],
-        logging: true,
-        synchronize: true,
+        logging: process.env.NODE_ENV === 'development',
+        synchronize: process.env.NODE_ENV === 'development',
       }),
     }),
     NodeModule,

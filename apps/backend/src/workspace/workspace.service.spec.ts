@@ -13,6 +13,8 @@ import { User } from '../user/user.entity';
 import { TokenService } from '../auth/token/token.service';
 import { ForbiddenAccessException } from '../exception/access.exception';
 import { Snowflake } from '@theinternetfolks/snowflake';
+import { UserWorkspaceDto } from './dtos/userWorkspace.dto';
+import { ConfigService } from '@nestjs/config';
 
 describe('WorkspaceService', () => {
   let service: WorkspaceService;
@@ -20,6 +22,7 @@ describe('WorkspaceService', () => {
   let userRepository: UserRepository;
   let roleRepository: RoleRepository;
   let tokenService: TokenService;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -56,6 +59,12 @@ describe('WorkspaceService', () => {
             verifyInviteToken: jest.fn(),
           },
         },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -64,12 +73,16 @@ describe('WorkspaceService', () => {
     userRepository = module.get<UserRepository>(UserRepository);
     roleRepository = module.get<RoleRepository>(RoleRepository);
     tokenService = module.get<TokenService>(TokenService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('서비스 클래스가 정상적으로 인스턴스화된다.', () => {
     expect(service).toBeDefined();
     expect(workspaceRepository).toBeDefined();
     expect(userRepository).toBeDefined();
+    expect(roleRepository).toBeDefined();
+    expect(tokenService).toBeDefined();
+    expect(configService).toBeDefined();
   });
 
   describe('createWorkspace', () => {
@@ -283,6 +296,10 @@ describe('WorkspaceService', () => {
         .spyOn(tokenService, 'generateInviteToken')
         .mockReturnValue(tokenMock);
 
+      jest
+        .spyOn(configService, 'get')
+        .mockReturnValue('https://octodocs.local');
+
       const result = await service.generateInviteUrl(userId, workspaceId);
 
       expect(workspaceRepository.findOneBy).toHaveBeenCalledWith({
@@ -357,46 +374,96 @@ describe('WorkspaceService', () => {
     });
   });
 
-  describe('checkAccess', () => {
-    it('퍼블릭 워크스페이스는 접근을 허용한다.', async () => {
-      jest
-        .spyOn(workspaceRepository, 'findOne')
-        .mockResolvedValue({ visibility: 'public' } as Workspace);
+  describe('getWorkspaceData', () => {
+    it('퍼블릭 워크스페이스는 권한 체크 없이 데이터를 받는다.', async () => {
+      const workspace = {
+        id: 1,
+        snowflakeId: 'workspace-snowflake-id',
+        owner: { id: 1 } as User,
+        title: 'Test Workspace',
+        description: null,
+        visibility: 'public',
+        thumbnailUrl: null,
+      } as Workspace;
 
-      await expect(
-        service.checkAccess(null, 'workspace-snowflake-id'),
-      ).resolves.toBeUndefined();
+      const workspaceDto = {
+        workspaceId: 'workspace-snowflake-id',
+        title: 'Test Workspace',
+        description: null,
+        thumbnailUrl: null,
+        role: null,
+        visibility: 'public',
+      } as UserWorkspaceDto;
+
+      jest.spyOn(workspaceRepository, 'findOne').mockResolvedValue(workspace);
+
+      const result = await service.getWorkspaceData(
+        null,
+        'workspace-snowflake-id',
+      );
+
+      expect(result).toEqual(workspaceDto);
     });
 
     it('프라이빗 워크스페이스는 권한이 없으면 예외를 던진다.', async () => {
-      jest
-        .spyOn(workspaceRepository, 'findOne')
-        .mockResolvedValue({ visibility: 'private' } as Workspace);
+      const workspace = {
+        id: 1,
+        snowflakeId: 'workspace-snowflake-id',
+        owner: { id: 2 } as User,
+        title: 'Test Workspace',
+        description: null,
+        visibility: 'private',
+        thumbnailUrl: null,
+      } as Workspace;
+
+      jest.spyOn(workspaceRepository, 'findOne').mockResolvedValue(workspace);
       jest
         .spyOn(userRepository, 'findOneBy')
-        .mockResolvedValue({ id: 1 } as User);
+        .mockResolvedValue({ id: 1, snowflakeId: 'user-snowflake-id' } as User);
       jest.spyOn(roleRepository, 'findOne').mockResolvedValue(null);
 
       await expect(
-        service.checkAccess('user-snowflake-id', 'workspace-snowflake-id'),
+        service.getWorkspaceData('user-snowflake-id', 'workspace-snowflake-id'),
       ).rejects.toThrow(ForbiddenAccessException);
     });
 
     it('프라이빗 워크스페이스는 권한이 있으면 접근을 허용한다.', async () => {
-      const userMock = { id: 1 };
-      const workspaceMock = { id: 1, visibility: 'private' };
+      const workspace = {
+        id: 1,
+        snowflakeId: 'workspace-snowflake-id',
+        owner: { id: 2 } as User,
+        title: 'Test Workspace',
+        description: null,
+        visibility: 'private',
+        thumbnailUrl: null,
+      } as Workspace;
+      const user = {
+        id: 1,
+        snowflakeId: 'user-snowflake-id',
+      } as User;
+      const role = {
+        workspace: workspace,
+        user: user,
+        role: 'guest',
+      } as Role;
+      const workspaceDto = {
+        workspaceId: 'workspace-snowflake-id',
+        title: 'Test Workspace',
+        description: null,
+        thumbnailUrl: null,
+        role: 'guest',
+        visibility: 'private',
+      } as UserWorkspaceDto;
+      jest.spyOn(workspaceRepository, 'findOne').mockResolvedValue(workspace);
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(user);
+      jest.spyOn(roleRepository, 'findOne').mockResolvedValue(role);
 
-      jest
-        .spyOn(workspaceRepository, 'findOne')
-        .mockResolvedValue(workspaceMock as Workspace);
-      jest
-        .spyOn(userRepository, 'findOneBy')
-        .mockResolvedValue(userMock as User);
-      jest.spyOn(roleRepository, 'findOne').mockResolvedValue({} as Role);
+      const result = await service.getWorkspaceData(
+        'user-snowflake-id',
+        'workspace-snowflake-id',
+      );
 
-      await expect(
-        service.checkAccess('user-snowflake-id', 'workspace-snowflake-id'),
-      ).resolves.toBeUndefined();
+      expect(result).toEqual(workspaceDto);
     });
   });
 });

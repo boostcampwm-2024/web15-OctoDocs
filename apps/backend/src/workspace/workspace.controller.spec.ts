@@ -26,7 +26,7 @@ describe('WorkspaceController', () => {
             getUserWorkspaces: jest.fn(),
             generateInviteUrl: jest.fn(),
             processInviteUrl: jest.fn(),
-            checkAccess: jest.fn(),
+            getWorkspaceData: jest.fn(),
             updateVisibility: jest.fn(),
           },
         },
@@ -117,6 +117,7 @@ describe('WorkspaceController', () => {
           description: 'Description 1',
           thumbnailUrl: 'http://example.com/image1.png',
           role: 'owner',
+          visibility: 'private',
         },
         {
           workspaceId: 'snowflake-id-2',
@@ -124,6 +125,7 @@ describe('WorkspaceController', () => {
           description: null,
           thumbnailUrl: null,
           role: 'guest',
+          visibility: 'private',
         },
       ] as UserWorkspaceDto[];
 
@@ -188,18 +190,31 @@ describe('WorkspaceController', () => {
     });
   });
 
-  describe('checkWorkspaceAccess', () => {
-    it('워크스페이스에 접근 가능한 경우 메시지를 반환한다.', async () => {
+  describe('getWorkspace', () => {
+    it('워크스페이스에 접근 가능한 경우 워크스페이스 정보를 반환한다.', async () => {
       const workspaceId = 'workspace-snowflake-id';
       const userId = 'user-snowflake-id';
 
-      jest.spyOn(service, 'checkAccess').mockResolvedValue(undefined);
+      const mockWorkspace = {
+        workspaceId: 'snowflake-id-1',
+        title: 'Workspace 1',
+        description: 'Description 1',
+        thumbnailUrl: 'http://example.com/image1.png',
+        role: 'owner',
+        visibility: 'public',
+      } as UserWorkspaceDto;
 
-      const result = await controller.checkWorkspaceAccess(workspaceId, userId);
+      jest.spyOn(service, 'getWorkspaceData').mockResolvedValue(mockWorkspace);
 
-      expect(service.checkAccess).toHaveBeenCalledWith(userId, workspaceId);
+      const result = await controller.getWorkspace(workspaceId, userId);
+
+      expect(service.getWorkspaceData).toHaveBeenCalledWith(
+        userId,
+        workspaceId,
+      );
       expect(result).toEqual({
-        message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
+        message: WorkspaceResponseMessage.WORKSPACE_DATA_RETURNED,
+        workspace: mockWorkspace,
       });
     });
 
@@ -207,13 +222,13 @@ describe('WorkspaceController', () => {
       const workspaceId = 'workspace-snowflake-id';
       const userId = 'null'; // 로그인되지 않은 상태를 나타냄
 
-      jest.spyOn(service, 'checkAccess').mockResolvedValue(undefined);
+      jest.spyOn(service, 'getWorkspaceData').mockResolvedValue(undefined);
 
-      const result = await controller.checkWorkspaceAccess(workspaceId, userId);
+      const result = await controller.getWorkspace(workspaceId, userId);
 
-      expect(service.checkAccess).toHaveBeenCalledWith(null, workspaceId);
+      expect(service.getWorkspaceData).toHaveBeenCalledWith(null, workspaceId);
       expect(result).toEqual({
-        message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
+        message: WorkspaceResponseMessage.WORKSPACE_DATA_RETURNED,
       });
     });
 
@@ -223,14 +238,17 @@ describe('WorkspaceController', () => {
 
       // 권한 없음
       jest
-        .spyOn(service, 'checkAccess')
+        .spyOn(service, 'getWorkspaceData')
         .mockRejectedValue(new ForbiddenAccessException());
 
       await expect(
-        controller.checkWorkspaceAccess(workspaceId, userId),
+        controller.getWorkspace(workspaceId, userId),
       ).rejects.toThrow(ForbiddenAccessException);
 
-      expect(service.checkAccess).toHaveBeenCalledWith(userId, workspaceId);
+      expect(service.getWorkspaceData).toHaveBeenCalledWith(
+        userId,
+        workspaceId,
+      );
     });
 
     it('워크스페이스가 존재하지 않는 경우 WorkspaceNotFoundException을 던진다.', async () => {
@@ -239,14 +257,17 @@ describe('WorkspaceController', () => {
 
       // 워크스페이스 없음
       jest
-        .spyOn(service, 'checkAccess')
+        .spyOn(service, 'getWorkspaceData')
         .mockRejectedValue(new WorkspaceNotFoundException());
 
       await expect(
-        controller.checkWorkspaceAccess(workspaceId, userId),
+        controller.getWorkspace(workspaceId, userId),
       ).rejects.toThrow(WorkspaceNotFoundException);
 
-      expect(service.checkAccess).toHaveBeenCalledWith(userId, workspaceId);
+      expect(service.getWorkspaceData).toHaveBeenCalledWith(
+        userId,
+        workspaceId,
+      );
     });
   });
 });

@@ -20,6 +20,7 @@ import { CreateWorkspaceDto } from './dtos/createWorkspace.dto';
 import { CreateWorkspaceResponseDto } from './dtos/createWorkspaceResponse.dto';
 import { GetUserWorkspacesResponseDto } from './dtos/getUserWorkspacesResponse.dto';
 import { CreateWorkspaceInviteUrlDto } from './dtos/createWorkspaceInviteUrl.dto';
+import { GetWorkspaceResponseDto } from './dtos/getWorkspaceResponse.dto';
 
 export enum WorkspaceResponseMessage {
   WORKSPACE_CREATED = '워크스페이스를 생성했습니다.',
@@ -27,7 +28,7 @@ export enum WorkspaceResponseMessage {
   WORKSPACES_RETURNED = '사용자가 참여하고 있는 모든 워크스페이스들을 가져왔습니다.',
   WORKSPACE_INVITED = '워크스페이스 게스트 초대 링크가 생성되었습니다.',
   WORKSPACE_JOINED = '워크스페이스에 게스트로 등록되었습니다.',
-  WORKSPACE_ACCESS_CHECKED = '워크스페이스에 대한 사용자의 접근 권한이 확인되었습니다.',
+  WORKSPACE_DATA_RETURNED = '워크스페이스에 대한 정보를 가져왔습니다.',
   WORKSPACE_UPDATED_TO_PUBLIC = '워크스페이스가 공개로 설정되었습니다.',
   WORKSPACE_UPDATED_TO_PRIVATE = '워크스페이스가 비공개로 설정되었습니다.',
 }
@@ -56,6 +57,7 @@ export class WorkspaceController {
       userId,
       createWorkspaceDto,
     );
+
     return {
       message: WorkspaceResponseMessage.WORKSPACE_CREATED,
       workspaceId: newWorkspace.snowflakeId,
@@ -91,6 +93,7 @@ export class WorkspaceController {
   async getUserWorkspaces(@Request() req) {
     const userId = req.user.sub; // 인증된 사용자의 ID
     const workspaces = await this.workspaceService.getUserWorkspaces(userId);
+
     return {
       message: WorkspaceResponseMessage.WORKSPACES_RETURNED,
       workspaces,
@@ -134,14 +137,14 @@ export class WorkspaceController {
   }
 
   @ApiResponse({
-    type: MessageResponseDto,
+    type: GetWorkspaceResponseDto,
   })
   @ApiOperation({
     summary: '워크스페이스에 대한 사용자의 권한을 확인합니다.',
   })
   @Get('/:workspaceId/:userId')
   @HttpCode(HttpStatus.OK)
-  async checkWorkspaceAccess(
+  async getWorkspace(
     @Param('workspaceId') workspaceId: string,
     @Param('userId') userId: string, // 로그인되지 않은 경우 'null'
   ) {
@@ -149,10 +152,14 @@ export class WorkspaceController {
     // userId 'null'인 경우 => null로 처리
     const checkedUserId = userId === 'null' ? null : userId;
 
-    await this.workspaceService.checkAccess(checkedUserId, workspaceId);
+    const workspaceData = await this.workspaceService.getWorkspaceData(
+      checkedUserId,
+      workspaceId,
+    );
 
     return {
-      message: WorkspaceResponseMessage.WORKSPACE_ACCESS_CHECKED,
+      message: WorkspaceResponseMessage.WORKSPACE_DATA_RETURNED,
+      workspace: workspaceData,
     };
   }
 
@@ -168,6 +175,7 @@ export class WorkspaceController {
   async makeWorkspacePublic(@Request() req, @Param('id') id: string) {
     const userId = req.user.sub; // 인증된 사용자 ID
     await this.workspaceService.updateVisibility(userId, id, 'public');
+
     return { message: WorkspaceResponseMessage.WORKSPACE_UPDATED_TO_PUBLIC };
   }
 
@@ -183,6 +191,7 @@ export class WorkspaceController {
   async makeWorkspacePrivate(@Request() req, @Param('id') id: string) {
     const userId = req.user.sub; // 인증된 사용자 ID
     await this.workspaceService.updateVisibility(userId, id, 'private');
+
     return { message: WorkspaceResponseMessage.WORKSPACE_UPDATED_TO_PRIVATE };
   }
 }

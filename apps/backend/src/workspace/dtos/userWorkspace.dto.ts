@@ -3,6 +3,6 @@ export class UserWorkspaceDto {
   title: string;
   description: string | null;
   thumbnailUrl: string | null;
-  role: 'owner' | 'guest';
+  role: 'owner' | 'guest' | null;
   visibility: 'public' | 'private';
 }
