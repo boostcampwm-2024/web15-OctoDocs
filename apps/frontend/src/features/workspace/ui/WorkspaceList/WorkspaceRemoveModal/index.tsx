@@ -1,7 +1,5 @@
-import Button from "@/shared/ui/Button";
-import { Dialog } from "@/shared/ui/Dialog";
-
 import WarningIcon from "/icons/warning-icon.png";
+import { Button, Dialog } from "@/shared/ui";
 
 type WorkspaceRemoveModalProps = {
   isOpen: boolean;

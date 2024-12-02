@@ -1,2 +1,2 @@
-export * from "./GroupNode";
-export * from "./NoteNode";
+export { GroupNode } from "./GroupNode";
+export { NoteNode } from "./NoteNode";

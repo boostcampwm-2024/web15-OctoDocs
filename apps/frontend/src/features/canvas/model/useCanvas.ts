@@ -13,12 +13,12 @@ import {
 import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
 
-import useYDocStore from "@/shared/model/ydocStore";
-import { calculateBestHandles } from "@/features/canvas/model/calculateHandles";
-import { createSocketIOProvider } from "@/shared/api/socketProvider";
+import { calculateBestHandles } from "./calculateHandles";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
-import { usePageStore } from "@/features/pageSidebar/model/pageStore";
-import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { usePageStore } from "@/features/pageSidebar";
+import { createSocketIOProvider } from "@/shared/api";
+import { useWorkspace } from "@/shared/lib";
+import { useYDocStore } from "@/shared/model";
 
 export interface YNode extends Node {
   isHolding: boolean;

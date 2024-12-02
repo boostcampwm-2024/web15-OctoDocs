@@ -1,8 +1,8 @@
 import { LogOut } from "lucide-react";
 
-import Button from "@/shared/ui/Button";
 import { useLogout } from "../../model/useAuth";
-import { usePopover } from "@/shared/model/usePopover";
+import { Button } from "@/shared/ui";
+import { usePopover } from "@/shared/model";
 
 export function Logout() {
   const logoutMutation = useLogout();

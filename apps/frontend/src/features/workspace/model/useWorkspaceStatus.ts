@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useUserWorkspace } from "@/features/workspace/model/useWorkspace";
-import { useWorkspace } from "@/shared/lib/useWorkspace";
+
 import {
   setWorkspaceStatusToPrivate,
   setWorkspaceStatusToPublic,
 } from "../api/workspaceStatusApi";
+import { useUserWorkspace } from "../model/useWorkspace";
+import { useWorkspace } from "@/shared/lib";
 
 export const useWorkspaceStatus = () => {
   const { data } = useUserWorkspace();

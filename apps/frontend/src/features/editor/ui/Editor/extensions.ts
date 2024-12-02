@@ -22,7 +22,6 @@ import {
   Mathematics,
 } from "novel/extensions";
 import { UploadImagesPlugin } from "novel/plugins";
-
 import { cx } from "class-variance-authority";
 import { common, createLowlight } from "lowlight";
 

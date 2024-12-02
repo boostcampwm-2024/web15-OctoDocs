@@ -1,4 +1,4 @@
-import { User } from "@/entities/user/model/userStore";
+import { User } from "@/entities/user";
 import { cn } from "@/shared/lib";
 
 interface ActiveUserProps {
@@ -6,7 +6,7 @@ interface ActiveUserProps {
   className?: string;
 }
 
-export default function ActiveUser({ users, className }: ActiveUserProps) {
+export function ActiveUser({ users, className }: ActiveUserProps) {
   const maxVisibleUsers = 10;
   const hasMoreUsers = users.length > maxVisibleUsers;
   const visibleUsers = users.slice(0, maxVisibleUsers);

@@ -5,9 +5,9 @@ import {
   PanelRightClose,
 } from "lucide-react";
 
-import { cn } from "@/shared/lib";
 import SaveStatus from "../SaveStatus";
-import { usePageStore } from "@/features/pageSidebar/model";
+import { cn } from "@/shared/lib";
+import { usePageStore } from "@/features/pageSidebar";
 
 interface EditorActionPanelProps {
   saveStatus: "saved" | "unsaved";

@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from "@tanstack/react-router";
 
 import { useRemoveWorkspace, useUserWorkspace } from "../../model/useWorkspace";
 import { WorkspaceRemoveModal } from "./WorkspaceRemoveModal";
-import { usePopover } from "@/shared/model/usePopover";
+import { usePopover } from "@/shared/model";
 
 export function WorkspaceList() {
   const { data } = useUserWorkspace();

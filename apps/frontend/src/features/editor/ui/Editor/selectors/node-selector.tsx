@@ -13,11 +13,8 @@ import {
 import { EditorBubbleItem, useEditor } from "novel";
 import { Popover } from "@radix-ui/react-popover";
 
-import { Button } from "@/features/editor/ui/Editor/ui/button";
-import {
-  PopoverContent,
-  PopoverTrigger,
-} from "@/features/editor/ui/Editor/ui/popover";
+import { Button } from "../ui/button";
+import { PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const items: SelectorItem[] = [
   {

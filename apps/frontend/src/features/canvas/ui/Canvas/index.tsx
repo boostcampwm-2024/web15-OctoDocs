@@ -12,7 +12,6 @@ import "@xyflow/react/dist/style.css";
 
 import { CollaborativeCursors } from "../CollaborativeCursors";
 import { NoteNode, GroupNode } from "../Node";
-
 import { useCanvas } from "../../model/useCanvas";
 import { cn } from "@/shared/lib";
 

@@ -1,6 +1,7 @@
 import { createImageUpload } from "novel/plugins";
 
-import { onUpload } from "@/features/editor/api";
+// TODO: 수정해야할듯
+import { onUpload } from "@/features/editor";
 
 export const uploadFn = createImageUpload({
   onUpload,

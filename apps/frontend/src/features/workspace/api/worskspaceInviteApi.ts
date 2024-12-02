@@ -1,9 +1,9 @@
-import { Get, Post } from "@/shared/api";
 import {
   WorkspaceInviteLinkRequest,
   WorkspaceInviteLinkResponse,
   ValidateWorkspaceLinkResponse,
 } from "@/features/workspace/model/workspaceInviteTypes";
+import { Get, Post } from "@/shared/api";
 
 export const createWorkspaceInviteLink = async (id: string) => {
   const url = `/api/workspace/${id}/invite`;

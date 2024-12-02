@@ -3,10 +3,9 @@ import { useDebouncedCallback } from "use-debounce";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 
-import { usePage } from "@/features/pageSidebar/api/usePages";
-import { createSocketIOProvider } from "@/shared/api/socketProvider";
-import { usePageStore } from "@/features/pageSidebar/model";
 import { useUserStore } from "@/entities/user";
+import { usePage, usePageStore } from "@/features/pageSidebar";
+import { createSocketIOProvider } from "@/shared/api";
 
 export const useEditorView = () => {
   const { currentPage, isPanelOpen, isMaximized } = usePageStore();

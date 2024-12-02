@@ -1,5 +1,5 @@
-import { Post } from "@/shared/api";
 import { SetWorkspaceStatusResponse } from "../model/workspaceInviteTypes";
+import { Post } from "@/shared/api";
 
 export const setWorkspaceStatusToPrivate = async (id: string) => {
   // TODO: URL 맞게 고치기.

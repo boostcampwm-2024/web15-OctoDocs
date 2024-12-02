@@ -2,10 +2,12 @@ import { useState } from "react";
 
 import { UserProfile } from "@/entities/user";
 import { LoginForm, Logout, useGetUser } from "@/features/auth";
-import { LogoBtn } from "@/features/pageSidebar/ui";
-import { WorkspaceAddButton } from "@/features/workspace/ui/WorkspaceAddButton";
-import { WorkspaceForm } from "@/features/workspace/ui/WorkspaceForm";
-import { WorkspaceList } from "@/features/workspace/ui/WorkspaceList";
+import { LogoBtn } from "@/features/pageSidebar";
+import {
+  WorkspaceAddButton,
+  WorkspaceForm,
+  WorkspaceList,
+} from "@/features/workspace";
 import { Divider, Popover } from "@/shared/ui";
 
 export function UserInfoView() {

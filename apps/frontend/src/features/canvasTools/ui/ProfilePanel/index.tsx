@@ -1,5 +1,5 @@
-import { usePopover } from "@/shared/model/usePopover";
-import { CursorPreview, ProfileForm } from "@/features/canvasTools/ui";
+import { CursorPreview, ProfileForm } from "@/features/canvasTools";
+import { usePopover } from "@/shared/model";
 
 interface ProfilePanelProps {
   color: string;

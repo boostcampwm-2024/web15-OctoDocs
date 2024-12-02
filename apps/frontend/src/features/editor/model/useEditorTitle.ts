@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Emoji from "@/shared/ui/Emoji";
-import useYDocStore from "@/shared/model/ydocStore";
-import { useYText } from "@/shared/model/useYText";
-import { YNode } from "@/features/canvas/model/useCanvas";
+
+import { YNode } from "@/features/canvas";
+import { Emoji } from "@/shared/ui";
+import { useYDocStore, useYText } from "@/shared/model";
 
 interface Emoji {
   id: string;

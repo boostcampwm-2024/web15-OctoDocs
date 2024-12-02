@@ -1,6 +1,6 @@
 // TODO: admin이 아니라면 tooltip 추가 "권한이 없습니다."
 
-import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { useWorkspace } from "@/shared/lib";
 import { useUserWorkspace } from "../../model/useWorkspace";
 
 export function Sharebutton() {

@@ -1,7 +1,7 @@
-import ActiveUser from "@/shared/ui/ActiveUser";
+import { useEditorView } from "../model/useEditorView";
 import { Editor, EditorActionPanel, EditorTitle } from "@/features/editor";
+import { ActiveUser } from "@/shared/ui";
 import { cn } from "@/shared/lib";
-import { useEditorView } from "../hooks/useEditorView";
 
 export function EditorView() {
   const {

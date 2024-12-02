@@ -1,10 +1,10 @@
-import { Delete, Get, Post } from "@/shared/api";
 import {
   CreateWorkSpaceResponse,
   CreateWorkSpaceResquest,
   GetUserWorkspaceResponse,
   RemoveWorkSpaceResponse,
 } from "../model/workspaceTypes";
+import { Delete, Get, Post } from "@/shared/api";
 
 const BASE_URL = "/api/workspace";
 

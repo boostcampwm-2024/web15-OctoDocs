@@ -1,11 +1,9 @@
 import { PencilLine } from "lucide-react";
 
-import Button from "@/shared/ui/Button";
-
-import { useCreatePage } from "@/features/pageSidebar/api/usePages";
+import { useCreatePage } from "../../api/usePages";
 import { usePageStore } from "../../model/pageStore";
-import useYDocStore from "@/shared/model/ydocStore";
-import { initializeYText } from "@/shared/model";
+import { Button } from "@/shared/ui";
+import { useYDocStore, initializeYText } from "@/shared/model";
 
 export function Tools() {
   const { setCurrentPage } = usePageStore();

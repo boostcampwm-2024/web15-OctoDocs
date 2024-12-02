@@ -1,7 +1,11 @@
 import { useQuery, useMutation, skipToken } from "@tanstack/react-query";
 
-import { createPage, deletePage, getPage } from "@/entities/page/api/pageApi";
-import { CreatePageRequest } from "@/entities/page/model/pageTypes";
+import {
+  CreatePageRequest,
+  createPage,
+  deletePage,
+  getPage,
+} from "@/entities/page";
 
 export const usePage = (currentPage: number | null) => {
   const {

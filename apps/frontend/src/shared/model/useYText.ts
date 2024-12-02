@@ -2,7 +2,7 @@ import { useState } from "react";
 import * as Y from "yjs";
 import diff from "fast-diff";
 
-import { diffToDelta } from "../lib";
+import { diffToDelta } from "../lib/utils";
 
 type ReturnTypes = [string, (textNew: string) => void];
 

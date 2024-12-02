@@ -1,6 +1,6 @@
 import { memo } from "react";
-import { NodeResizeControl } from "@xyflow/react";
 import { Maximize2 } from "lucide-react";
+import { NodeResizeControl } from "@xyflow/react";
 
 const controlStyle = {
   background: "transparent",

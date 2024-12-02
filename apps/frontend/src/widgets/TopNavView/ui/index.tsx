@@ -1,10 +1,10 @@
 import { Menu, X } from "lucide-react";
 
+import { WorkspaceNav } from "@/features/pageSidebar";
+import { useUserWorkspace } from "@/features/workspace";
+import { UserInfoView } from "@/widgets/UserInfoView";
 import { Divider } from "@/shared/ui";
-import { WorkspaceNav } from "@/features/pageSidebar/ui";
-import { UserInfoView } from "@/widgets/UserInfoView/ui";
-import { useUserWorkspace } from "@/features/workspace/model/useWorkspace";
-import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { useWorkspace } from "@/shared/lib";
 
 interface TopNavProps {
   onExpand: () => void;

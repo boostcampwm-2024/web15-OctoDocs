@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { usePopover } from "@/shared/model/usePopover";
-import { getPosition } from "@/shared/model/getPopoverPosition";
+import { getPosition, usePopover } from "@/shared/model";
 import { cn } from "@/shared/lib";
 
 interface ContentProps {

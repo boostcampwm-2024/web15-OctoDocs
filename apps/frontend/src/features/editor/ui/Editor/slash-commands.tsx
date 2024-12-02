@@ -15,7 +15,7 @@ import {
 import { createSuggestionItems } from "novel/extensions";
 import { Command, renderItems } from "novel/extensions";
 
-import { onUpload } from "@/features/editor/api";
+import { onUpload } from "@/features/editor";
 
 export const suggestionItems = createSuggestionItems([
   {
