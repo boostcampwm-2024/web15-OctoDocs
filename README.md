@@ -19,10 +19,10 @@
 
 # 🐙 프로젝트 소개
 
-### 🕸️ 문서간의 관계를 한 눈에 볼 수 있는 지식 관리 툴 
+### 🕸️ 관계형 지식 관리 툴 
 
 
-
+> 문서들을 작성하고 연결하면서 문서들 간의 연간 관계를 시각적으로 확인 가능.
 
 https://github.com/user-attachments/assets/1ac81d56-a0ce-403c-9e3f-7ba092b6a5b6
 
@@ -32,16 +32,16 @@ https://github.com/user-attachments/assets/1ac81d56-a0ce-403c-9e3f-7ba092b6a5b6
 
 ### 🧸 실시간 동시 편집 및 협업 기능
 
-
+> 실시간으로 다른 사용자들과 동시 편집 및 협업 가능.
 
 https://github.com/user-attachments/assets/ad1f6dc9-50af-46e4-bac4-267b1432b301
 
 <br>
 
 
-### ⛺️ 공유가 가능한 개별 워크스페이스 제공
+### ⛺️ 워크스페이스 초대 기능
 
-> 🚧 영상 준비 중.
+> 개별 워크 스페이스에 다른 사용자들을 초대해서 함께 이용 가능.
 
 <br>
 
