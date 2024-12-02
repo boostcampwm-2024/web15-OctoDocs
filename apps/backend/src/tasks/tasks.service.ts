@@ -12,46 +12,6 @@ import { Page } from '../page/page.entity';
 import { Node } from '../node/node.entity';
 import { Edge } from '../edge/edge.entity';
 
-/**
-TODO Coordinate
-this.redisService.setField(`node:${findPage.node.id}`, 'x', x);
-this.redisService.setField(`node:${findPage.node.id}`, 'y', y);
-
-TODO AddEdge
-this.redisService.setField(
-    `edge:${edge.source}-${edge.target}`,
-    'fromNode',
-    edge.source,
-);
-this.redisService.setField(
-    `edge:${edge.source}-${edge.target}`,
-    'toNode',
-    edge.target,
-);
-this.redisService.setField(
-    `edge:${edge.source}-${edge.target}`,
-    'type',
-    'add',
-);
-
-TODO DeleteEdge
-this.redisService.setField(
-    `edge:${edge.source}-${edge.target}`,
-    'fromNode',
-    edge.source,
-);
-this.redisService.setField(
-    `edge:${edge.source}-${edge.target}`,
-    'toNode',
-    edge.target,
-);
-this.redisService.setField(
-    `edge:${edge.source}-${edge.target}`,
-    'type',
-    'delete',
-);
-*/
-
 @Injectable()
 export class TasksService {
   private readonly logger = new Logger(TasksService.name);
@@ -67,12 +27,12 @@ export class TasksService {
     const startTime = performance.now();
     const pageKeys = await this.redisService.getAllKeys('page:*');
     const nodeKeys = await this.redisService.getAllKeys('node:*');
-    // const edgeKeys = await this.redisService.getAllKeys('edge:*');
+    const edgeKeys = await this.redisService.getAllKeys('edge:*');
 
     Promise.allSettled([
       ...pageKeys.map(this.migratePage.bind(this)),
       ...nodeKeys.map(this.migrateNode.bind(this)),
-      // ...edgeKeys.map(this.migrateEdge.bind(this)),
+      ...edgeKeys.map(this.migrateEdge.bind(this)),
     ])
       .then((results) => {
         const endTime = performance.now();
@@ -158,7 +118,7 @@ export class TasksService {
       y: Number(redisData.y),
     };
 
-    // 업데이트 대상이 없다면 리턴
+    // 쿼리 대상이 없다면 리턴
     if (Object.keys(updateData).length === 0) return;
     const nodeId = parseInt(key.split(':')[1]);
 
@@ -194,27 +154,13 @@ export class TasksService {
   }
 
   async migrateEdge(key: string) {
-    const redisData = await this.redisService.get(key);
+    const redisData = (await this.redisService.get(
+      key,
+    )) as unknown as RedisEdge;
     // 데이터 없으면 오류
     if (!redisData) {
       throw new Error(`redis에 ${key}에 해당하는 데이터가 없습니다.`);
     }
-
-    const { title, content, emoji } = redisData;
-
-    const updateData: Partial<{
-      title: string;
-      content: any;
-      emoji: string;
-    }> = {};
-
-    if (title) updateData.title = title;
-    if (content) updateData.content = JSON.parse(content);
-    if (emoji) updateData.emoji = emoji;
-
-    // 업데이트 대상이 없다면 리턴
-    if (Object.keys(updateData).length === 0) return;
-    const pageId = parseInt(key.split(':')[1]);
 
     // 트랜잭션 시작
     const queryRunner = this.dataSource.createQueryRunner();
@@ -222,10 +168,28 @@ export class TasksService {
       await queryRunner.startTransaction();
 
       // 갱신 시작
-      const pageRepository = queryRunner.manager.getRepository(Page);
+      const edgeRepository = queryRunner.manager.getRepository(Edge);
+      const nodeRepository = queryRunner.manager.getRepository(Node);
 
-      // TODO : 페이지가 없으면 affect : 0을 반환하는데 이 부분 처리도 하는 게 좋을 듯...?
-      await pageRepository.update(pageId, updateData);
+      const fromNode = await nodeRepository.findOne({
+        where: { id: redisData.fromNode },
+      });
+
+      const toNode = await nodeRepository.findOne({
+        where: { id: redisData.toNode },
+      });
+
+      if (redisData.type === 'add') {
+        await edgeRepository.save({ fromNode, toNode });
+      }
+
+      if (redisData.type === 'delete') {
+        const edge = await edgeRepository.findOne({
+          where: { fromNode, toNode },
+        });
+
+        await edgeRepository.delete({ id: edge.id });
+      }
 
       // redis에서 데이터 삭제
       await this.redisService.delete(key);
@@ -236,12 +200,17 @@ export class TasksService {
       // 실패하면 postgres는 roll back하고 redis의 값을 살린다.
       this.logger.error(err.stack);
       await queryRunner.rollbackTransaction();
-      updateData.title &&
-        (await this.redisService.setField(key, 'title', updateData.title));
-      updateData.content &&
-        (await this.redisService.setField(key, 'content', updateData.content));
-      updateData.emoji &&
-        (await this.redisService.setField(key, 'emoji', updateData.emoji));
+      await this.redisService.setField(
+        key,
+        'fromNode',
+        redisData.fromNode.toString(),
+      );
+      await this.redisService.setField(
+        key,
+        'toNode',
+        redisData.toNode.toString(),
+      );
+      await this.redisService.setField(key, 'type', redisData.type);
 
       // Promise.all에서 실패를 인식하기 위해 에러를 던진다.
       throw err;

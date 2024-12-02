@@ -292,6 +292,7 @@ export class YjsService
     edgesMap: Y.Map<unknown>,
   ) {
     for (const [key, change] of event.changes.keys) {
+      const [fromNode, toNode] = key.slice(1).split('-');
       const edge = edgesMap.get(key) as YMapEdge;
 
       if (change.action === 'add') {
@@ -315,17 +316,17 @@ export class YjsService
       if (change.action === 'delete') {
         // 엣지가 존재하면 삭제
         this.redisService.setField(
-          `edge:${edge.source}-${edge.target}`,
+          `edge:${fromNode}-${toNode}`,
           'fromNode',
-          edge.source,
+          fromNode,
         );
         this.redisService.setField(
-          `edge:${edge.source}-${edge.target}`,
+          `edge:${fromNode}-${toNode}`,
           'toNode',
-          edge.target,
+          toNode,
         );
         this.redisService.setField(
-          `edge:${edge.source}-${edge.target}`,
+          `edge:${fromNode}-${toNode}`,
           'type',
           'delete',
         );
