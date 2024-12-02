@@ -122,16 +122,8 @@ export class YjsService
 
     // 페이지 내용 변경 사항을 감지해서 데이터베이스에 갱신합니다.
     editorDoc.observeDeep(() => {
-      const document = editorDoc.doc as CustomDoc;
-      const pageId = parseInt(document.name.split('-')[1]);
-
-      this.redisService.setField(
-        `page:${pageId.toString()}`,
-        'content',
-        JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
-      );
+      this.observeEditor(editorDoc);
     });
-    return;
   }
 
   handleConnection() {
@@ -141,7 +133,6 @@ export class YjsService
   handleDisconnect() {
     this.logger.log('접속 해제');
   }
-
 
   /**
    * initialize 관련 메소드
@@ -160,70 +151,19 @@ export class YjsService
     this.initializeYEdgeMap(edges, edgesMap);
 
     // title의 변경 사항을 감지한다.
-    title.observeDeep(async (event) => {
-      // path가 존재할 때만 페이지 갱신
+    title.observeDeep(this.observeTitle);
 
-      event[0].path.toString().split('_')[1] &&
-        this.redisService.setField(
-          `page:${event[0].path.toString().split('_')[1]}`,
-          'title',
-          event[0].target.toString(),
-        );
-    });
-    emoji.observeDeep((event) => {
-      // path가 존재할 때만 페이지 갱신
-      event[0].path.toString().split('_')[1] &&
-        this.pageService.updatePage(
-          parseInt(event[0].path.toString().split('_')[1]),
-          {
-            emoji: event[0].target.toString(),
-          },
-        );
-    });
+    // emoji의 변경 사항을 감지한다.
+    emoji.observeDeep(this.observeEmoji);
+
     // node의 변경 사항을 감지한다.
-    nodesMap.observe(async (event) => {
-      for (const [key, change] of event.changes.keys) {
-        if (change.action === 'update') {
-          const node: any = nodesMap.get(key);
-          if (node.type !== 'note') {
-            continue;
-          }
-
-          // node.data는 페이지에 대한 정보
-          const { title, id } = node.data;
-          const { x, y } = node.position;
-          const isHolding = node.isHolding;
-          if (!isHolding) {
-            // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
-            const findPage = await this.pageService.findPageById(id);
-            await this.nodeService.updateNode(findPage.node.id, {
-              title,
-              x,
-              y,
-            });
-          }
-        }
-      }
+    nodesMap.observe((event) => {
+      this.observeNodeMap(event, nodesMap);
     });
 
     // edge의 변경 사항을 감지한다.
     edgesMap.observe(async (event) => {
-      for (const [key, change] of event.changes.keys) {
-        if (change.action === 'add') {
-          const edge = edgesMap.get(key) as YMapEdge;
-          const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
-            parseInt(edge.source),
-            parseInt(edge.target),
-          );
-          // 연결된 노드가 없을 때만 edge 생성
-          if (!findEdge) {
-            await this.edgeService.createEdge({
-              fromNode: parseInt(edge.source),
-              toNode: parseInt(edge.target),
-            });
-          }
-        }
-      }
+      this.observeEdgeMap(event, edgesMap);
     });
   }
   // YMap에 노드 정보를 넣어준다.
@@ -293,15 +233,86 @@ export class YjsService
   /**
    * event listener 관련
    */
-  private observeTitle(){
+  private async observeTitle(event: Y.YEvent<any>[]) {
+    // path가 존재할 때만 페이지 갱신
 
+    event[0].path.toString().split('_')[1] &&
+      this.redisService.setField(
+        `page:${event[0].path.toString().split('_')[1]}`,
+        'title',
+        event[0].target.toString(),
+      );
   }
 
-  private observeEmoji(){
-
+  private async observeEmoji(event: Y.YEvent<any>[]) {
+    // path가 존재할 때만 페이지 갱신
+    event[0].path.toString().split('_')[1] &&
+      this.pageService.updatePage(
+        parseInt(event[0].path.toString().split('_')[1]),
+        {
+          emoji: event[0].target.toString(),
+        },
+      );
   }
-  private observeContent(){
+  private async observeNodeMap(
+    event: Y.YMapEvent<unknown>,
+    nodesMap: Y.Map<unknown>,
+  ) {
+    for (const [key, change] of event.changes.keys) {
+      if (change.action === 'update') {
+        const node: any = nodesMap.get(key);
+        if (node.type !== 'note') {
+          continue;
+        }
 
+        // node.data는 페이지에 대한 정보
+        const { title, id } = node.data;
+        const { x, y } = node.position;
+        const isHolding = node.isHolding;
+        if (!isHolding) {
+          // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
+          const findPage = await this.pageService.findPageById(id);
+          await this.nodeService.updateNode(findPage.node.id, {
+            title,
+            x,
+            y,
+          });
+        }
+      }
+    }
+  }
+  private async observeEdgeMap(
+    event: Y.YMapEvent<unknown>,
+    edgesMap: Y.Map<unknown>,
+  ) {
+    for (const [key, change] of event.changes.keys) {
+      if (change.action === 'add') {
+        const edge = edgesMap.get(key) as YMapEdge;
+        const findEdge = await this.edgeService.findEdgeByFromNodeAndToNode(
+          parseInt(edge.source),
+          parseInt(edge.target),
+        );
+        // 연결된 노드가 없을 때만 edge 생성
+        if (!findEdge) {
+          await this.edgeService.createEdge({
+            fromNode: parseInt(edge.source),
+            toNode: parseInt(edge.target),
+          });
+        }
+      }
+    }
+  }
+
+  private async observeEditor(editorDoc: Y.XmlFragment) {
+    const document = editorDoc.doc as CustomDoc;
+    const pageId = parseInt(document.name.split('-')[1]);
+
+    this.redisService.setField(
+      `page:${pageId.toString()}`,
+      'content',
+      JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+    );
+    return;
   }
 
   // editor에서 paragraph 내부 text 노드의 text 값의 빈 문자열을 제거한다.
