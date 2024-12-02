@@ -2,22 +2,20 @@ import { PencilLine } from "lucide-react";
 
 import Button from "@/shared/ui/Button";
 
-import { useCreatePage, usePages } from "@/features/pageSidebar/api/usePages";
+import { useCreatePage } from "@/features/pageSidebar/api/usePages";
 import { usePageStore } from "../../model/pageStore";
 import useYDocStore from "@/shared/model/ydocStore";
 import { initializeYText } from "@/shared/model";
-import { useWorkspace } from "@/shared/lib/useWorkspace";
 
 export function Tools() {
   const { setCurrentPage } = usePageStore();
-  const workspace = useWorkspace();
-  const { pages } = usePages(workspace);
+
   const createMutation = useCreatePage();
   const { ydoc } = useYDocStore();
 
   return (
     <Button
-      className={`${!pages && "disabled"} flex w-full flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100`}
+      className={`flex w-full flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100`}
       onClick={() => {
         createMutation
           .mutateAsync({
