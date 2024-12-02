@@ -37,6 +37,7 @@ export const useToggleWorkspaceStatus = (
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userWorkspace"] });
+      queryClient.invalidateQueries({ queryKey: ["currentWorkspace"] });
     },
   });
 };

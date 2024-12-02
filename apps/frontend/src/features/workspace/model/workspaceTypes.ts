@@ -27,3 +27,8 @@ export interface GetUserWorkspaceResponse {
   message: string;
   workspaces: Workspace[];
 }
+
+export interface GetCurrentUserWorkspaceResponse {
+  message: string;
+  workspace: Workspace;
+}

@@ -2,9 +2,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   createWorkspace,
+  getCurrentWorkspace,
   getUserWorkspaces,
   removeWorkspace,
 } from "../api/workspaceApi";
+import { useGetUser } from "@/features/auth";
+import { useWorkspace } from "@/shared/lib/useWorkspace";
 
 export const useUserWorkspace = () => {
   return useQuery({
@@ -34,5 +37,24 @@ export const useRemoveWorkspace = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userWorkspace"] });
     },
+  });
+};
+
+export const useCurrentWorkspace = () => {
+  const workspaceId = useWorkspace();
+  const { data: user, isError } = useGetUser();
+
+  return useQuery({
+    queryKey: [
+      "currentWorkspace",
+      workspaceId,
+      isError ? "null" : (user?.snowflakeId ?? "null"),
+    ],
+    queryFn: () =>
+      getCurrentWorkspace(
+        workspaceId,
+        isError ? "null" : (user?.snowflakeId ?? "null"),
+      ),
+    enabled: Boolean(workspaceId),
   });
 };
