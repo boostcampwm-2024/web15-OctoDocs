@@ -1,24 +1,6 @@
-import { useQuery, useMutation, skipToken } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
-import {
-  CreatePageRequest,
-  createPage,
-  deletePage,
-  getPage,
-} from "@/entities/page";
-
-export const usePage = (currentPage: number | null) => {
-  const {
-    data: page,
-    isError,
-    isLoading,
-  } = useQuery({
-    queryKey: ["page", currentPage],
-    queryFn: currentPage ? () => getPage(currentPage) : skipToken,
-  });
-
-  return { page, isError, isLoading };
-};
+import { CreatePageRequest, createPage, deletePage } from "@/entities/page";
 
 export const useCreatePage = () => {
   return useMutation({

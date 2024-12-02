@@ -6,13 +6,11 @@ import { SocketIOProvider } from "y-socket.io";
 import { useUserStore } from "@/entities/user";
 import { usePageStore } from "@/entities/page";
 import { useEditorStore } from "@/features/editor";
-import { usePage } from "@/features/pageSidebar";
 import { createSocketIOProvider } from "@/shared/api";
 
 export const useEditorView = () => {
   const { currentPage } = usePageStore();
   const { isPanelOpen, isMaximized, setIsPanelOpen } = useEditorStore();
-  const { page, isLoading } = usePage(currentPage);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
   const [ydoc, setYDoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<SocketIOProvider | null>(null);
@@ -55,8 +53,6 @@ export const useEditorView = () => {
     currentPage,
     isPanelOpen,
     isMaximized,
-    isLoading,
-    page,
     ydoc,
     provider,
     saveStatus,

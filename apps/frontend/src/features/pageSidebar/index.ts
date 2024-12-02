@@ -1,4 +1,4 @@
-export { usePage, useCreatePage } from "./api/usePages";
+export { useCreatePage } from "./api/usePages";
 
 export { LogoBtn } from "./ui/LogoBtn";
 export { NoteList } from "./ui/NoteList";

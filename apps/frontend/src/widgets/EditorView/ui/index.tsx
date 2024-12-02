@@ -8,8 +8,6 @@ export function EditorView() {
     currentPage,
     isPanelOpen,
     isMaximized,
-    isLoading,
-    page,
     ydoc,
     provider,
     saveStatus,
@@ -17,7 +15,7 @@ export function EditorView() {
     users,
   } = useEditorView();
 
-  if (isLoading || !page || currentPage === null) {
+  if (currentPage === null) {
     return null;
   }
 
