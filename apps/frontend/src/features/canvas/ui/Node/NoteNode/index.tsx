@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { Handle, NodeProps, Position, type Node } from "@xyflow/react";
 
-import { ActiveUser, Emoji } from "@/shared/ui";
-import { usePageStore } from "@/features/pageSidebar";
 import { useUserStore } from "@/entities/user";
+import { usePageStore } from "@/entities/page";
+import { ActiveUser, Emoji } from "@/shared/ui";
 
 export type NoteNodeData = { title: string; id: number; emoji: string };
 export type NoteNodeType = Node<NoteNodeData, "note">;

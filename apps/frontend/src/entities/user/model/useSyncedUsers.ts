@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { useUserStore, type User } from "./userStore";
-import { usePageStore } from "@/features/pageSidebar";
+import { usePageStore } from "@/entities/page";
 
 export const useSyncedUsers = () => {
   const { currentPage } = usePageStore();

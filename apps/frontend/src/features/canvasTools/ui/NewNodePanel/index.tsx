@@ -1,4 +1,5 @@
-import { useCreatePage, usePageStore } from "@/features/pageSidebar";
+import { usePageStore } from "@/entities/page";
+import { useCreatePage } from "@/features/pageSidebar";
 import { initializeYText, usePopover, useYDocStore } from "@/shared/model";
 
 export function NewNodePanel() {

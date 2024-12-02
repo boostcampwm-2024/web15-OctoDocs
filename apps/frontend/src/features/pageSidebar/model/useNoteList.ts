@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { useDeletePage } from "../api/usePages";
-import { usePageStore } from "./pageStore";
-import { useYDocStore } from "@/shared/model";
+import { usePageStore } from "@/entities/page";
 // TODO: Node entity 만들어야할듯?
 import { YNode } from "@/features/canvas/model/useCanvas";
-// TODO: Node entity 만들어야할듯?
 import { NoteNodeData } from "@/features/canvas/ui/Node/NoteNode";
+import { useYDocStore } from "@/shared/model";
 
 export const useNoteList = () => {
   const { setCurrentPage } = usePageStore();

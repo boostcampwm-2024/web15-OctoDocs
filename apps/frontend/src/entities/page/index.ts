@@ -6,5 +6,5 @@ export {
   updatePage,
 } from "./api/pageApi";
 
-export { usePageStore } from "../../features/pageSidebar/model/pageStore";
+export { usePageStore } from "./model/pageStore";
 export { type Page, type CreatePageRequest } from "./model/pageTypes";

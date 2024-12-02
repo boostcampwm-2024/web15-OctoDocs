@@ -15,7 +15,7 @@ import { SocketIOProvider } from "y-socket.io";
 
 import { calculateBestHandles } from "./calculateHandles";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
-import { usePageStore } from "@/features/pageSidebar";
+import { usePageStore } from "@/entities/page";
 import { createSocketIOProvider } from "@/shared/api";
 import { useWorkspace } from "@/shared/lib";
 import { useYDocStore } from "@/shared/model";
@@ -38,7 +38,8 @@ export const useCanvas = () => {
   const provider = useRef<SocketIOProvider>();
   const holdingNodeRef = useRef<string | null>(null);
 
-  const currentPage = usePageStore((state) => state.currentPage);
+  const { currentPage, setCurrentPage } = usePageStore();
+
   const { fitView } = useReactFlow();
 
   useEffect(() => {
@@ -145,7 +146,7 @@ export const useCanvas = () => {
           const currentPageValue = usePageStore.getState().currentPage;
 
           if (currentPageValue === deletedNodeId) {
-            usePageStore.setState({ currentPage: null, isPanelOpen: false });
+            setCurrentPage(null);
           }
 
           setNodes((nds) => nds.filter((n) => n.id !== nodeId));

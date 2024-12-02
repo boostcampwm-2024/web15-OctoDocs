@@ -4,16 +4,25 @@ import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 
 import { useUserStore } from "@/entities/user";
-import { usePage, usePageStore } from "@/features/pageSidebar";
+import { usePageStore } from "@/entities/page";
+import { useEditorStore } from "@/features/editor";
+import { usePage } from "@/features/pageSidebar";
 import { createSocketIOProvider } from "@/shared/api";
 
 export const useEditorView = () => {
-  const { currentPage, isPanelOpen, isMaximized } = usePageStore();
+  const { currentPage } = usePageStore();
+  const { isPanelOpen, isMaximized, setIsPanelOpen } = useEditorStore();
   const { page, isLoading } = usePage(currentPage);
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
   const [ydoc, setYDoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<SocketIOProvider | null>(null);
   const { users } = useUserStore();
+
+  useEffect(() => {
+    if (currentPage) return;
+
+    setIsPanelOpen(false);
+  }, [currentPage]);
 
   useEffect(() => {
     if (!currentPage) return;
@@ -27,6 +36,7 @@ export const useEditorView = () => {
 
     const wsProvider = createSocketIOProvider(`document-${currentPage}`, doc);
     setProvider(wsProvider);
+    setIsPanelOpen(true);
 
     return () => {
       wsProvider.disconnect();

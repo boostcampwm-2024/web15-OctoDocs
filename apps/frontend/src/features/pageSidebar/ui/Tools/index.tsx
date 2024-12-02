@@ -1,13 +1,12 @@
 import { PencilLine } from "lucide-react";
 
 import { useCreatePage } from "../../api/usePages";
-import { usePageStore } from "../../model/pageStore";
-import { Button } from "@/shared/ui";
+import { usePageStore } from "@/entities/page";
 import { useYDocStore, initializeYText } from "@/shared/model";
+import { Button } from "@/shared/ui";
 
 export function Tools() {
   const { setCurrentPage } = usePageStore();
-
   const createMutation = useCreatePage();
   const { ydoc } = useYDocStore();
 
