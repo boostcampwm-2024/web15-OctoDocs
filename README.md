@@ -1,14 +1,6 @@
-![Sprint 33](https://github.com/user-attachments/assets/2b23184d-90ed-458d-9dc4-dab9579c1e48)
-
+[![Sprint 33](https://github.com/user-attachments/assets/2b23184d-90ed-458d-9dc4-dab9579c1e48)](https://octodocs.site)
 
 <br>
-
-
-
-
-
-
-
 
 <div align="center">
   
@@ -16,6 +8,16 @@
  [![Group 83 (2)](https://github.com/user-attachments/assets/2d106d94-430c-47bc-a9e2-1f0026f76c2f)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki) [![Group 84 (2)](https://github.com/user-attachments/assets/b29b191b-8172-42a9-b541-40fdb8f165f3)](https://github.com/orgs/boostcampwm-2024/projects/120) 
 
 </div>
+
+<p align="center">
+  <a href="#프로젝트-소개">🐙 프로젝트 소개</a> <br>
+  <a href="#주차별-피드백을-통한-점진적-개선">🌱 주차별 피드백을 통한 점진적 개선</a> <br>
+  <a href="#프로젝트-구조">🛠️ 프로젝트 구조</a> <br>
+  <a href="#프로젝트-타임라인">🗺️ 프로젝트 타임라인</a> <br>
+  <a href="#문제와-해결과정">🚧 문제와 해결과정</a> <br>
+  <a href="#팀원-소개">🧸 팀원 소개</a> <br>
+</p>
+
 
 # 🐙 프로젝트 소개
 
