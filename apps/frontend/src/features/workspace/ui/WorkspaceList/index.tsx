@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Check, Trash2 } from "lucide-react";
-import { Link, useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 
 import { useRemoveWorkspace } from "../../model/workspaceMutations";
 import { useUserWorkspace } from "../../model/workspaceQuries";
@@ -41,7 +41,7 @@ export function WorkspaceList() {
         onCloseModal={onCloseModal}
         onConfirm={onConform}
       />
-      <Link
+      <a
         href="/"
         onClick={() => setOpen(false)}
         className="flex items-center gap-2 py-2 hover:cursor-pointer hover:bg-[#f5f5f5]"
@@ -49,9 +49,9 @@ export function WorkspaceList() {
         <div className="h-6 w-6 rounded-md bg-neutral-300"></div>
         공용 워크스페이스
         {workspaceId === undefined && <Check width={18} height={18} />}
-      </Link>
+      </a>
       {data.workspaces.map((workspace) => (
-        <Link
+        <a
           href={`/workspace/${workspace.workspaceId}`}
           onClick={() => setOpen(false)}
           key={workspace.workspaceId}
@@ -75,7 +75,7 @@ export function WorkspaceList() {
           >
             <Trash2 width={18} height={18} />
           </span>
-        </Link>
+        </a>
       ))}
     </div>
   );
