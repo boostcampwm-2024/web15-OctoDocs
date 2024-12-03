@@ -1,7 +1,6 @@
 import { useSyncedUsers } from "@/entities/user";
 import { useProtectedWorkspace } from "@/features/workspace";
 import { CanvasView } from "@/widgets/CanvasView";
-import { CanvasToolsView } from "@/widgets/CanvasToolsView";
 import { EditorView } from "@/widgets/EditorView";
 import { NodeToolsView } from "@/widgets/NodeToolsView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
