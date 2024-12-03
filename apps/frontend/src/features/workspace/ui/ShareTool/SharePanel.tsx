@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Globe2, Lock, Copy, CheckCheck } from "lucide-react";
-
 import { useCreateWorkspaceInviteLink } from "../../model/workspaceMutations";
 import { useCurrentWorkspace } from "../../model/workspaceQuries";
 import { useToggleWorkspaceStatus } from "../../model/workspaceMutations";
@@ -36,7 +35,6 @@ export function SharePanel() {
 
   const isPublic =
     workspaceId === "main" ? true : workspaceVisibility === "public";
-
   const isGuest =
     workspaceId === "main" || currentWorkspace?.workspace?.role === "guest";
 
@@ -49,21 +47,26 @@ export function SharePanel() {
     }
   };
 
-  const getCurrentUrl = () => {
+  const getDisplayUrl = () => {
     if (isUserLoading || isWorkspaceLoading)
       return "워크스페이스를 불러오는 중...";
     if (isPending) return "처리 중...";
+    if (isGuest) return "권한이 없습니다";
     if (isPublic) return PUBLIC_URL;
-    if (createInviteLinkMutation.data) {
-      return createFrontendUrl(createInviteLinkMutation.data, workspaceId);
-    }
-    return "권한이 없습니다";
+    return `${window.location.origin}/join/***********`;
   };
 
   const handleCopy = async () => {
-    const urlToCopy = getCurrentUrl();
     if (!isPending && !isWorkspaceLoading) {
-      await navigator.clipboard.writeText(urlToCopy);
+      const urlToCopy = isPublic
+        ? PUBLIC_URL
+        : createInviteLinkMutation.data
+          ? createFrontendUrl(createInviteLinkMutation.data, workspaceId)
+          : await createInviteLinkMutation.mutateAsync(workspaceId);
+
+      await navigator.clipboard.writeText(
+        isPublic ? urlToCopy : createFrontendUrl(urlToCopy, workspaceId),
+      );
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -96,7 +99,7 @@ export function SharePanel() {
         }`}
       >
         <div className="w-48 flex-1 truncate rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-600">
-          {getCurrentUrl()}
+          {getDisplayUrl()}
         </div>
         <button
           onClick={handleCopy}
