@@ -70,11 +70,52 @@ https://github.com/user-attachments/assets/86b0dcaf-3640-4836-8b91-207b39b17b05
 
 ### 🐳 Sequence Diagram 
 
-<div align="center">
+```mermaid
+sequenceDiagram
+    participant Subscriber as 구독자
+    participant OctoDocs as OctoDocs 워크스페이스
+    participant Yjs as yjs 라이브러리
+    participant YSocket as y-socketIO provider
+    participant WS_Server as websocket server (ysocketio)
+    participant PageModule as page 모듈 (node 모듈)
+    participant Redis as redis
+    participant Postgres as postgres
+    %% 웹소켓 연결 플로우
+    note over Subscriber, YSocket: [웹소켓 연결 플로우]
+    Subscriber->>OctoDocs: Y.Doc 생성 요청
+    OctoDocs->>Yjs: Y.Doc 생성 수행
+    Yjs->>YSocket: Y.Doc 공유 요청
+    alt [Y.Doc이 존재하지 않을 때]
+        YSocket->>WS_Server: 웹소켓 연결
+        WS_Server->>PageModule: 데이터 조회 요청
+        PageModule->>Redis: 데이터 조회 요청
+        Redis->>PageModule: 데이터 조회 응답
+        PageModule->>WS_Server: 데이터 조회 응답
+        WS_Server->>YSocket: Y.Doc에 초기 데이터 셋팅
+        YSocket->>Yjs: 웹소켓 연결 완료
+    else [Y.Doc이 존재할 때]
+        YSocket->>WS_Server: 웹소켓 연결
+        YSocket->>Yjs: 웹소켓 연결 완료
+    end
+    %% 페이지 정보 변경 플로우
+    note over OctoDocs, WS_Server: [페이지 정보 변경 플로우]
+    OctoDocs->>Yjs: Y.Doc 데이터 변경
+    Yjs->>YSocket: 변경된 데이터 전달
+    YSocket->>WS_Server: 소켓 요청
+    WS_Server->>PageModule: 소켓 요청
+    PageModule->>Redis: 변경 사항 저장
+    Redis->>PageModule: 변경 사항 저장 알림
+    PageModule-->>WS_Server: 저장 완료 알림
+    WS_Server-->>YSocket: 변경된 데이터 전달
+    YSocket-->>Yjs: 모든 참여자들에게 Y.Doc 데이터 변경
+    %% 데이터베이스 영속화 플로우
+    note over Redis, Postgres: [데이터베이스 영속화 플로우]
+    loop [스케줄러]
+        Redis->>Postgres: 변경 사항 저장
+        Postgres->>Redis: 변경 사항 저장 알림
+    end
+```
 
-![image (14)](https://github.com/user-attachments/assets/ea6853d8-398e-4448-ae0a-07bffc653722)
-
-</div>
 
 <br><br>
 
