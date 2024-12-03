@@ -2892,22 +2892,22 @@
   resolved "https://registry.yarnpkg.com/@tanstack/history/-/history-1.85.3.tgz#c137958805e761659f97a2af9825a98a90d95a04"
   integrity sha512-62z1qXIILvjdkQyMTVPFQedHOc6kQgunz9GHV9jSy2z1ixsDqyI9GxNj3AWx8Ucmhjwd5/P+v3XN10bsb+FzRA==
 
-"@tanstack/query-core@5.62.1":
-  version "5.62.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.62.1.tgz#0ef80db0832f7d96cf3f93b81470ce5a36e84478"
-  integrity sha512-thYv90GkMcfumgmtp6sptC18SqxWwXTCKUuk7jyeHHn7kYouh0VJrowuuBffAIBiR3Z8OnsccmPUnP1leKJBVQ==
+"@tanstack/query-core@5.62.2":
+  version "5.62.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.62.2.tgz#4eef3201422f246788fb41d01662c2dea3136d9a"
+  integrity sha512-LcwVcC5qpsDpHcqlXUUL5o9SaOBwhNkGeV+B06s0GBoyBr8FqXPuXT29XzYXR36lchhnerp6XO+CWc84/vh7Zg==
 
 "@tanstack/react-query@^5.59.19":
-  version "5.62.1"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.62.1.tgz#90f3558a7a7c45e4387172df2ff15fe7b371d9ad"
-  integrity sha512-gb4eglrgW+yOeiNPkpqFyN8oLrFafHrHE+q2LzVl7TfyA4fuQluH92NTl6Jed7ae35v+BNtAQng9mykywWLzfA==
+  version "5.62.2"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.62.2.tgz#fbcb8f991ddcf484ce7968fb58bb4790d6c98cd3"
+  integrity sha512-fkTpKKfwTJtVPKVR+ag7YqFgG/7TRVVPzduPAUF9zRCiiA8Wu305u+KJl8rCrh98Qce77vzIakvtUyzWLtaPGA==
   dependencies:
-    "@tanstack/query-core" "5.62.1"
+    "@tanstack/query-core" "5.62.2"
 
 "@tanstack/react-router@^1.82.12":
-  version "1.85.3"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-router/-/react-router-1.85.3.tgz#3cb1fc3fa7a6efdd0e1ee5e2ca98b86e9e9c7baf"
-  integrity sha512-QgX3fuc0W941TE6PDM2YmMdF2WrDFIv7DN3ATuCiezUF4Fn5xvB0QUy9Uabdn/FQWugbnplG/REGCHtzem59uQ==
+  version "1.85.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-router/-/react-router-1.85.4.tgz#c3e242005fcb29d480ea5175305ef446069714be"
+  integrity sha512-CmrgrMtIIVnXS/og5W3glP1noBlFSD3mRaBgP6nTEbkZZ25nN1s52C35dnsMNuAQayQsVJNlkuSNZv3elfrBmA==
   dependencies:
     "@tanstack/history" "1.85.3"
     "@tanstack/react-store" "^0.6.1"
@@ -2924,9 +2924,9 @@
     use-sync-external-store "^1.2.2"
 
 "@tanstack/router-devtools@^1.82.12":
-  version "1.85.3"
-  resolved "https://registry.yarnpkg.com/@tanstack/router-devtools/-/router-devtools-1.85.3.tgz#bd03f2766909c766678284acfa913b0696c8b5a0"
-  integrity sha512-t9YrxnEhKEAXHfLQOgpDkqgDu479PoOXeFjfcti5Iok/oH5taxKXAZ0+2r/1yfU2TzcY4QFFNJJYt9PUFlprjA==
+  version "1.85.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/router-devtools/-/router-devtools-1.85.4.tgz#891398920189f520a9aa04aed66e2c48e1a593c8"
+  integrity sha512-Io8qyv5WMYa+gk83/dQ0OlcOsvCxSY2PTNEYUQ4wHfbEV1RW3IjwOVL6/n7p7TDhjD5ou4eKufF9zDykdyFldQ==
   dependencies:
     clsx "^2.1.1"
     goober "^2.1.16"
@@ -4815,9 +4815,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001646, caniuse-lite@^1.0.30001669:
-  version "1.0.30001685"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001685.tgz#2d10d36c540a9a5d47ad6ab9e1ed5f61fdeadd8c"
-  integrity sha512-e/kJN1EMyHQzgcMEEgoo+YTCO1NGCmIYHk5Qk8jT6AazWemS5QFKJ5ShCJlH3GZrNIdZofcNCEwZqbMjjKzmnA==
+  version "1.0.30001686"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001686.tgz#0e04b8d90de8753188e93c9989d56cb19d902670"
+  integrity sha512-Y7deg0Aergpa24M3qLC5xjNklnKnhsmSyR/V89dLZ1n0ucJIFNs7PgR2Yfa/Zf6W79SbBicgtGxZr2juHkEUIA==
 
 chalk@4.1.2, chalk@^4.0.0, chalk@^4.0.2, chalk@^4.1.0, chalk@^4.1.1, chalk@^4.1.2:
   version "4.1.2"
@@ -5487,10 +5487,15 @@ dotenv-expand@10.0.0:
   resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-10.0.0.tgz#12605d00fb0af6d0a592e6558585784032e4ef37"
   integrity sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==
 
-dotenv@16.4.5, dotenv@^16.0.3:
+dotenv@16.4.5:
   version "16.4.5"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
   integrity sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==
+
+dotenv@^16.0.3:
+  version "16.4.6"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.6.tgz#fc88e8a664087abf3e19d61e21f7feee1849bbb1"
+  integrity sha512-JhcR/+KIjkkjiU8yEpaB/USlzVi3i5whwOjpIRNGi9svKEXZSe+Qp6IWAjFjv+2GViAoDRCUv/QLNziQxsLqDg==
 
 eastasianwidth@^0.2.0:
   version "0.2.0"
@@ -7565,9 +7570,9 @@ lib0@^0.2.31, lib0@^0.2.42, lib0@^0.2.52, lib0@^0.2.85, lib0@^0.2.98:
     isomorphic.js "^0.2.4"
 
 libphonenumber-js@^1.10.53:
-  version "1.11.15"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.15.tgz#0947ba02208cf6c44fdf3b07e097a98b3ec945f4"
-  integrity sha512-M7+rtYi9l5RvMmHyjyoF3BHHUpXTYdJ0PezZGHNs0GyW1lO+K7jxlXpbdIb7a56h0nqLYdjIw+E+z0ciGaJP7g==
+  version "1.11.16"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.16.tgz#3aa64a8a95ffc59253a5df3009940a9604a02102"
+  integrity sha512-Noyazmt0yOvnG0OeRY45Cd1ur8G7Z0HWVkuCuKe+yysGNxPQwBAODBQQ40j0AIagi9ZWurfmmZWNlpg4h4W+XQ==
 
 lilconfig@^2.1.0:
   version "2.1.0"
