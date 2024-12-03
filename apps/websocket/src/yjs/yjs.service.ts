@@ -71,8 +71,8 @@ export class YjsService
         this.initializePage(pageId, editorDoc);
       }
 
-      if (!customDoc.name?.startsWith('flow-room-')) {
-        const workspaceId = customDoc.name.split('-')[2];
+      if (customDoc.name?.startsWith('flow-room-')) {
+        const workspaceId = customDoc.name.split('-')[2] ?? 'main';
         // 만약 workspace document라면 node, edge 초기 데이터를 세팅해줍니다.
         this.initializeWorkspace(workspaceId, doc);
       }
