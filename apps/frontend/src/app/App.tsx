@@ -1,14 +1,22 @@
 import { useSyncedUsers } from "@/entities/user";
-import { useGetUser } from "@/features/auth";
-import { CanvasToolsView } from "@/widgets/CanvasToolsView";
+import { useProtectedWorkspace } from "@/features/workspace";
 import { CanvasView } from "@/widgets/CanvasView";
 import { EditorView } from "@/widgets/EditorView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
+import { CanvasToolsView } from "@/widgets/CanvasToolsView";
 import { SideWrapper } from "@/shared/ui";
 
 function App() {
   useSyncedUsers();
-  useGetUser();
+  const { isLoading } = useProtectedWorkspace();
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white">
+        <div className="animate-pulse text-gray-400">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-white">
