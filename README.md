@@ -137,37 +137,37 @@ sequenceDiagram
 
 <h1 id="문제와해결과정">🚧 문제와 해결과정</h1>
 
-### 실시간 편집 구현 과정
+### 🐙 실시간 편집 구현 과정
 
 Octodocs 팀은 핵심 기능인 에디터와 노드 캔버스의 **실시간 편집**을 위해 **CRDT** 라이브러리인 **YJS**와 **SocketIO**를 어떻게 활용 했을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 <br>
 
-### 데이터 흐름 변경
+### 🌱 데이터 흐름 변경
 
 YDoc과 소켓을 사용하면서도 RESTful 방식으로 일부 상태를 관리하던 구조를, YDoc 중심의 **단일 truth source**와 소켓 기반 **단방향 흐름**으로 단순화했습니다. 그 결과 모든 상태가 YDoc을 통해 일관성 있게 관리되며, 클라이언트와 서버 간 데이터 흐름도 간소화되었습니다. 중복 관리와 데이터 충돌을 줄이기 위한 이런 **data flow 변화**의 핵심은 무엇이었을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 <br>
 
-### FE 프로젝트 구조 개선 과정
+### 🕸️ FE 프로젝트 구조 개선 과정
 
 Octodocs 팀은 기존 **프로젝트 구조**의 문제점을 어떻게 파악했고, 어떤 방법으로 개선을 했을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 <br>
 
-### 드래그 이벤트 발생 시 생기는 쿼리 최적화
+### ✨ 드래그 이벤트 발생 시 생기는 쿼리 최적화
 
 **노트 카드를 드래그** 할 때, 그 위치를 DB에 저장하기 위해 **너무 많은 쿼리가 발생**하는 문제가 있었습니다. 이를 위해 **쿼리를 최적화**해야할 필요성이 생겼는데 이를 어떻게 해결할 수 있었을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
 <br>
 
-### redis 캐싱으로 데이터베이스 부하 감소
+### 🧨 redis 캐싱으로 데이터베이스 부하 감소
 
 실시간 문서 동시 편집에서 발생하는 굉장히 많은 변경 사항을 모두 데이터베이스에 저장하기에는 데이터베이스 부하가 너무 많이 발생했고, Octodocs 팀은 redis를 도입하기로 결정했습니다. 저희는 왜 redis를 도입하기로 결정했고 또 redis를 어떻게 활용했을까요? [🔗 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki/redis%EB%A5%BC-%ED%86%B5%ED%95%B4-%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4-%EC%BF%BC%EB%A6%AC-%EC%A4%84%EC%9D%B4%EA%B8%B0)
 
 <br>
 
-### 개발 환경, 배포 환경 및 CI/CD에 대한 개선 과정
+### 🐳 개발 환경, 배포 환경 및 CI/CD에 대한 개선 과정
 
 Octodocs 팀은 사용자 경험 향상은 물론, 일관된 코드 품질 유지와 개발자 친화적인 쾌적한 개발 환경 조성을 위해 많은 노력을 기울였습니다. 멀티 레포에서 모노레포로의 전환, GitHub Actions를 활용한 CI/CD 구축, Docker와 Docker Compose의 도입까지—우리는 어떤 변화를 거쳤을까요? [🔗 링크 준비 중](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki)
 
