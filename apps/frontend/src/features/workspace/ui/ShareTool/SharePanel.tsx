@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Switch } from "@/shared/ui/Switch";
 import { Globe2, Lock, Copy, CheckCheck } from "lucide-react";
-import { useCreateWorkspaceInviteLink } from "../../model/useWorkspaceInvite";
-import { useCurrentWorkspace } from "../../model/workspaceQuries";
 
+import { useCreateWorkspaceInviteLink } from "../../model/workspaceMutations";
+import { useCurrentWorkspace } from "../../model/workspaceQuries";
 import { useToggleWorkspaceStatus } from "../../model/workspaceMutations";
 import { useWorkspaceStatus } from "../../model/useWorkspaceStatus";
 import { useGetUser } from "@/features/auth";
 import { useWorkspace } from "@/shared/lib";
+import { Switch } from "@/shared/ui";
 
 const createFrontendUrl = (apiUrl: string, currentWorkspaceId: string) => {
   const searchParams = new URLSearchParams();

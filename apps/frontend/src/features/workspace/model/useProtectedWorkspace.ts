@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useCurrentWorkspace } from "@/features/workspace/model/useWorkspace";
+import { useCurrentWorkspace } from "@/features/workspace/model/workspaceQuries";
 
 export const useProtectedWorkspace = () => {
   const navigate = useNavigate();

@@ -9,6 +9,7 @@ import {
   createWorkspaceInviteLink,
   validateWorkspaceInviteLink,
 } from "../api/worskspaceInviteApi";
+import { useWorkspace } from "@/shared/lib";
 
 // response로 workspaceId가 오는데 userWorkspace를 어떻게 invalidate 할까?
 // login state에 있는 userId로?
@@ -48,9 +49,9 @@ export const useValidateWorkspaceInviteLink = () => {
 
 export const useToggleWorkspaceStatus = (
   currentStatus: "public" | "private" | undefined,
-  currentWorkspaceId: string,
 ) => {
   const queryClient = useQueryClient();
+  const currentWorkspaceId = useWorkspace();
 
   return useMutation({
     mutationFn: () => {
@@ -67,6 +68,7 @@ export const useToggleWorkspaceStatus = (
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userWorkspace"] });
+      queryClient.invalidateQueries({ queryKey: ["currentWorkspace"] });
     },
   });
 };

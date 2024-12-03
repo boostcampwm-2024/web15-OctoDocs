@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useValidateWorkspaceInviteLink } from "@/features/workspace/model/useWorkspaceInvite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import { useValidateWorkspaceInviteLink } from "@/features/workspace";
 
 const joinQueryClient = new QueryClient();
 

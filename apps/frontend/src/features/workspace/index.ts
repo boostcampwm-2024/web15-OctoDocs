@@ -1,5 +1,6 @@
 export { useUserWorkspace } from "./model/workspaceQuries";
-export { useProtectedWorkspace } from "./model/use";
+export { useProtectedWorkspace } from "./model/useProtectedWorkspace";
+export { useValidateWorkspaceInviteLink } from "./model/workspaceMutations";
 
 export { ShareTool } from "./ui/ShareTool";
 export { WorkspaceAddButton } from "./ui/WorkspaceAddButton";
