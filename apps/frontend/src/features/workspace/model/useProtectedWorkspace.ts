@@ -1,11 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useCurrentWorkspace } from "@/features/workspace/model/workspaceQuries";
-import { useGetUser } from "@/features/auth";
+
+import { useCurrentWorkspace } from "../model/workspaceQuries";
 
 export const useProtectedWorkspace = () => {
   const navigate = useNavigate();
-  const { isLoading: isUserLoading } = useGetUser();
   const {
     data: workspaceData,
     isLoading: isWorkspaceLoading,
@@ -13,13 +12,13 @@ export const useProtectedWorkspace = () => {
   } = useCurrentWorkspace();
 
   useEffect(() => {
-    if (!isUserLoading && !isWorkspaceLoading && (error || !workspaceData)) {
+    if (!isWorkspaceLoading && (error || !workspaceData)) {
       navigate({ to: "/" });
     }
-  }, [isUserLoading, isWorkspaceLoading, workspaceData, error, navigate]);
+  }, [isWorkspaceLoading, workspaceData, error, navigate]);
 
   return {
-    isLoading: isUserLoading || isWorkspaceLoading,
+    isLoading: isWorkspaceLoading,
     workspaceData,
   };
 };
