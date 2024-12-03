@@ -27,7 +27,7 @@ async function bootstrap() {
   app.enableCors({
     origin:
       process.env.NODE_ENV === 'production'
-        ? ['https://octodocs.com', 'https://www.octodocs.com']
+        ? ['https://octodocs.site', 'https://www.octodocs.site']
         : process.env.origin,
     credentials: true,
   });
