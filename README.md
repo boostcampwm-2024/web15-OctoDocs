@@ -34,7 +34,11 @@ https://github.com/user-attachments/assets/1ac81d56-a0ce-403c-9e3f-7ba092b6a5b6
 
 > 실시간으로 다른 사용자들과 동시 편집 및 협업 가능.
 
-https://github.com/user-attachments/assets/ad1f6dc9-50af-46e4-bac4-267b1432b301
+
+
+https://github.com/user-attachments/assets/86b0dcaf-3640-4836-8b91-207b39b17b05
+
+
 
 <br>
 
