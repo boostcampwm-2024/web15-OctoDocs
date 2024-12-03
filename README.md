@@ -66,64 +66,61 @@ https://github.com/user-attachments/assets/0c096e40-bed4-4cee-bb8e-40f72a5d43f2
 
 <br>
 
-Octodocs팀은 애자일한 개발을 최우선 목표로 삼고, 이를 팀의 색깔로 자리잡게 했습니다. 부스트캠프야 말로 주차별로 고정 테스터를 확보할 수 있고, 이를 통해 운영과 개발의 경험을 해볼 수 있는 최적의 환경이라고 생각했기 때문인데요. 매주 다양한 피드백을 받아오며 문제를 해결하고 개선해 나가는 과정을 직접 확인해보세요!
+> Octodocs팀은 **애자일한 개발**을 최우선 목표로 삼고, 이를 팀의 색깔로 자리잡게 했습니다. 부스트캠프야 말로 주차별로 고정 테스터를 확보할 수 있고, 이를 통해 **운영과 개발의 경험**을 해볼 수 있는 최적의 환경이라고 생각했기 때문인데요. 빠른 배포 후 매주 다양한 피드백을 받아오며 문제를 해결하고 개선해 나가는 과정을 직접 확인해보세요!
 
 <br>
 
-### 3주차
+### 3주차 피드백 반영
 
 → [🔗 3주차 전체 사용자 피드백 반영 기록 보러가기](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki/3%EF%B8%8F%E2%83%A3-3%EC%A3%BC%EC%B0%A8-%EC%82%AC%EC%9A%A9%EC%9E%90-%ED%94%BC%EB%93%9C%EB%B0%B1-%EB%B0%98%EC%98%81-%EA%B8%B0%EB%A1%9D)
-
-<br>
 
 ![image 23](https://github.com/user-attachments/assets/a566ce1e-b2ab-4690-80a0-3189613debc2)
 
 
-🙏 **보드랑, 문서노드에 마우스 포인터가 달랐으면 좋겠어요.**
+🙏🏻 **보드랑, 문서노드에 마우스 포인터가 달랐으면 좋겠어요.**
 
-→ ✅ 캔버스 커서에서는 캔버스에서 마우스를 움직이는 중인 유저들을 보여주고, 유저는 커서에 보이는 자신의 커서 색깔을 커스텀할 수 있는 기능을 추가하였다. [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/219)
-
-<br>
-
-🙏 **연결같은거 하다보면 복잡해지네요**
-
-→  ✅ 엣지들이 엉켜보이는 것이 문제점이라고 판단, 엣지는 시작하는 / 끝나는 노드의 정보만 가지고 있고 엣지가 뻗어나오는 노드의 위치는 다른 노드의 상대적 노드로 결정되게 하였다. [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/201)
+→ ✅ 캔버스에서 마우스를 움직이는 중인 유저들의 커서를 보여주고, 유저는 자신의 **커서 색깔을 커스텀**할 수 있는 기능을 추가했습니다. [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/219)
 
 <br>
 
-🙏 **스크린 높이를 작게 한 상태에서 왼쪽 사이드바가 버튼 UI를 가려버려용**
+🙏🏻 **연결같은거 하다보면 복잡해지네요**
 
-→ ✅ 사이드바 UI를 수정하였고, expand 기능을 추가하였다. [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/228)
+→  ✅ 엣지들이 엉켜보이는 것이 문제점이라고 판단했고 엣지의 시작점과 끝점이 항상 **최단 경로**가 되게 하는 기능을 추가했습니다. [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/201)
+
+<br>
+
+🙏🏻 **스크린 높이를 작게 한 상태에서 왼쪽 사이드바가 버튼 UI를 가려버려용**
+
+→ ✅ 사이드바 UI를 수정, **사이드바를 닫을 수 있는 기능**을 추가했습니다. [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/228)
 
 <br><br>
 
-### 4주차
+### 4주차 피드백 반영
 
 → [🔗 4주차 전체 사용자 피드백 반영 기록 보러가기](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki/4%EF%B8%8F%E2%83%A3-4%EC%A3%BC%EC%B0%A8-%EC%82%AC%EC%9A%A9%EC%9E%90-%ED%94%BC%EB%93%9C%EB%B0%B1-%EB%B0%98%EC%98%81-%EA%B8%B0%EB%A1%9D)
 
-<br>
 
 ![Group 115 (1)](https://github.com/user-attachments/assets/1da2266f-247a-43ba-9b75-b7e4f7129b30)
 
-🙏 **테두리가 더 두꺼워서 에디터랑 아래의 기본 배경이 더 구분이 잘 되었으면 좋겠어요! 색상을 변경할 수 있으면 좋겠습니다!**
+🙏🏻 **테두리가 더 두꺼워서 에디터랑 아래의 기본 배경이 더 구분이 잘 되었으면 좋겠어요! 색상을 변경할 수 있으면 좋겠습니다!**
 
-→ ✅ 노드의 색깔을 사용자가 결정할 수 있으면 공통적인 문제(노드가 배경으로부터 분리되어 보였으면 좋겠다)가 해결된다고 판단, **노드의 색깔을 커스텀할 수 있는 기능을 추가하였다** [PR 링크 1(FE)](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/201) [PR 링크 2(BE)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki/4%EF%B8%8F%E2%83%A3-4%EC%A3%BC%EC%B0%A8-%EC%82%AC%EC%9A%A9%EC%9E%90-%ED%94%BC%EB%93%9C%EB%B0%B1-%EB%B0%98%EC%98%81-%EA%B8%B0%EB%A1%9D)
-
-<br>
-
-🙏 **favicon에 문어 넣어주세요 문어 귀여워요...**
-
-→ ✅ 현재 배포된 사이트([https://octodocs.com](https://octodocs.com/) => 후에 [https://octodocs.site](https://octodocs.site/) 로 이전)를 통해 확인할 수 있다
+→ ✅ 노드의 색깔을 사용자가 결정할 수 있으면 공통적인 문제(노드가 배경으로부터 분리되어 보였으면 좋겠다)가 해결된다고 판단했고 **노드의 색깔을 커스텀**할 수 있는 기능을 추가하였습니다. [PR 링크 1(FE)](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/201) [PR 링크 2(BE)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki/4%EF%B8%8F%E2%83%A3-4%EC%A3%BC%EC%B0%A8-%EC%82%AC%EC%9A%A9%EC%9E%90-%ED%94%BC%EB%93%9C%EB%B0%B1-%EB%B0%98%EC%98%81-%EA%B8%B0%EB%A1%9D)
 
 <br>
 
-🙏 **사용자 프로필 (이름하고 색깔) 변경하는 기능이 잘 눈에 안 띄어요. 사용하기 쉬웠으면 좋겠습니다.**
+🙏🏻 **favicon에 문어 넣어주세요 문어 귀여워요...**
 
-→ ✅ **프로필 변경할 수 있는 버튼을 새로 생성한 후, 사용자가 직관적으로 색상, 이름을 변경할 수 있는 기능을 구현하였다** [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/274)
+→ ✅ 현재 배포된 사이트 [**https://octodocs.site**](https://octodocs.site/)를 통해 확인할 수 있습니다.
+
+<br>
+
+🙏🏻 **사용자 프로필 (이름하고 색깔) 변경하는 기능이 잘 눈에 안 띄어요. 사용하기 쉬웠으면 좋겠습니다.**
+
+→ ✅ 프로필을 변경할 수 있는 버튼을 눈에 띄는 곳에 새로 생성한 후, 사용자가 본인의 커서를 직접 보고 체험할 수 있는 **커서 프리뷰 기능**을 추가했습니다. [PR 링크](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/274)
 
 <br><br>
 
-### 5주차
+### 5주차 피드백 반영
 
 ![스크린샷 2024-12-03 오후 8 09 51 1](https://github.com/user-attachments/assets/74d02bff-e476-425c-8086-a377aa2cb482)
 
@@ -131,7 +128,7 @@ Octodocs팀은 애자일한 개발을 최우선 목표로 삼고, 이를 팀의 
 
 🚨 **데모 중  서비스가 다운되는 문제가 발생했어요**
 
-> 5주차에는 데모 발표 중 사용자의 트래픽이 몰리면서 예상하지 못했던 버그로 인해 서버가 다운되었습니다. 이또한 **실사용자로부터 온** 중요한 피드백이라고 생각하였고 서비스 복구를 최우선 과제로 삼았습니다. 이 과정에서 어떤 문제가 있었고 이를 어떻게 해결했을까요?
+> 5주차에는 데모 발표 중 사용자의 트래픽이 몰리면서 예상하지 못했던 버그로 인해 서버가 다운되었습니다. 이또한 **실사용자로부터 온** 중요한 피드백이라고 생각하였고 다른 피드백보다 서비스 복구를 최우선 과제로 삼았습니다. 이 과정에서 어떤 문제가 있었고 이를 어떻게 해결했을까요?
 > 
 
 → [🔗 어? 금지, 모니터 앞에 3명 이상 서있기 금지](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki/5%EF%B8%8F%E2%83%A3-5%EC%A3%BC%EC%B0%A8-%EB%B2%84%EA%B7%B8-%EA%B8%B0%EB%A1%9D)
