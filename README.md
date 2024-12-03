@@ -43,7 +43,16 @@ https://github.com/user-attachments/assets/ad1f6dc9-50af-46e4-bac4-267b1432b301
 
 > 개별 워크 스페이스에 다른 사용자들을 초대해서 함께 이용 가능.
 
-<br>
+<br><br><br><br>
+
+# 🌱 주차별 피드백을 통한 점진적 개선
+
+![image 23](https://github.com/user-attachments/assets/a566ce1e-b2ab-4690-80a0-3189613debc2)
+
+![Group 115 (1)](https://github.com/user-attachments/assets/1da2266f-247a-43ba-9b75-b7e4f7129b30)
+
+![스크린샷 2024-12-03 오후 8 09 51 1](https://github.com/user-attachments/assets/74d02bff-e476-425c-8086-a377aa2cb482)
+
 
 
 # 🛠️ 프로젝트 구조
