@@ -1,4 +1,5 @@
-import { CursorPreview, ProfileForm } from "@/features/canvasTools";
+import { CursorPreview } from "../CursorPreview";
+import { ProfileForm } from "../ProfileForm";
 import { usePopover } from "@/shared/model";
 
 interface ProfilePanelProps {

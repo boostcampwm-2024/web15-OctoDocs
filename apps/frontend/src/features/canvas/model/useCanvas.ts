@@ -78,7 +78,12 @@ export const useCanvas = () => {
       const newNode: YNode = {
         id: existingNode.id,
         type: "note",
-        data: { title: value, id: pageId, emoji: existingNode.data.emoji },
+        data: {
+          title: value,
+          id: pageId,
+          emoji: existingNode.data.emoji,
+          color: existingNode.data.color,
+        },
         position: existingNode.position,
         selected: false,
         isHolding: false,
@@ -99,7 +104,12 @@ export const useCanvas = () => {
       const newNode: YNode = {
         id: pageId,
         type: "note",
-        data: { title: existingNode.data.title, id: pageId, emoji: value },
+        data: {
+          title: existingNode.data.title,
+          id: pageId,
+          emoji: value,
+          color: existingNode.data.color,
+        },
         position: existingNode.position,
         selected: false,
         isHolding: false,
@@ -108,6 +118,7 @@ export const useCanvas = () => {
       nodesMap.set(pageId, newNode);
     });
   }, [ydoc]);
+
   useEffect(() => {
     if (!ydoc) return;
 
@@ -131,7 +142,7 @@ export const useCanvas = () => {
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
         if (change.action === "add" || change.action === "update") {
-          const updatedNode = nodesMap.get(nodeId) as Node;
+          const updatedNode = nodesMap.get(nodeId) as YNode;
           setNodes((nds) => {
             const index = nds.findIndex((n) => n.id === nodeId);
             if (index === -1) {
