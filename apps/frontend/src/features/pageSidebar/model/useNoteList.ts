@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { useDeletePage } from "../api/usePages";
-import useYDocStore from "@/shared/model/ydocStore";
-import { YNode } from "@/features/canvas/model/useCanvas";
-import { NoteNodeData } from "@/features/canvas/ui/Node/NoteNode";
-import { usePageStore } from "./pageStore";
+import { Node, NoteNodeData } from "@/entities/node";
+import { useDeletePage, usePageStore } from "@/entities/page";
+import { useYDocStore } from "@/shared/model";
 
 export const useNoteList = () => {
   const { setCurrentPage } = usePageStore();
@@ -16,7 +14,7 @@ export const useNoteList = () => {
   // TODO: 최적화 필요
   useEffect(() => {
     nodesMap.observe(() => {
-      const yNodes = Array.from(nodesMap.values()) as YNode[];
+      const yNodes = Array.from(nodesMap.values()) as Node[];
       const data = yNodes.map((yNode) => yNode.data) as NoteNodeData[];
       setPages(data);
     });

@@ -1,15 +1,13 @@
-import ActiveUser from "@/shared/ui/ActiveUser";
+import { useEditorView } from "../model/useEditorView";
 import { Editor, EditorActionPanel, EditorTitle } from "@/features/editor";
+import { ActiveUser } from "@/shared/ui";
 import { cn } from "@/shared/lib";
-import { useEditorView } from "../hooks/useEditorView";
 
 export function EditorView() {
   const {
     currentPage,
     isPanelOpen,
     isMaximized,
-    isLoading,
-    page,
     ydoc,
     provider,
     saveStatus,
@@ -17,7 +15,7 @@ export function EditorView() {
     users,
   } = useEditorView();
 
-  if (isLoading || !page || currentPage === null) {
+  if (currentPage === null) {
     return null;
   }
 

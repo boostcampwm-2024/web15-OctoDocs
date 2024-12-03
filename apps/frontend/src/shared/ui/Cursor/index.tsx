@@ -11,11 +11,7 @@ interface CursorProps {
   color?: string;
 }
 
-export default function Cursor({
-  coors,
-  color = "#ffb8b9",
-  clientId,
-}: CursorProps) {
+export function Cursor({ coors, color = "#ffb8b9", clientId }: CursorProps) {
   const { x, y } = coors;
 
   return (

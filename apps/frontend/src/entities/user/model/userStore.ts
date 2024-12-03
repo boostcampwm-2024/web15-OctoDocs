@@ -2,7 +2,7 @@ import { create } from "zustand";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 
-import { createSocketIOProvider } from "@/shared/api/socketProvider";
+import { createSocketIOProvider } from "@/shared/api";
 import { getRandomColor, getRandomHexString } from "@/shared/lib";
 
 export interface User {

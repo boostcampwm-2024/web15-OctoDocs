@@ -1,11 +1,11 @@
-import { Post } from "@/shared/api/axios";
+import { Post } from "@/shared/api";
 
 type UploadImageResponse = {
   message: string;
   url: string;
 };
 
-export const onUpload = async (file: File) => {
+export const onUploadImage = async (file: File) => {
   const url = `/api/upload/image`;
 
   const formData = new FormData();

@@ -1,9 +1,9 @@
 import { Get, Post, Delete, Patch } from "@/shared/api";
 import {
-  CreatePageRequest,
-  CreatePageResponse,
   GetPageResponse,
   GetPagesResponse,
+  CreatePageRequest,
+  CreatePageResponse,
   UpdatePageRequest,
 } from "../model/pageTypes";
 

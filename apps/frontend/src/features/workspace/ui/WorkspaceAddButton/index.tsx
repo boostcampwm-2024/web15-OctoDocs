@@ -1,6 +1,6 @@
 import { CirclePlus } from "lucide-react";
 
-import Button from "@/shared/ui/Button";
+import { Button } from "@/shared/ui";
 
 interface WorkspaceAddButtonProps {
   onClick: () => void;

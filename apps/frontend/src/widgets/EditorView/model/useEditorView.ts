@@ -3,18 +3,24 @@ import { useDebouncedCallback } from "use-debounce";
 import * as Y from "yjs";
 import { SocketIOProvider } from "y-socket.io";
 
-import { usePage } from "@/features/pageSidebar/api/usePages";
-import { createSocketIOProvider } from "@/shared/api/socketProvider";
-import { usePageStore } from "@/features/pageSidebar/model";
 import { useUserStore } from "@/entities/user";
+import { usePageStore } from "@/entities/page";
+import { useEditorStore } from "@/features/editor";
+import { createSocketIOProvider } from "@/shared/api";
 
 export const useEditorView = () => {
-  const { currentPage, isPanelOpen, isMaximized } = usePageStore();
-  const { page, isLoading } = usePage(currentPage);
+  const { currentPage } = usePageStore();
+  const { isPanelOpen, isMaximized, setIsPanelOpen } = useEditorStore();
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
   const [ydoc, setYDoc] = useState<Y.Doc | null>(null);
   const [provider, setProvider] = useState<SocketIOProvider | null>(null);
   const { users } = useUserStore();
+
+  useEffect(() => {
+    if (currentPage) return;
+
+    setIsPanelOpen(false);
+  }, [currentPage]);
 
   useEffect(() => {
     if (!currentPage) return;
@@ -28,6 +34,7 @@ export const useEditorView = () => {
 
     const wsProvider = createSocketIOProvider(`document-${currentPage}`, doc);
     setProvider(wsProvider);
+    setIsPanelOpen(true);
 
     return () => {
       wsProvider.disconnect();
@@ -46,8 +53,6 @@ export const useEditorView = () => {
     currentPage,
     isPanelOpen,
     isMaximized,
-    isLoading,
-    page,
     ydoc,
     provider,
     saveStatus,

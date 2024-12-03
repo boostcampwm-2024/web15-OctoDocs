@@ -1,15 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { getUser, logout } from "../api/authApi";
-
-export const useGetUser = () => {
-  return useQuery({
-    queryKey: ["user"],
-    queryFn: getUser,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-};
+import { logout } from "../api/authApi";
 
 export const useLogout = () => {
   const queryClient = useQueryClient();

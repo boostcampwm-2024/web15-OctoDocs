@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useReactFlow, type XYPosition } from "@xyflow/react";
 import { SocketIOProvider } from "y-socket.io";
 import * as Y from "yjs";
-import { useReactFlow, type XYPosition } from "@xyflow/react";
 
-import { createSocketIOProvider } from "@/shared/api/socketProvider";
-import { useUserStore } from "@/entities/user/model/userStore";
-import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { useUserStore } from "@/entities/user";
+import { createSocketIOProvider } from "@/shared/api";
+import { useWorkspace } from "@/shared/lib";
 
 export interface AwarenessState {
   cursor: XYPosition | null;

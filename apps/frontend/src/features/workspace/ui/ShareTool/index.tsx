@@ -1,6 +1,7 @@
-import { Popover } from "@/shared/ui";
 import { Sharebutton } from "./ShareButton";
 import { SharePanel } from "./SharePanel";
+import { Popover } from "@/shared/ui";
+
 export function ShareTool() {
   return (
     <div className="mr-1">

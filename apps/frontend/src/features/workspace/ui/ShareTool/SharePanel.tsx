@@ -1,6 +1,7 @@
-import { Switch } from "@/shared/ui/Switch";
-import { Globe2, Lock, Copy, CheckCheck } from "lucide-react";
 import { useState } from "react";
+import { Globe2, Lock, Copy, CheckCheck } from "lucide-react";
+
+import { Switch } from "@/shared/ui";
 
 export function SharePanel() {
   const [copied, setCopied] = useState(false);

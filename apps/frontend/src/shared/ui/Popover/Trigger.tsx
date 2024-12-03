@@ -1,4 +1,4 @@
-import { usePopover } from "@/shared/model/usePopover";
+import { usePopover } from "@/shared/model";
 
 interface TriggerProps {
   children: React.ReactNode;
