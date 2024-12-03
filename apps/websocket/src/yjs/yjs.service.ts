@@ -182,12 +182,12 @@ export class YjsService
           title: node.page.title,
           id: node.page.id,
           emoji: node.page.emoji,
+          color: node.color,
         },
         position: {
           x: node.x,
           y: node.y,
         },
-        color: node.color ?? '#FFFFFF',
         selected: false, // 기본적으로 선택되지 않음
         dragging: true,
         isHolding: false,
@@ -263,15 +263,10 @@ export class YjsService
       const node: any = nodesMap.get(key);
       if (node.type !== 'note') continue;
 
-      // node.data는 페이지에 대한 정보
-      // const { id, color} = node.data;
-      // TODO : 구조 분해 할당 쓰려다가 지금은 color를 받아오지 못 할 것 같아서 직접 꺼내왔습니다.
-      // TODO : 색상 추가되면 변경하겠습니다.
-      const id = node.data.id;
-      const color = node.data.color ?? '#FFFFFF'
+      const { id, color } = node.data;
       const { x, y } = node.position;
       const isHolding = node.isHolding;
-      // const color = node.color ?? '#FFFFFF';
+
       if (isHolding) continue;
 
       const pageResponse = await axios.get(
