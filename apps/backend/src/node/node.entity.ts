@@ -23,6 +23,9 @@ export class Node {
   @Column('float')
   y: number;
 
+  @Column({ default: '#FFFFFF' })
+  color: string;
+
   @OneToOne(() => Page, (page) => page.node, {
     cascade: true,
     onDelete: 'CASCADE',
