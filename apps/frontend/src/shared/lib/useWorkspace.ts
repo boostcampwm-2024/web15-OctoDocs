@@ -5,5 +5,7 @@ export function useWorkspace(): string {
   const workspaceMatch = matches.find(
     (match) => match.routeId === "/workspace/$workspaceId",
   );
-  return workspaceMatch?.params.workspaceId ?? "main";
+  const workspaceId = workspaceMatch?.params.workspaceId ?? "main";
+  console.log(workspaceId);
+  return workspaceId;
 }
