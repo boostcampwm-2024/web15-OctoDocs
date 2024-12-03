@@ -20,6 +20,7 @@ export function NoteNode({
   return (
     <div
       className={`h-24 w-48 rounded-lg border-[1px] ${isClicked ? "border-[#8dbaef]" : "border-[#eaeaea]"} bg-white p-3 shadow-sm`}
+      style={{ backgroundColor: data.color }}
       onClick={handleNodeClick}
     >
       <Handle

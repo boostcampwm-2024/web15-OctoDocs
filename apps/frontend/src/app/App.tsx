@@ -1,8 +1,9 @@
 import { useSyncedUsers } from "@/entities/user";
 import { useGetUser } from "@/features/auth";
-import { CanvasToolsView } from "@/widgets/CanvasToolsView";
 import { CanvasView } from "@/widgets/CanvasView";
+import { CanvasToolsView } from "@/widgets/CanvasToolsView";
 import { EditorView } from "@/widgets/EditorView";
+import { NodeToolsView } from "@/widgets/NodeToolsView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
 import { SideWrapper } from "@/shared/ui";
 
@@ -22,6 +23,7 @@ function App() {
       >
         <PageSideBarView />
         <CanvasToolsView />
+        <NodeToolsView />
       </SideWrapper>
     </div>
   );
