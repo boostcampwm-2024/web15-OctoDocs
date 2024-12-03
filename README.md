@@ -24,9 +24,7 @@
 
 ![Group 117 (2)](https://github.com/user-attachments/assets/04e39b34-9483-4896-bd6b-6456c4784eee)
 
-
-<br><br>
-
+<br>
 
 ### 🕸️ 관계형 지식 관리 툴 
 
