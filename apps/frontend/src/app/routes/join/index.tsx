@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { useValidateWorkspaceInviteLink } from "@/features/workspace";
@@ -16,43 +16,48 @@ function JoinWrapper() {
 
 export const Route = createFileRoute("/join/")({
   validateSearch: (search: Record<string, unknown>) => {
-    const workspaceId = search.workspaceId as string;
-    const token = search.token as string;
-
-    if (!workspaceId || !token) {
+    if (!search.workspaceId || !search.token) {
+      window.location.href = "/";
       throw new Error("유효한 링크가 아닙니다.");
     }
 
-    return { workspaceId, token };
+    return {
+      workspaceId: search.workspaceId as string,
+      token: search.token as string,
+    };
   },
   component: JoinWrapper,
 });
 
 function JoinComponent() {
-  const { workspaceId, token } = Route.useSearch();
-  const navigate = useNavigate();
+  const rawWorkspaceId = new URLSearchParams(window.location.search).get(
+    "workspaceId",
+  );
+  const { token } = Route.useSearch();
   const { mutate: validateInvite, isPending } =
     useValidateWorkspaceInviteLink();
+  const [validated, setValidated] = useState(false);
 
   useEffect(() => {
-    if (!token || !workspaceId) {
-      navigate({ to: "/" });
+    if (!token || !rawWorkspaceId) {
+      window.location.href = "/";
       return;
     }
 
-    validateInvite(token, {
+    validateInvite(String(token), {
       onSuccess: () => {
-        navigate({
-          to: "/workspace/$workspaceId",
-          params: { workspaceId },
-          replace: true,
-        });
+        setValidated(true);
       },
       onError: () => {
-        navigate({ to: "/" });
+        window.location.href = "/";
       },
     });
-  }, [token, workspaceId, validateInvite, navigate]);
+  }, [token, rawWorkspaceId, validateInvite]);
+
+  if (validated && rawWorkspaceId) {
+    window.location.href = `/workspace/${rawWorkspaceId}`;
+    return null;
+  }
 
   return (
     <div className="flex h-screen items-center justify-center">
@@ -60,9 +65,9 @@ function JoinComponent() {
         <div className="mb-2 text-lg font-medium">
           워크스페이스 초대 확인 중
         </div>
-        {isPending && (
+        {isPending && rawWorkspaceId && (
           <div className="text-sm text-gray-500">
-            워크스페이스 {workspaceId} 입장 중...
+            워크스페이스 {rawWorkspaceId} 입장 중...
           </div>
         )}
       </div>
