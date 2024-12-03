@@ -24,8 +24,8 @@ services:
             --email hihj070914@icloud.com
             --agree-tos
             --no-eff-email
-            -d octodocs.com
-            -d www.octodocs.com
+            -d octodocs.site
+            -d www.octodocs.site
 
 networks:
     frontend:

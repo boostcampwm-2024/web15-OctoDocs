@@ -9,6 +9,8 @@
         "dev": "turbo run dev --parallel",
         "build": "turbo run build",
         "start": "node apps/backend/dist/main.js",
+        "start:backend": "node apps/backend/dist/main.js",
+        "start:websocket": "node apps/websocket/dist/main.js",
         "lint": "turbo run lint",
         "test": "turbo run test",
         "docker:dev": "docker compose -f compose.local.yml up",

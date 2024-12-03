@@ -15,7 +15,10 @@ services:
         networks:
             - frontend
         depends_on:
-            - backend
+            backend:
+                condition: service_healthy
+            websocket:
+                condition: service_healthy
 
     backend:
         build:
@@ -28,12 +31,46 @@ services:
             - .env.prod:/app/.env
         expose:
             - "3000"
-            - "1234"
         networks:
             - frontend
             - backend
         depends_on:
-            - redis
+            redis:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        restart: always
+
+    websocket:
+        build:
+            context: .
+            dockerfile: ./services/websocket/Dockerfile.prod
+        image: websocket:latest
+        env_file:
+            - .env.prod
+        volumes:
+            - .env.prod:/app/apps/websocket/.env
+        expose:
+            - "4242"
+        networks:
+            - frontend
+            - backend
+        depends_on:
+            backend:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4242/health"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        restart: always
 
     redis:
         image: redis:latest
@@ -42,6 +79,13 @@ services:
             REDIS_PORT: ${REDIS_PORT}
         networks:
             - backend
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 30s
+            retries: 3
+            start_period: 10s
+            timeout: 5s
+        restart: always
 
     certbot-renewer:
         image: certbot/certbot:latest
@@ -50,6 +94,7 @@ services:
             - ./data/certbot/www:/var/www/certbot
             - ./data/certbot/log:/var/log/letsencrypt
         entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot; sleep 12h & wait $${!}; done;'"
+        restart: always
 
 networks:
     frontend:
