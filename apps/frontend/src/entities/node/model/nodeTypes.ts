@@ -8,6 +8,7 @@ export type NoteNodeData = {
   title: string;
   id: number;
   emoji: string;
+  color: string;
 };
 
 export type NoteNodeType = FlowNode<NoteNodeData, "note">;
