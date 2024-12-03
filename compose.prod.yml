@@ -43,6 +43,7 @@ services:
             timeout: 5s
             retries: 5
             start_period: 10s
+        restart: always
 
     websocket:
         build:
@@ -69,6 +70,7 @@ services:
             timeout: 5s
             retries: 5
             start_period: 10s
+        restart: always
 
     redis:
         image: redis:latest
@@ -83,6 +85,7 @@ services:
             retries: 3
             start_period: 10s
             timeout: 5s
+        restart: always
 
     certbot-renewer:
         image: certbot/certbot:latest
@@ -91,6 +94,7 @@ services:
             - ./data/certbot/www:/var/www/certbot
             - ./data/certbot/log:/var/log/letsencrypt
         entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot --webroot-path=/var/www/certbot; sleep 12h & wait $${!}; done;'"
+        restart: always
 
 networks:
     frontend:
