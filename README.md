@@ -48,6 +48,12 @@ https://github.com/user-attachments/assets/86b0dcaf-3640-4836-8b91-207b39b17b05
 
 > 개별 워크 스페이스에 다른 사용자들을 초대해서 함께 이용 가능.
 
+
+
+https://github.com/user-attachments/assets/0c096e40-bed4-4cee-bb8e-40f72a5d43f2
+
+
+
 <br><br><br><br>
 
 <h1 id="주차별피드백">🌱 주차별 피드백을 통한 점진적 개선</h1>
