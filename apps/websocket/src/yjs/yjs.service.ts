@@ -187,6 +187,7 @@ export class YjsService
           x: node.x,
           y: node.y,
         },
+        color: node.color ?? '#FFFFFFF',
         selected: false, // 기본적으로 선택되지 않음
         dragging: true,
         isHolding: false,
@@ -266,6 +267,7 @@ export class YjsService
       const { id } = node.data;
       const { x, y } = node.position;
       const isHolding = node.isHolding;
+      const color = node.color ?? 'main';
       if (isHolding) continue;
 
       // TODO : node의 경우 key 값을 page id가 아닌 node id로 변경
@@ -275,12 +277,19 @@ export class YjsService
       //   x,
       //   y,
       // });
+
       const pageResponse = await axios.get(
         `http://backend:3000/api/page/${id}`,
       );
       const findPage = pageResponse.data.page;
-      this.redisService.setField(`node:${findPage.node.id}`, 'x', x);
-      this.redisService.setField(`node:${findPage.node.id}`, 'y', y);
+
+      await this.redisService.setField(`node:${findPage.node.id}`, 'x', x);
+      await this.redisService.setField(`node:${findPage.node.id}`, 'y', y);
+      await this.redisService.setField(
+        `node:${findPage.node.id}`,
+        'color',
+        color,
+      );
     }
   }
 
