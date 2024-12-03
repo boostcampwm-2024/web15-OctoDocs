@@ -12,8 +12,9 @@ export type RedisPage = {
 };
 
 export type RedisNode = {
-  x: number;
-  y: number;
+  x?: number;
+  y?: number;
+  color?: string;
 };
 
 export type RedisEdge = {

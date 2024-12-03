@@ -113,10 +113,12 @@ export class TasksService {
       throw new Error(`redis에 ${key}에 해당하는 데이터가 없습니다.`);
     }
 
-    const updateData: Partial<Node> = {
-      x: Number(redisData.x),
-      y: Number(redisData.y),
-    };
+    const { x, y, color } = redisData;
+    const updateData: Partial<Node> = {};
+
+    if (x) updateData.x = Number(x);
+    if (y) updateData.y = Number(y);
+    if (color) updateData.color = color;
 
     // 쿼리 대상이 없다면 리턴
     if (Object.keys(updateData).length === 0) return;
@@ -142,8 +144,12 @@ export class TasksService {
       // 실패하면 postgres는 roll back하고 redis의 값을 살린다.
       this.logger.error(err.stack);
       await queryRunner.rollbackTransaction();
-      await this.redisService.setField(key, 'x', updateData.x.toString());
-      await this.redisService.setField(key, 'y', updateData.y.toString());
+      updateData.x &&
+        (await this.redisService.setField(key, 'x', updateData.x.toString()));
+      updateData.y &&
+        (await this.redisService.setField(key, 'y', updateData.y.toString()));
+      updateData.color &&
+        (await this.redisService.setField(key, 'color', updateData.color));
 
       // Promise.all에서 실패를 인식하기 위해 에러를 던진다.
       throw err;

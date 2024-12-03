@@ -11,6 +11,7 @@ export type YMapNode = {
     x: number; // X 좌표
     y: number; // Y 좌표
   };
+  color: string; // 색상
   selected: boolean;
   isHolding: boolean;
 };

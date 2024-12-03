@@ -8,6 +8,8 @@ export class Node {
 
   y: number;
 
+  color: string;
+
   page: Page;
 
   outgoingEdges: Edge[];
