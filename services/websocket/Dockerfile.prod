@@ -1,0 +1,43 @@
+# 빌드 스테이지
+FROM node:20-alpine as builder
+
+WORKDIR /app
+
+# yarn 설정 추가
+RUN yarn config set network-timeout 300000 && \
+    yarn config set network-concurrency 1
+
+# 패키지 파일 복사
+COPY package.json yarn.lock ./
+COPY apps/websocket/package.json ./apps/websocket/
+COPY turbo.json ./
+
+# 의존성 설치 (재시도 옵션 추가)
+RUN yarn install --frozen-lockfile --network-timeout 300000 || \
+    yarn install --frozen-lockfile --network-timeout 300000 || \
+    yarn install --frozen-lockfile --network-timeout 300000
+
+# 소스 코드 복사
+COPY . .
+
+# 빌드
+RUN yarn turbo run build --filter=websocket
+
+# 프로덕션 스테이지
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 빌드된 파일과 필요한 의존성만 복사
+COPY --from=builder /app/package.json /app/yarn.lock ./
+COPY --from=builder /app/apps/websocket/package.json ./apps/websocket/
+COPY --from=builder /app/apps/websocket/dist ./apps/websocket/dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/websocket/node_modules ./apps/websocket/node_modules
+
+# 프로덕션 모드로 실행
+ENV NODE_ENV=production
+
+EXPOSE 4242
+
+CMD ["yarn", "start:websocket"]
