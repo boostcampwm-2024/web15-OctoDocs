@@ -104,7 +104,7 @@ https://github.com/user-attachments/assets/0c096e40-bed4-4cee-bb8e-40f72a5d43f2
 
 🙏🏻 **테두리가 더 두꺼워서 에디터랑 아래의 기본 배경이 더 구분이 잘 되었으면 좋겠어요! 색상을 변경할 수 있으면 좋겠습니다!**
 
-→ ✅ 노드의 색깔을 사용자가 결정할 수 있으면 공통적인 문제(노드가 배경으로부터 분리되어 보였으면 좋겠다)가 해결된다고 판단했고 **노드의 색깔을 커스텀**할 수 있는 기능을 추가하였습니다. [PR 링크 1(FE)](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/201) [PR 링크 2(BE)](https://github.com/boostcampwm-2024/web15-OctoDocs/wiki/4%EF%B8%8F%E2%83%A3-4%EC%A3%BC%EC%B0%A8-%EC%82%AC%EC%9A%A9%EC%9E%90-%ED%94%BC%EB%93%9C%EB%B0%B1-%EB%B0%98%EC%98%81-%EA%B8%B0%EB%A1%9D)
+→ ✅ 노드의 색깔을 사용자가 결정할 수 있으면 공통적인 문제(노드가 배경으로부터 분리되어 보였으면 좋겠다)가 해결된다고 판단했고 **노드의 색깔을 커스텀**할 수 있는 기능을 추가하였습니다. [PR 링크 1(FE)](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/201) [PR 링크 2(BE)](https://github.com/boostcampwm-2024/web15-OctoDocs/pull/373)
 
 <br>
 
