@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { YNode } from "@/features/canvas";
+import { Node } from "@/entities/node";
 import { Emoji } from "@/shared/ui";
 import { useYDocStore, useYText } from "@/shared/model";
 
@@ -23,7 +23,7 @@ export const useEditorTitle = (currentPage: number) => {
     setYTitle(e.target.value);
 
     const nodesMap = ydoc.getMap("nodes");
-    const existingNode = nodesMap.get(currentPage.toString()) as YNode;
+    const existingNode = nodesMap.get(currentPage.toString()) as Node;
 
     if (existingNode) {
       const updatedNode = {
@@ -41,7 +41,7 @@ export const useEditorTitle = (currentPage: number) => {
     setYEmoji(native);
 
     const nodesMap = ydoc.getMap("nodes");
-    const existingNode = nodesMap.get(currentPage.toString()) as YNode;
+    const existingNode = nodesMap.get(currentPage.toString()) as Node;
 
     if (existingNode) {
       const updatedNode = {
@@ -63,7 +63,7 @@ export const useEditorTitle = (currentPage: number) => {
     setYEmoji("");
 
     const nodesMap = ydoc.getMap("nodes");
-    const existingNode = nodesMap.get(currentPage.toString()) as YNode;
+    const existingNode = nodesMap.get(currentPage.toString()) as Node;
 
     if (existingNode) {
       const updatedNode = {
