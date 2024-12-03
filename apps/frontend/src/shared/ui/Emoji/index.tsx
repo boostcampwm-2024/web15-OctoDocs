@@ -10,7 +10,7 @@ interface EmojiProps {
   fontSize?: Tailwindest["fontSize"];
 }
 
-export default function Emoji({ emoji, width, height, fontSize }: EmojiProps) {
+export function Emoji({ emoji, width, height, fontSize }: EmojiProps) {
   if (!emoji)
     return (
       <FileText

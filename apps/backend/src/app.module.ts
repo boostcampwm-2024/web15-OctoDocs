@@ -12,9 +12,7 @@ import { Node } from './node/node.entity';
 import { User } from './user/user.entity';
 import { Workspace } from './workspace/workspace.entity';
 import { Role } from './role/role.entity';
-import { YjsModule } from './yjs/yjs.module';
 import * as path from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -49,7 +47,6 @@ import { RedLockModule } from './red-lock/red-lock.module';
     NodeModule,
     PageModule,
     EdgeModule,
-    YjsModule,
     UploadModule,
     AuthModule,
     UserModule,

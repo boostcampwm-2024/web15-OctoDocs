@@ -1,8 +1,7 @@
 import Picker from "@emoji-mart/react";
 
-import { useEditorTitle } from "@/features/editor/model/useEditorTitle";
-import Emoji from "@/shared/ui/Emoji";
-
+import { useEditorTitle } from "../../model/useEditorTitle";
+import { Emoji } from "@/shared/ui";
 import { cn } from "@/shared/lib";
 
 interface EditorTitleProps {

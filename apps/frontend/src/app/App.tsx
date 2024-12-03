@@ -1,10 +1,10 @@
 import { useSyncedUsers } from "@/entities/user";
-import { SideWrapper } from "@/shared/ui";
+import { useProtectedWorkspace } from "@/features/workspace";
 import { CanvasView } from "@/widgets/CanvasView";
 import { EditorView } from "@/widgets/EditorView";
 import { PageSideBarView } from "@/widgets/PageSideBarView";
 import { CanvasToolsView } from "@/widgets/CanvasToolsView";
-import { useProtectedWorkspace } from "@/features/workspace/model/useProtectedWorkspace";
+import { SideWrapper } from "@/shared/ui";
 
 function App() {
   useSyncedUsers();
@@ -18,7 +18,6 @@ function App() {
     );
   }
 
-  // If we're not loading and have workspace data, show the main content
   return (
     <div className="fixed inset-0 bg-white">
       <SideWrapper side="right" className="z-50">

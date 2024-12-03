@@ -1,5 +1,5 @@
-import { Patch } from "@/shared/api";
 import { SetWorkspaceStatusResponse } from "../model/workspaceInviteTypes";
+import { Patch } from "@/shared/api";
 
 export const setWorkspaceStatusToPrivate = async (id: string) => {
   const url = `/api/workspace/${id}/private`;

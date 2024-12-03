@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { EditorBubbleItem, useEditor } from "novel";
 
-import { Button } from "@/features/editor/ui/Editor/ui/button";
+import { Button } from "../ui/button";
 import { cn } from "@/shared/lib";
 
 export const TextButtons = () => {

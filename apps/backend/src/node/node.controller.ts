@@ -135,7 +135,7 @@ export class NodeController {
   @ApiOperation({ summary: '특정 워크스페이스의 모든 노드들을 가져옵니다.' })
   @Get('/workspace/:workspaceId')
   @HttpCode(HttpStatus.OK)
-  async findPagesByWorkspace(
+  async findNodesByWorkspace(
     @Param('workspaceId') workspaceId: string, // Snowflake ID
   ): Promise<FindNodesResponseDto> {
     const nodes = await this.nodeService.findNodesByWorkspace(workspaceId);

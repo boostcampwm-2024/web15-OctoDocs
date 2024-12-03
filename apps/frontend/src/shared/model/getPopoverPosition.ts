@@ -1,4 +1,4 @@
-import { Placement, Offset, Alignment } from "@/shared/model/usePopover";
+import { Placement, Offset, Alignment } from "../model/usePopover";
 
 export interface Position {
   top: number;

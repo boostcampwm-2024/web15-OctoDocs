@@ -13,12 +13,13 @@ import {
 import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
 
-import useYDocStore from "@/shared/model/ydocStore";
-import { calculateBestHandles } from "@/features/canvas/model/calculateHandles";
-import { createSocketIOProvider } from "@/shared/api/socketProvider";
+import { calculateBestHandles } from "./calculateHandles";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
-import { usePageStore } from "@/features/pageSidebar/model/pageStore";
-import { useWorkspace } from "@/shared/lib/useWorkspace";
+import { usePageStore } from "@/entities/page";
+import { createSocketIOProvider } from "@/shared/api";
+import { useWorkspace } from "@/shared/lib";
+import { useYDocStore } from "@/shared/model";
+import { useUserStore } from "@/entities/user";
 
 export interface YNode extends Node {
   isHolding: boolean;
@@ -29,7 +30,6 @@ export const useCanvas = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const workspace = useWorkspace();
   const { ydoc } = useYDocStore();
-
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({
       ydoc,
@@ -38,7 +38,9 @@ export const useCanvas = () => {
   const provider = useRef<SocketIOProvider>();
   const holdingNodeRef = useRef<string | null>(null);
 
-  const currentPage = usePageStore((state) => state.currentPage);
+  const { currentPage, setCurrentPage } = usePageStore();
+  const { users } = useUserStore();
+
   const { fitView } = useReactFlow();
 
   useEffect(() => {
@@ -145,7 +147,7 @@ export const useCanvas = () => {
           const currentPageValue = usePageStore.getState().currentPage;
 
           if (currentPageValue === deletedNodeId) {
-            usePageStore.setState({ currentPage: null, isPanelOpen: false });
+            setCurrentPage(null);
           }
 
           setNodes((nds) => nds.filter((n) => n.id !== nodeId));
@@ -282,10 +284,17 @@ export const useCanvas = () => {
     [ydoc],
   );
 
+  const handleNodeClick = useCallback((id: number) => {
+    setCurrentPage(id);
+  }, []);
+
   return {
-    handleMouseMove,
+    currentPage,
     nodes,
     edges,
+    users,
+    setCurrentPage,
+    handleMouseMove,
     handleNodesChange,
     handleEdgesChange,
     handleMouseLeave,
@@ -293,6 +302,7 @@ export const useCanvas = () => {
     onNodeDragStart,
     onNodeDragStop,
     onConnect,
+    handleNodeClick,
     cursors,
   };
 };

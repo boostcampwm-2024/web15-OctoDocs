@@ -2,10 +2,9 @@ import { useMemo } from "react";
 import { Panel } from "@xyflow/react";
 import { useReactFlow } from "@xyflow/react";
 
-import Cursor from "@/shared/ui/Cursor";
-
 import { AwarenessState } from "../../model/useCollaborativeCursors";
 import { useUserStore } from "@/entities/user";
+import { Cursor } from "@/shared/ui";
 
 interface CollaborativeCursorsProps {
   cursors: Map<number, AwarenessState>;

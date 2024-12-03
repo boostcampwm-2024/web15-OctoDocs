@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { NoteList, Tools } from "@/features/pageSidebar/ui";
-import { ScrollWrapper } from "@/shared/ui";
+import { NoteList, Tools } from "@/features/pageSidebar";
 import { TopNavView } from "@/widgets/TopNavView";
+import { ScrollWrapper } from "@/shared/ui";
 
 export function PageSideBarView() {
   const [isExpanded, setIsExpanded] = useState(false);

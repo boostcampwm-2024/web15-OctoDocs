@@ -1,12 +1,8 @@
 import { useRef, useState } from "react";
+
 import { Content } from "./Content";
 import { Trigger } from "./Trigger";
-import {
-  PopoverContext,
-  Placement,
-  Offset,
-  Alignment,
-} from "@/shared/model/usePopover";
+import { PopoverContext, Placement, Offset, Alignment } from "@/shared/model";
 
 interface PopoverProps {
   children: React.ReactNode;

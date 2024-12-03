@@ -3,8 +3,8 @@ import { Check, Trash } from "lucide-react";
 import { useEditor } from "novel";
 import { Popover, PopoverTrigger } from "@radix-ui/react-popover";
 
-import { Button } from "@/features/editor/ui/Editor/ui/button";
-import { PopoverContent } from "@/features/editor/ui/Editor/ui/popover";
+import { Button } from "../ui/button";
+import { PopoverContent } from "../ui/popover";
 import { cn } from "@/shared/lib";
 
 export function isValidUrl(url: string) {

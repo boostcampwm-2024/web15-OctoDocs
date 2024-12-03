@@ -6,7 +6,14 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [TanStackRouterVite(), react(), tsconfigPaths()],
+  plugins: [
+    TanStackRouterVite({
+      routesDirectory: "./src/app/routes",
+      generatedRouteTree: "./src/app/routeTree.gen.ts",
+    }),
+    react(),
+    tsconfigPaths(),
+  ],
   css: {
     postcss: {
       plugins: [tailwindcss()],

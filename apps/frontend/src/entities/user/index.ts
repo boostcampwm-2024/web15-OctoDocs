@@ -1,4 +1,4 @@
-export * from "./model/userStore";
-export * from "./model/useSyncedUsers";
+export { useUserStore, type User } from "./model/userStore";
+export { useSyncedUsers } from "./model/useSyncedUsers";
 
-export * from "./ui/UserProfile";
+export { UserProfile } from "./ui/UserProfile";

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { Popover } from "@/shared/ui";
-import { CursorButton } from "@/features/canvasTools/ui";
-import { ShareTool } from "@/features/workspace/ui/ShareTool";
-import { ProfilePanel } from "@/features/canvasTools/ui";
 import { useUserStore } from "@/entities/user";
+import { CursorButton, ProfilePanel } from "@/features/canvasTools";
+import { ShareTool } from "@/features/workspace";
+import { Popover } from "@/shared/ui";
 
 export function CanvasToolsView() {
   const { currentUser } = useUserStore();
