@@ -120,6 +120,7 @@ describe('PageService', () => {
         id: 1,
         x: 0,
         y: 0,
+        color: '#FFFFFF',
         page: null,
         outgoingEdges: [],
         incomingEdges: [],
