@@ -65,7 +65,7 @@ https://github.com/user-attachments/assets/86b0dcaf-3640-4836-8b91-207b39b17b05
 
 ### 🖥️ System Architecture
 
-![image (13)](https://github.com/user-attachments/assets/60bfb7a1-3c1a-436d-b961-5a30dc9dba7f)
+![image (13)](https://github.com/user-attachments/assets/bee51119-c814-4f57-8cda-60ea4bfdd2dd)
 
 
 ### 🐳 Sequence Diagram 
