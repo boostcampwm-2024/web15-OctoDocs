@@ -187,7 +187,7 @@ export class YjsService
           x: node.x,
           y: node.y,
         },
-        color: node.color ?? '#FFFFFFF',
+        color: node.color ?? '#FFFFFF',
         selected: false, // 기본적으로 선택되지 않음
         dragging: true,
         isHolding: false,
