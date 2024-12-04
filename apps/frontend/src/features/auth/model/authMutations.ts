@@ -10,6 +10,7 @@ export const useLogout = () => {
     onSuccess: async () => {
       queryClient.setQueryData(["user"], null);
       await queryClient.invalidateQueries({ queryKey: ["user"] });
+      window.location.replace("/");
     },
   });
 
