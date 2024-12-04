@@ -26,34 +26,34 @@
 
 <br>
 
-### 🕸️ 관계형 지식 관리 툴
+### 🪡 관계형 지식 관리 툴
 
-🌱 마크다운, 이미지, 코드 등을 활용해서 간편하게 **문서 작성**이 가능합니다. <br>
-🌱 작성한 문서들을 **연결**하고 **배치**하면서 새로운 아이디어를 쉽게 떠올릴 수 있습니다.
+📢 마크다운, 이미지, 코드 등을 활용해서 간편하게 **문서 작성**이 가능합니다. <br>
+📢 작성한 문서들을 **연결**하고 **배치**하면서 새로운 아이디어를 쉽게 떠올릴 수 있습니다.
 
 https://github.com/user-attachments/assets/1ac81d56-a0ce-403c-9e3f-7ba092b6a5b6
 
 <br>
 
-### 🧸 실시간 동시 편집 및 협업 기능
+### 👥 실시간 동시 편집 및 협업 기능
 
-🌱 에디터에서 간편하게 **실시간 동시 편집**이 가능합니다. <br>
-🌱 작성된 문서들도 **함께 연결하고 배치**해 보며 우리 팀만의 구조를 만들어 볼 수 있습니다.
+📢 에디터에서 간편하게 **실시간 동시 편집**이 가능합니다. <br>
+📢 작성된 문서들도 **함께 연결하고 배치**해 보며 우리 팀만의 구조를 만들어 볼 수 있습니다.
 
 https://github.com/user-attachments/assets/86b0dcaf-3640-4836-8b91-207b39b17b05
 
 <br>
 
-### ⛺️ 워크스페이스 초대 기능
+### 📮 워크스페이스 초대 기능
 
-🌱 우리 팀만의 **워크 스페이스를 생성**하고 팀원들을 **초대**할 수 있습니다. <br>
-🌱 워크 스페이스의 **공개 범위**를 설정해서 누구나 참여할 수 있는 공간도 생성이 가능합니다.
+📢 우리 팀만의 **워크 스페이스를 생성**하고 팀원들을 **초대**할 수 있습니다. <br>
+📢 워크 스페이스의 **공개 범위**를 설정해서 누구나 참여할 수 있는 공간도 생성이 가능합니다.
 
 https://github.com/user-attachments/assets/0c096e40-bed4-4cee-bb8e-40f72a5d43f2
 
 <br><br><br><br>
 
-<h1 id="주차별피드백">🌱 주차별 피드백을 통한 점진적 개선</h1>
+<h1 id="피드백">🏗️ 피드백을 반영한 점진적 개선</h1>
 
 <br>
 
@@ -123,73 +123,9 @@ https://github.com/user-attachments/assets/0c096e40-bed4-4cee-bb8e-40f72a5d43f2
 
 <br><br>
 
-<h1 id="프로젝트타임라인">🗺️ 프로젝트 타임라인</h1>
+<h1 id="Octodocs 팀의 핵심 경험">🗜️ Octodocs 팀의 핵심 경험</h1>
 
-![Overview-variant (18)](https://github.com/user-attachments/assets/a503f8fe-bab9-4cf3-8d9d-98ff43ab0c3e)
-
-<br><br>
-
-<h1 id="프로젝트구조">🛠️ 프로젝트 구조</h1>
-
-### 🖥️ System Architecture
-
-![image (13)](https://github.com/user-attachments/assets/bee51119-c814-4f57-8cda-60ea4bfdd2dd)
-
-<br>
-
-### 🐳 Sequence Diagram
-
-```mermaid
-sequenceDiagram
-    participant Subscriber as 구독자
-    participant OctoDocs as OctoDocs 워크스페이스
-    participant Yjs as yjs 라이브러리
-    participant YSocket as y-socketIO provider
-    participant WS_Server as websocket server (ysocketio)
-    participant PageModule as page 모듈 (node 모듈)
-    participant Redis as redis
-    participant Postgres as postgres
-    %% 웹소켓 연결 플로우
-    note over Subscriber, YSocket: [웹소켓 연결 플로우]
-    Subscriber->>OctoDocs: Y.Doc 생성 요청
-    OctoDocs->>Yjs: Y.Doc 생성 수행
-    Yjs->>YSocket: Y.Doc 공유 요청
-    alt [Y.Doc이 존재하지 않을 때]
-        YSocket->>WS_Server: 웹소켓 연결
-        WS_Server->>PageModule: 데이터 조회 요청
-        PageModule->>Redis: 데이터 조회 요청
-        Redis->>PageModule: 데이터 조회 응답
-        PageModule->>WS_Server: 데이터 조회 응답
-        WS_Server->>YSocket: Y.Doc에 초기 데이터 셋팅
-        YSocket->>Yjs: 웹소켓 연결 완료
-    else [Y.Doc이 존재할 때]
-        YSocket->>WS_Server: 웹소켓 연결
-        YSocket->>Yjs: 웹소켓 연결 완료
-    end
-    %% 페이지 정보 변경 플로우
-    note over OctoDocs, WS_Server: [페이지 정보 변경 플로우]
-    OctoDocs->>Yjs: Y.Doc 데이터 변경
-    Yjs->>YSocket: 변경된 데이터 전달
-    YSocket->>WS_Server: 소켓 요청
-    WS_Server->>PageModule: 소켓 요청
-    PageModule->>Redis: 변경 사항 저장
-    Redis->>PageModule: 변경 사항 저장 알림
-    PageModule-->>WS_Server: 저장 완료 알림
-    WS_Server-->>YSocket: 변경된 데이터 전달
-    YSocket-->>Yjs: 모든 참여자들에게 Y.Doc 데이터 변경
-    %% 데이터베이스 영속화 플로우
-    note over Redis, Postgres: [데이터베이스 영속화 플로우]
-    loop [스케줄러]
-        Redis->>Postgres: 변경 사항 저장
-        Postgres->>Redis: 변경 사항 저장 알림
-    end
-```
-
-<br><br>
-
-<h1 id="문제와해결과정">🚧 문제와 해결과정</h1>
-
-### 🐙 실시간 편집 구현 과정
+### 🗣️ 실시간 편집 구현 과정
 
 실시간으로 여러 사용자가 동일한 문서를 편집할 때, 충돌 없이 동기화하는 것은 어려운 문제입니다. Octodocs 팀은 이를 직접 구현하는 대신 **YJS**와 **Socket.IO**를 결합하는 전략을 선택했습니다. 하지만 이 두 라이브러리를 통합하는 과정에서 예상치 못한 문제들을 어떻게 해결했을까요?
 
@@ -197,7 +133,7 @@ sequenceDiagram
 
 <br>
 
-### 🌊 데이터 흐름 변경
+### ☄️ 데이터 흐름 변경
 
 Octodocs 팀은 기존 RESTful API 기반 상태 관리를 버리고 **YDoc 중심의 단일 Truth Source**와 **소켓 기반 단방향 흐름**으로 전환했습니다. 이로 인해 모든 상태가 YDoc을 통해 일관되게 관리되고, 데이터 흐름도 간소화되었습니다. 기존 방식을 버리고 이 변화를 선택한 이유는 무엇일까요? 또한, 중복 관리와 데이터 충돌을 줄이기 위한 **data flow 변화**의 핵심은 무엇이었을까요?
 
@@ -205,7 +141,7 @@ Octodocs 팀은 기존 RESTful API 기반 상태 관리를 버리고 **YDoc 중�
 
 <br>
 
-### 🕸️ FE 프로젝트 구조 개선 과정
+### 🛠️ FE 프로젝트 구조 개선 과정
 
 짧은 기간의 스프린트를 빠르게 반복하여 개발했던 Octodocs 팀은 어느 순간부터 기능을 추가하고 유지보수하기 어렵다는 문제점을 마주하였습니다. 기존 **프로젝트 구조**의 문제점을 어떻게 파악했고, 어떤 방법으로 개선 했을까요?
 
@@ -245,7 +181,21 @@ Octodocs 팀은 사용자 경험 향상은 물론, 일관된 코드 품질 유�
 
 <br><br>
 
-<h1 id="팀원소개">🧸 팀원 소개</h1>
+<h1 id="프로젝트구조">⚙️ 프로젝트 구조</h1>
+
+### 🖥️ System Architecture
+
+![image (13)](https://github.com/user-attachments/assets/bee51119-c814-4f57-8cda-60ea4bfdd2dd)
+
+<br><br>
+
+<h1 id="프로젝트타임라인">🗺️ 프로젝트 타임라인</h1>
+
+![Overview-variant (18)](https://github.com/user-attachments/assets/a503f8fe-bab9-4cf3-8d9d-98ff43ab0c3e)
+
+<br><br>
+
+<h1 id="팀원소개">🍻 팀원 소개</h1>
 
 |                                               [J032\_김동준](https://github.com/djk01281)                                                |                                                  [J075\_김현준](https://github.com/Tolerblanc)                                                  |                                               [J097\_민서진](https://github.com/summersummerwhy)                                                |                                                   [J162\_유성민](https://github.com/ezcolin2)                                                   |                                                   [J248\_진예원](https://github.com/yewonJin)                                                   |
 | :--------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
