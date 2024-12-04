@@ -31,7 +31,7 @@
 📢 마크다운, 이미지, 코드 등을 활용해서 간편하게 **문서 작성**이 가능합니다. <br>
 📢 작성한 문서들을 **연결**하고 **배치**하면서 새로운 아이디어를 쉽게 떠올릴 수 있습니다.
 
-![문서 작성과 연결 gif](https://raw.githubusercontent.com/summersummerwhy/gif/blob/main/391353713-1ac81d56-a0ce-403c-9e3f-7ba092b6a5b6-ezgif.com-video-to-gif-converter.gif)
+![문서 작성과 연결 gif](https://raw.githubusercontent.com/summersummerwhy/gif/main/391353713-1ac81d56-a0ce-403c-9e3f-7ba092b6a5b6-ezgif.com-video-to-gif-converter.gif)
 
 <br>
 
@@ -40,7 +40,7 @@
 📢 에디터에서 간편하게 **실시간 동시 편집**이 가능합니다. <br>
 📢 작성된 문서들도 **함께 연결하고 배치**해 보며 우리 팀만의 구조를 만들어 볼 수 있습니다.
 
-![실시간 동시편집 gif](https://raw.githubusercontent.com/summersummerwhy/gif/blob/main/391975638-86b0dcaf-3640-4836-8b91-207b39b17b05-ezgif.com-video-to-gif-converter.gif)
+![실시간 동시편집 gif](https://raw.githubusercontent.com/summersummerwhy/gif/main/391975638-86b0dcaf-3640-4836-8b91-207b39b17b05-ezgif.com-video-to-gif-converter.gif)
 
 <br>
 
@@ -49,7 +49,7 @@
 📢 우리 팀만의 **워크 스페이스를 생성**하고 팀원들을 **초대**할 수 있습니다. <br>
 📢 워크 스페이스의 **공개 범위**를 설정해서 누구나 참여할 수 있는 공간도 생성이 가능합니다.
 
-![워크스페이스 초대 gif](https://raw.githubusercontent.com/summersummerwhy/gif/blob/main/391998820-0c096e40-bed4-4cee-bb8e-40f72a5d43f2-ezgif.com-video-to-gif-converter.gif)
+![워크스페이스 초대 gif](https://raw.githubusercontent.com/summersummerwhy/gif/main/391998820-0c096e40-bed4-4cee-bb8e-40f72a5d43f2-ezgif.com-video-to-gif-converter.gif)
 
 <br>
 
