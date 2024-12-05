@@ -21,14 +21,12 @@
 <br><br>
 
 <h1 id="옥토독스소개">🐙 서비스 소개 </h1>
-
 <div align="center">
-
-![Group 117 (2)](https://github.com/user-attachments/assets/04e39b34-9483-4896-bd6b-6456c4784eee)
-
 <br>
 <h3> 옥토독스, <br> 협업을 위한 <br> 연결형 지식관리 툴</h3>
 <br>
+
+![Group 117 (2)](https://github.com/user-attachments/assets/04e39b34-9483-4896-bd6b-6456c4784eee)
 
 <br>
 
