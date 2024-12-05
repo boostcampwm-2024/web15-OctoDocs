@@ -17,13 +17,17 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(express.urlencoded({ extended: true }));
 
-  const config = new DocumentBuilder()
-    .setTitle('OctoDocs')
-    .setDescription('OctoDocs API 명세서')
-    .build();
+  // Swagger 설정 (production 환경에서는 비활성화)
+  if (process.env.NODE_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle('OctoDocs')
+      .setDescription('OctoDocs API 명세서')
+      .build();
 
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, documentFactory);
+  }
+
   app.enableCors({
     origin:
       process.env.NODE_ENV === 'production'
