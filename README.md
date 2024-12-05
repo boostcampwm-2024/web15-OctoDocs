@@ -24,7 +24,7 @@
 
 <div align="center">
 
-<h1 style="border: none; margin: 0;">옥토독스, <br> 협업을 위한 <br> 연결형 지식관리 툴</h1>
+<h2> 옥토독스, <br> 협업을 위한 <br> 연결형 지식관리 툴</h2>
 <br>
 
 ![Group 117 (2)](https://github.com/user-attachments/assets/04e39b34-9483-4896-bd6b-6456c4784eee)
@@ -67,9 +67,7 @@
 
 <br><br>
 
-<h1 id="주차별피드백">🏗️ 개발 원칙</h1>
-
-<h1 style="border: none; margin: 0;">피드백을 반영한 점진적 개선</h1>
+<h1 id="주차별피드백">🏗️ 개발 원칙  <br> <br> 피드백을 반영한 점진적 개선 </h1>
 
 <br>
 
