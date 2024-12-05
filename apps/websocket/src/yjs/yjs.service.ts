@@ -263,19 +263,19 @@ export class YjsService
   ) {
     for (const [key, change] of event.changes.keys) {
       // TODO: change.action이 'add', 'delete'일 때 처리를 추가하여 REST API 사용 제거
-      if (change.action === 'add') {
-        const node = nodesMap.get(key);
-        const { title, id, emoji } = node.data;
-        const { x, y } = node.position;
-        axios.post('http://backend:3000/api/page', {
-          title,
-          content,
-          workspaceId,
-          x,
-          y,
-          emoji,
-        });
-      }
+      // if (change.action === 'add') {
+      //   const node = nodesMap.get(key);
+      //   const { title, id, emoji } = node.data;
+      //   const { x, y } = node.position;
+      //   axios.post('http://backend:3000/api/page', {
+      //     title,
+      //     content,
+      //     workspaceId,
+      //     x,
+      //     y,
+      //     emoji,
+      //   });
+      // }
       if (change.action !== 'update') continue;
 
       const node: any = nodesMap.get(key);
