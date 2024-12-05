@@ -1,4 +1,4 @@
-export { useUserWorkspace } from "./model/workspaceQuries";
+export { useUserWorkspace, useCurrentWorkspace } from "./model/workspaceQuries";
 export { useProtectedWorkspace } from "./model/useProtectedWorkspace";
 export { useValidateWorkspaceInviteLink } from "./model/workspaceMutations";
 
