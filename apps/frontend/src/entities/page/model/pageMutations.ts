@@ -5,8 +5,15 @@ import { createPage, deletePage } from "../api/pageApi";
 
 export const useCreatePage = () => {
   return useMutation({
-    mutationFn: ({ title, content, x, y, emoji }: CreatePageRequest) =>
-      createPage({ title, content, x, y, emoji }),
+    mutationFn: ({
+      title,
+      content,
+      x,
+      y,
+      emoji,
+      workspaceId,
+    }: CreatePageRequest) =>
+      createPage({ title, content, x, y, emoji, workspaceId }),
   });
 };
 

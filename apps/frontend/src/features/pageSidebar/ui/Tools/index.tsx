@@ -3,16 +3,20 @@ import { PencilLine } from "lucide-react";
 import { useCreatePage, usePageStore } from "@/entities/page";
 import { useYDocStore, initializeYText } from "@/shared/model";
 import { Button } from "@/shared/ui";
+import { useCurrentWorkspace } from "@/features/workspace";
 
 export function Tools() {
   const { setCurrentPage } = usePageStore();
   const createMutation = useCreatePage();
+  const { data } = useCurrentWorkspace();
   const { ydoc } = useYDocStore();
 
   return (
     <Button
       className={`flex w-full flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100`}
       onClick={() => {
+        if (!data) return;
+
         createMutation
           .mutateAsync({
             title: "제목 없음",
@@ -28,6 +32,7 @@ export function Tools() {
             x: 0,
             y: 0,
             emoji: null,
+            workspaceId: data.workspace.workspaceId,
           })
           .then((res) => {
             const nodesMap = ydoc.getMap("nodes");
