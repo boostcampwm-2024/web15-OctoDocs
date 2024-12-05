@@ -216,7 +216,7 @@ export class WorkspaceService {
       // 권한이 없으면 예외 발생
       throw new ForbiddenAccessException();
     }
-  
+
     return {
       workspaceId: workspace.snowflakeId,
       title: workspace.title,
@@ -226,7 +226,6 @@ export class WorkspaceService {
       visibility: 'private',
     };
   }
-
 
   /**
    * 가장 처음에 모두가 접속할 수 있는 main workspace를 생성한다.
@@ -284,9 +283,9 @@ export class WorkspaceService {
         workspace: findWorkspace,
         user: findOwner,
         role: 'owner',
-      });}
+      });
     }
-  
+  }
 
   async updateVisibility(
     userId: number,
