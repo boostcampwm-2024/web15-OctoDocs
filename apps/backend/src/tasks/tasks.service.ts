@@ -179,6 +179,7 @@ export class TasksService {
 
       const fromNode = await nodeRepository.findOne({
         where: { id: redisData.fromNode },
+        relations: ['workspace'],
       });
 
       const toNode = await nodeRepository.findOne({
@@ -186,7 +187,11 @@ export class TasksService {
       });
 
       if (redisData.type === 'add') {
-        await edgeRepository.save({ fromNode, toNode });
+        await edgeRepository.save({
+          fromNode,
+          toNode,
+          workspace: fromNode.workspace,
+        });
       }
 
       if (redisData.type === 'delete') {
