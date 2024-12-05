@@ -10,8 +10,8 @@
 </div>
 
 <p align="center">
-  <a href="#옥토독스소개">🐙 서비스 소개 :  옥토독스, 협업을 위한 연결형 지식관리 툴</a> <br>
-  <a href="#주차별피드백">🏗️ 개발 원칙 : 피드백을 반영한 점진적 개선</a> <br>
+  <a href="#옥토독스소개">🐙 서비스 소개</a> <br>
+  <a href="#주차별피드백">🏗️ 개발 원칙</a> <br>
   <a href="#핵심경험">🗜️ 팀의 핵심 경험</a> <br>
   <a href="#프로젝트구조">⚙️ 프로젝트 구조</a> <br>
   <a href="#프로젝트타임라인">🗺️ 프로젝트 타임라인</a> <br>
@@ -20,15 +20,17 @@
 
 <br><br>
 
-<h1 id="옥토독스소개">🐙 서비스 소개 :  옥토독스, 협업을 위한 연결형 지식관리 툴</h1>
+<h1 id="옥토독스소개">🐙 Octodocs 서비스 소개 </h1>
+<div align="center">
+<br>
+<h3> 옥토독스, <br> 협업을 위한 <br> 연결형 지식관리 툴</h3>
+<br>
 
 ![Group 117 (2)](https://github.com/user-attachments/assets/04e39b34-9483-4896-bd6b-6456c4784eee)
 
 <br>
 
-<div align="center">
-
-### 🪡 관계형 지식 관리 툴
+### 🪡 연결형 지식 관리 툴
 
 📢 마크다운, 이미지, 코드 등을 활용해서 간편하게 **문서 작성**이 가능합니다. <br>
 📢 작성한 문서들을 **연결**하고 **배치**하면서 새로운 아이디어를 쉽게 떠올릴 수 있습니다.
@@ -64,7 +66,7 @@
 
 <br><br>
 
-<h1 id="주차별피드백">🏗️ 개발 원칙 : 피드백을 반영한 점진적 개선</h1>
+<h1 id="주차별피드백">🏗️ 개발 원칙: 피드백을 반영한 점진적 개선 </h1>
 
 <br>
 
@@ -198,6 +200,82 @@ Octodocs 팀은 사용자 경험 향상은 물론, 일관된 코드 품질 유�
 
 ![image (13)](https://github.com/user-attachments/assets/bee51119-c814-4f57-8cda-60ea4bfdd2dd)
 
+<br>
+
+### Tech Stack
+
+<table>
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Stack</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <p align=center>Common</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/Node.js-114411?logo=node.js">
+                <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Socket.io-010101?logo=Socket.io">
+                <img src="https://img.shields.io/badge/YJS-05A2BA?logo=yjs&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/ESLint-4B32C3?logo=Eslint">
+                <img src="https://img.shields.io/badge/yarn-2C8EBB?logo=yarn&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/.ENV-ECD53F?logo=.ENV&logoColor=ffffff">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                  <p align=center>Frontend</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/Vite-646CFF?logo=Vite&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/React-61DAFB?logo=React&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/React_Query-FF4154?logo=reactquery&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Zustand-443E38?logo=react&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Novel-3C3C3C?logo=novel&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/React_Flow-0078D7?logo=reactflow&logoColor=ffffff">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p align=center>Backend</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/TypeORM-FDF24A?logo=typeorm&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=ffffff">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p align=center>Deployment</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/nginx-014532?logo=Nginx&logoColor=009639&">
+                <img src="https://img.shields.io/badge/Naver Cloud Platform-03C75A?logo=naver&logoColor=ffffff">  
+                <img src="https://img.shields.io/badge/GitHub Actions-2088FF?logo=GitHub Actions&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=ffffff">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p align=center>Collaboration</p>
+            </td>
+            <td>
+                <img src="https://img.shields.io/badge/Notion-000000?logo=Notion">
+                <img src="https://img.shields.io/badge/Figma-F24E1E?logo=Figma&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Slack-4A154B?logo=Slack&logoColor=ffffff">
+                <img src="https://img.shields.io/badge/Gather.town-008B8B?logo=gather&logoColor=ffffff">
+            </td>
+        </tr>
+    </tbody>
+</table>
 <br><br>
 
 <h1 id="프로젝트타임라인">🗺️ 프로젝트 타임라인</h1>
