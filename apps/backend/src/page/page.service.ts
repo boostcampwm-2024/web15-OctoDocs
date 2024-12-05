@@ -35,12 +35,10 @@ export class PageService {
    */
   async createPage(dto: CreatePageDto): Promise<Page> {
     const { title, content, workspaceId, x, y, emoji } = dto;
-
     // 워크스페이스 DB에서 해당 워크스페이스의 내부 id를 찾는다
     const workspace = await this.workspaceRepository.findOneBy({
       snowflakeId: workspaceId,
     });
-
     if (!workspace) {
       throw new WorkspaceNotFoundException();
     }

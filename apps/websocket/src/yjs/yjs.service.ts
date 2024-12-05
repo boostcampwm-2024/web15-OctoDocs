@@ -130,6 +130,11 @@ export class YjsService
     const edgeResponse = await axios.get(
       `http://backend:3000/api/edge/workspace/${workspaceId}`,
     );
+
+    if (nodeResponse.status === 404 || edgeResponse.status === 404) {
+      this.logger.error('워크 스페이스가 존재하지 않습니다.');
+      return;
+    }
     const edges = edgeResponse.data.edges;
 
     const nodesMap = doc.getMap('nodes');
@@ -258,6 +263,19 @@ export class YjsService
   ) {
     for (const [key, change] of event.changes.keys) {
       // TODO: change.action이 'add', 'delete'일 때 처리를 추가하여 REST API 사용 제거
+      if (change.action === 'add') {
+        const node = nodesMap.get(key);
+        const { title, id, emoji } = node.data;
+        const { x, y } = node.position;
+        axios.post('http://backend:3000/api/page', {
+          title,
+          content,
+          workspaceId,
+          x,
+          y,
+          emoji,
+        });
+      }
       if (change.action !== 'update') continue;
 
       const node: any = nodesMap.get(key);
@@ -272,6 +290,10 @@ export class YjsService
       const pageResponse = await axios.get(
         `http://backend:3000/api/page/${id}`,
       );
+      if (pageResponse.status === 404) {
+        this.logger.error('페이지가 존재하지 않습니다.');
+        return;
+      }
       const findPage = pageResponse.data.page;
 
       await this.redisService.setField(`node:${findPage.node.id}`, 'x', x);
