@@ -13,15 +13,23 @@ interface CollaborativeCursorsProps {
 export function CollaborativeCursors({ cursors }: CollaborativeCursorsProps) {
   const { flowToScreenPosition } = useReactFlow();
   const { currentUser } = useUserStore();
-  const validCursors = useMemo(
-    () =>
-      Array.from(cursors.values()).filter(
-        (cursor) =>
-          cursor.cursor &&
-          (cursor.clientId as unknown as string) !== currentUser.clientId,
-      ),
-    [cursors],
-  );
+  const validCursors = useMemo(() => {
+    const filteredCursors = Array.from(cursors.values()).filter(
+      (cursor) =>
+        cursor.cursor &&
+        (cursor.clientId as unknown as string) !== currentUser.clientId,
+    );
+
+    const uniqueCursors = filteredCursors.reduce((acc, current) => {
+      const exists = acc.find((item) => item.clientId === current.clientId);
+      if (!exists) {
+        acc.push(current);
+      }
+      return acc;
+    }, [] as AwarenessState[]);
+
+    return uniqueCursors;
+  }, [cursors]);
 
   return (
     <Panel>
