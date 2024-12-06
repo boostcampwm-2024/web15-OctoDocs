@@ -83,30 +83,34 @@ export class YjsService
    * yXmlFragment에 content를 넣어준다.
    */
   private async initializePage(pageId: number, editorDoc: Y.XmlFragment) {
-    // 초기 세팅할 page content
-    let pageContent: JSON;
+    try {
+      // 초기 세팅할 page content
+      const response = await axios.get(
+        `http://backend:3000/api/page/${pageId}`,
+      );
+      const findPage = response.data.page;
+      const pageContent = JSON.parse(JSON.stringify(findPage.content));
 
-    const response = await axios.get(`http://backend:3000/api/page/${pageId}`);
-    if (response.status === 404) {
-      this.logger.error(`${pageId}번 페이지를 찾을 수 없습니다.`);
-      pageContent = JSON.parse('{}');
-      return;
+      // content가 비어있다면 내부 구조가 novel editor schema를 따르지 않기 때문에 오류가 납니다.
+      // content가 존재할 때만 넣어줍니다.
+      if (Object.keys(pageContent).length > 0) {
+        this.transformText(pageContent);
+        prosemirrorJSONToYXmlFragment(
+          novelEditorSchema,
+          pageContent,
+          editorDoc,
+        );
+      }
+
+      // 페이지 내용 변경 사항을 감지해서 데이터베이스에 갱신합니다.
+      editorDoc.observeDeep(() => {
+        this.observeEditor(editorDoc);
+      });
+    } catch (error) {
+      this.logger.error(
+        `페이지 초기화 중 오류 발생 (pageId: ${pageId}): ${error.message}`,
+      );
     }
-
-    const findPage = response.data.page;
-    pageContent = JSON.parse(JSON.stringify(findPage.content));
-
-    // content가 비어있다면 내부 구조가 novel editor schema를 따르지 않기 때문에 오류가 납니다.
-    // content가 존재할 때만 넣어줍니다.
-    if (Object.keys(pageContent).length > 0) {
-      this.transformText(pageContent);
-      prosemirrorJSONToYXmlFragment(novelEditorSchema, pageContent, editorDoc);
-    }
-
-    // 페이지 내용 변경 사항을 감지해서 데이터베이스에 갱신합니다.
-    editorDoc.observeDeep(() => {
-      this.observeEditor(editorDoc);
-    });
   }
 
   handleConnection() {
@@ -121,45 +125,48 @@ export class YjsService
    * initialize 관련 메소드
    */
   private async initializeWorkspace(workspaceId: string, doc: Y.Doc) {
-    // workspaceId에 속한 모든 노드와 엣지를 가져온다.
-    const nodeResponse = await axios.get(
-      `http://backend:3000/api/node/workspace/${workspaceId}`,
-    );
-    const nodes = nodeResponse.data.nodes;
+    try {
+      // workspaceId에 속한 모든 노드와 엣지를 가져온다.
+      const [nodeResponse, edgeResponse] = await Promise.all([
+        axios.get(`http://backend:3000/api/node/workspace/${workspaceId}`),
+        axios.get(`http://backend:3000/api/edge/workspace/${workspaceId}`),
+      ]);
 
-    const edgeResponse = await axios.get(
-      `http://backend:3000/api/edge/workspace/${workspaceId}`,
-    );
+      if (nodeResponse.status === 404 || edgeResponse.status === 404) {
+        throw new Error('워크스페이스가 존재하지 않습니다.');
+      }
 
-    if (nodeResponse.status === 404 || edgeResponse.status === 404) {
-      this.logger.error('워크 스페이스가 존재하지 않습니다.');
-      return;
+      const nodes = nodeResponse.data.nodes;
+      const edges = edgeResponse.data.edges;
+
+      const nodesMap = doc.getMap('nodes');
+      const title = doc.getMap('title');
+      const emoji = doc.getMap('emoji');
+      const edgesMap = doc.getMap('edges');
+
+      this.initializeYNodeMap(nodes, nodesMap, title, emoji);
+      this.initializeYEdgeMap(edges, edgesMap);
+
+      // title의 변경 사항을 감지한다.
+      title.observeDeep(this.observeTitle.bind(this));
+
+      // emoji의 변경 사항을 감지한다.
+      emoji.observeDeep(this.observeEmoji.bind(this));
+
+      // node의 변경 사항을 감지한다.
+      nodesMap.observe((event) => {
+        this.observeNodeMap(event, nodesMap);
+      });
+
+      // edge의 변경 사항을 감지한다.
+      edgesMap.observe(async (event) => {
+        this.observeEdgeMap(event, edgesMap);
+      });
+    } catch (error) {
+      this.logger.error(
+        `워크스페이스 초기화 중 오류 발생 (workspaceId: ${workspaceId}): ${error.message}`,
+      );
     }
-    const edges = edgeResponse.data.edges;
-
-    const nodesMap = doc.getMap('nodes');
-    const title = doc.getMap('title');
-    const emoji = doc.getMap('emoji');
-    const edgesMap = doc.getMap('edges');
-
-    this.initializeYNodeMap(nodes, nodesMap, title, emoji);
-    this.initializeYEdgeMap(edges, edgesMap);
-
-    // title의 변경 사항을 감지한다.
-    title.observeDeep(this.observeTitle.bind(this));
-
-    // emoji의 변경 사항을 감지한다.
-    emoji.observeDeep(this.observeEmoji.bind(this));
-
-    // node의 변경 사항을 감지한다.
-    nodesMap.observe((event) => {
-      this.observeNodeMap(event, nodesMap);
-    });
-
-    // edge의 변경 사항을 감지한다.
-    edgesMap.observe(async (event) => {
-      this.observeEdgeMap(event, edgesMap);
-    });
   }
 
   /**
@@ -261,48 +268,44 @@ export class YjsService
     event: Y.YMapEvent<unknown>,
     nodesMap: Y.Map<unknown>,
   ) {
-    for (const [key, change] of event.changes.keys) {
-      // TODO: change.action이 'add', 'delete'일 때 처리를 추가하여 REST API 사용 제거
-      // if (change.action === 'add') {
-      //   const node = nodesMap.get(key);
-      //   const { title, id, emoji } = node.data;
-      //   const { x, y } = node.position;
-      //   axios.post('http://backend:3000/api/page', {
-      //     title,
-      //     content,
-      //     workspaceId,
-      //     x,
-      //     y,
-      //     emoji,
-      //   });
-      // }
-      if (change.action !== 'update') continue;
+    try {
+      for (const [key, change] of event.changes.keys) {
+        if (change.action !== 'update') continue;
 
-      const node: any = nodesMap.get(key);
-      if (node.type !== 'note') continue;
+        const node: any = nodesMap.get(key);
+        if (node.type !== 'note') continue;
 
-      const { id, color } = node.data;
-      const { x, y } = node.position;
-      const isHolding = node.isHolding;
+        const { id, color } = node.data;
+        const { x, y } = node.position;
+        const isHolding = node.isHolding;
 
-      if (isHolding) continue;
+        if (isHolding) continue;
 
-      const pageResponse = await axios.get(
-        `http://backend:3000/api/page/${id}`,
-      );
-      if (pageResponse.status === 404) {
-        this.logger.error('페이지가 존재하지 않습니다.');
-        return;
+        try {
+          const pageResponse = await axios.get(
+            `http://backend:3000/api/page/${id}`,
+          );
+
+          const findPage = pageResponse.data.page;
+
+          await Promise.all([
+            this.redisService.setField(`node:${findPage.node.id}`, 'x', x),
+            this.redisService.setField(`node:${findPage.node.id}`, 'y', y),
+            this.redisService.setField(
+              `node:${findPage.node.id}`,
+              'color',
+              color,
+            ),
+          ]);
+        } catch (error) {
+          this.logger.error(
+            `노드 업데이트 중 오류 발생 (nodeId: ${id}): ${error.message}`,
+          );
+          continue;
+        }
       }
-      const findPage = pageResponse.data.page;
-
-      await this.redisService.setField(`node:${findPage.node.id}`, 'x', x);
-      await this.redisService.setField(`node:${findPage.node.id}`, 'y', y);
-      await this.redisService.setField(
-        `node:${findPage.node.id}`,
-        'color',
-        color,
-      );
+    } catch (error) {
+      this.logger.error(`노드맵 관찰 중 오류 발생: ${error.message}`);
     }
   }
 
@@ -355,14 +358,19 @@ export class YjsService
 
   private async observeEditor(editorDoc: Y.XmlFragment) {
     const document = editorDoc.doc as CustomDoc;
-    const pageId = parseInt(document.name.split('-')[1]);
+    try {
+      const pageId = parseInt(document.name.split('-')[1]);
 
-    this.redisService.setField(
-      `page:${pageId.toString()}`,
-      'content',
-      JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
-    );
-    return;
+      await this.redisService.setField(
+        `page:${pageId.toString()}`,
+        'content',
+        JSON.stringify(yXmlFragmentToProsemirrorJSON(editorDoc)),
+      );
+    } catch (error) {
+      this.logger.error(
+        `에디터 내용 저장 중 오류 발생 (pageId: ${document?.name}): ${error.message}`,
+      );
+    }
   }
 
   /**
