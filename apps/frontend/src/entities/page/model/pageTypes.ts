@@ -23,6 +23,7 @@ export interface CreatePageRequest {
   emoji: string | null;
   x: number;
   y: number;
+  workspaceId: string;
 }
 
 export interface CreatePageResponse {
