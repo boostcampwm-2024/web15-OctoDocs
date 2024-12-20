@@ -1,8 +1,5 @@
 import { create } from "zustand";
-import * as Y from "yjs";
-import { SocketIOProvider } from "y-socket.io";
 
-import { createSocketIOProvider } from "@/shared/api";
 import { getRandomColor, getRandomHexString } from "@/shared/lib";
 
 export interface User {
@@ -12,7 +9,6 @@ export interface User {
 }
 
 interface UserStore {
-  provider: SocketIOProvider;
   users: User[];
   currentUser: User;
   setUsers: (users: User[]) => void;
@@ -20,7 +16,6 @@ interface UserStore {
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-  provider: createSocketIOProvider("users", new Y.Doc()),
   users: [],
   currentUser: {
     clientId: getRandomHexString(10),
