@@ -12,6 +12,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { SocketIOProvider } from "y-socket.io";
+import { throttle } from "lodash";
 
 import { calculateBestHandles } from "./calculateHandles";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
@@ -197,39 +198,43 @@ export const useCanvas = () => {
       const nodesMap = ydoc.getMap("nodes");
       const edgesMap = ydoc.getMap("edges");
 
+      const updateNodePosition = throttle(
+        (node: Node, position: YNode["position"]) => {
+          const updatedYNode: YNode = {
+            ...node,
+            position: position,
+            selected: false,
+            isHolding: holdingNodeRef.current === node.id,
+          };
+          nodesMap.set(node.id, updatedYNode);
+
+          const affectedEdges = edges.filter(
+            (edge) => edge.source === node.id || edge.target === node.id,
+          );
+
+          affectedEdges.forEach((edge) => {
+            const sourceNode = nodes.find((n) => n.id === edge.source);
+            const targetNode = nodes.find((n) => n.id === edge.target);
+
+            if (sourceNode && targetNode) {
+              const bestHandles = calculateBestHandles(sourceNode, targetNode);
+              const updatedEdge = {
+                ...edge,
+                sourceHandle: bestHandles.source,
+                targetHandle: bestHandles.target,
+              };
+              edgesMap.set(edge.id, updatedEdge);
+            }
+          });
+        },
+        16,
+      );
+
       changes.forEach((change) => {
         if (change.type === "position" && change.position) {
           const node = nodes.find((n) => n.id === change.id);
           if (node) {
-            const updatedYNode: YNode = {
-              ...node,
-              position: change.position,
-              selected: false,
-              isHolding: holdingNodeRef.current === change.id,
-            };
-            nodesMap.set(change.id, updatedYNode);
-
-            const affectedEdges = edges.filter(
-              (edge) => edge.source === change.id || edge.target === change.id,
-            );
-
-            affectedEdges.forEach((edge) => {
-              const sourceNode = nodes.find((n) => n.id === edge.source);
-              const targetNode = nodes.find((n) => n.id === edge.target);
-
-              if (sourceNode && targetNode) {
-                const bestHandles = calculateBestHandles(
-                  sourceNode,
-                  targetNode,
-                );
-                const updatedEdge = {
-                  ...edge,
-                  sourceHandle: bestHandles.source,
-                  targetHandle: bestHandles.target,
-                };
-                edgesMap.set(edge.id, updatedEdge);
-              }
-            });
+            updateNodePosition(node, change.position);
           }
         }
       });
