@@ -138,20 +138,34 @@ export const useCanvas = () => {
     const yEdges = Array.from(edgesMap.values()) as Edge[];
     setEdges(yEdges);
 
+    let rafId: number | null = null;
+    const pendingUpdates = new Map<string, YNode>();
+
+    const applyUpdates = () => {
+      setNodes((nds) => {
+        return nds.map((node) => {
+          return pendingUpdates.get(node.id) ?? node;
+        });
+      });
+      rafId = null;
+    };
+
     nodesMap.observe((event) => {
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
-        if (change.action === "add" || change.action === "update") {
-          const updatedNode = nodesMap.get(nodeId) as YNode;
+
+        if (change.action === "add") {
+          const addedNode = nodesMap.get(nodeId) as YNode;
           setNodes((nds) => {
-            const index = nds.findIndex((n) => n.id === nodeId);
-            if (index === -1) {
-              return [...nds, updatedNode];
-            }
-            const newNodes = [...nds];
-            newNodes[index] = updatedNode;
-            return newNodes;
+            return [...nds, addedNode];
           });
+        } else if (change.action === "update") {
+          const updatedNode = nodesMap.get(nodeId) as YNode;
+          pendingUpdates.set(nodeId, updatedNode);
+
+          if (!rafId) {
+            rafId = requestAnimationFrame(applyUpdates);
+          }
         } else if (change.action === "delete") {
           // parseInt는 yjs.service.ts에서 타입 변환 로직 참고.
           const deletedNodeId = parseInt(nodeId);
@@ -173,6 +187,7 @@ export const useCanvas = () => {
 
     return () => {
       wsProvider.destroy();
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [ydoc, setNodes, setEdges, workspace]);
 
