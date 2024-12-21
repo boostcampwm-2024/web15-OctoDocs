@@ -1,8 +1,10 @@
 import { useState } from "react";
+import * as Y from "yjs";
 
 import { Node } from "@/entities/node";
 import { Emoji } from "@/shared/ui";
-import { useYDocStore, useYText } from "@/shared/model";
+import { useYText } from "@/shared/model";
+import useConnectionStore from "@/shared/model/useConnectionStore";
 
 interface Emoji {
   id: string;
@@ -14,7 +16,9 @@ interface Emoji {
 }
 
 export const useEditorTitle = (currentPage: number) => {
-  const { ydoc } = useYDocStore();
+  const { canvas } = useConnectionStore();
+  const ydoc = canvas.provider?.doc ?? new Y.Doc();
+
   const [title, setYTitle] = useYText(ydoc, "title", currentPage);
   const [emoji, setYEmoji] = useYText(ydoc, "emoji", currentPage);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);

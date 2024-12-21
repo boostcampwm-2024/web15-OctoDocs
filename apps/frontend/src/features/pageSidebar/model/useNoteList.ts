@@ -2,23 +2,25 @@ import { useEffect, useState } from "react";
 
 import { Node, NoteNodeData } from "@/entities/node";
 import { useDeletePage, usePageStore } from "@/entities/page";
-import { useYDocStore } from "@/shared/model";
+import useConnectionStore from "@/shared/model/useConnectionStore";
 
 export const useNoteList = () => {
   const { setCurrentPage } = usePageStore();
 
   const [pages, setPages] = useState<NoteNodeData[]>();
-  const { ydoc } = useYDocStore();
-  const nodesMap = ydoc.getMap("nodes");
+  const { canvas } = useConnectionStore();
 
   // TODO: 최적화 필요
   useEffect(() => {
+    if (!canvas.provider) return;
+    const nodesMap = canvas.provider.doc.getMap("nodes");
+
     nodesMap.observe(() => {
       const yNodes = Array.from(nodesMap.values()) as Node[];
       const data = yNodes.map((yNode) => yNode.data) as NoteNodeData[];
       setPages(data);
     });
-  }, []);
+  }, [canvas.provider]);
 
   const [noteIdToDelete, setNoteIdToDelete] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +41,9 @@ export const useNoteList = () => {
       return;
     }
 
-    const nodesMap = ydoc.getMap("nodes");
+    if (!canvas.provider) return;
+
+    const nodesMap = canvas.provider.doc.getMap("nodes");
     nodesMap.delete(noteIdToDelete.toString());
     deleteMutation.mutate({ id: noteIdToDelete });
 

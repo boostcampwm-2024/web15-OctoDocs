@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { SocketIOProvider } from "y-socket.io";
 
-type ConnectionStatus = "disconnected" | "connecting" | "connected";
+export type ConnectionStatus = "disconnected" | "connecting" | "connected";
 
 interface ConnectionState {
-  mindmap: {
+  canvas: {
     provider: SocketIOProvider | null;
     connectionStatus: ConnectionStatus;
   };
@@ -31,7 +31,7 @@ interface ConnectionActions {
 
 const useConnectionStore = create<ConnectionState & ConnectionActions>(
   (set) => ({
-    mindmap: {
+    canvas: {
       provider: null,
       connectionStatus: "disconnected",
     },

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 import { NodeForm } from "../NodeForm";
 import { Node } from "@/entities/node";
-import { useYDocStore } from "@/shared/model";
 import { Popover } from "@/shared/ui";
+import useConnectionStore from "@/shared/model/useConnectionStore";
 
 interface NodePanelProps {
   currentPage: string;
@@ -11,10 +11,12 @@ interface NodePanelProps {
 
 export function NodePanel({ currentPage }: NodePanelProps) {
   const [currentColor, setCurrentColor] = useState("#ffffff");
-  const { ydoc } = useYDocStore();
+  const { canvas } = useConnectionStore();
 
   const changeNodeColor = (color: string) => {
-    const nodesMap = ydoc.getMap("nodes");
+    if (!canvas.provider) return;
+
+    const nodesMap = canvas.provider.doc.getMap("nodes");
     const id = currentPage.toString();
 
     const existingNode = nodesMap.get(id) as Node;
@@ -26,7 +28,8 @@ export function NodePanel({ currentPage }: NodePanelProps) {
   };
 
   useEffect(() => {
-    const nodesMap = ydoc.getMap("nodes");
+    if (!canvas.provider) return;
+    const nodesMap = canvas.provider.doc.getMap("nodes");
     const currentNode = nodesMap.get(currentPage.toString()) as Node;
     setCurrentColor(currentNode.data.color as string);
   }, [currentPage]);
