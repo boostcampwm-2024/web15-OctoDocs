@@ -8,5 +8,4 @@ export {
   type PopoverContextType,
 } from "./usePopover";
 export { useYText } from "./useYText";
-export { useYDocStore } from "./ydocStore";
 export { initializeYText } from "./yjs";

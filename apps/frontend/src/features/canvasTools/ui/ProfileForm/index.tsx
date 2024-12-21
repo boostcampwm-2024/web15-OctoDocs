@@ -3,6 +3,7 @@ import { RefreshCcw } from "lucide-react";
 import { useUserStore } from "@/entities/user";
 import { getRandomColor } from "@/shared/lib";
 import { FormField } from "@/shared/ui";
+import useConnectionStore from "@/shared/model/useConnectionStore";
 
 interface ProfileFormProps {
   color: string;
@@ -19,7 +20,8 @@ export function ProfileForm({
   onClientIdChange,
   onSave,
 }: ProfileFormProps) {
-  const { currentUser, setCurrentUser, provider } = useUserStore();
+  const { user } = useConnectionStore();
+  const { currentUser, setCurrentUser } = useUserStore();
 
   const handleRefreshClick = () => {
     const newColor = getRandomColor();
@@ -35,8 +37,10 @@ export function ProfileForm({
   };
 
   const handleSave = () => {
-    provider.awareness.setLocalStateField("color", color);
-    provider.awareness.setLocalStateField("clientId", clientId);
+    if (!user.provider) return;
+
+    user.provider.awareness.setLocalStateField("color", color);
+    user.provider.awareness.setLocalStateField("clientId", clientId);
 
     setCurrentUser({
       ...currentUser,

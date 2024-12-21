@@ -1,21 +1,22 @@
 import { PencilLine } from "lucide-react";
 
 import { useCreatePage, usePageStore } from "@/entities/page";
-import { useYDocStore, initializeYText } from "@/shared/model";
+import { initializeYText } from "@/shared/model";
 import { Button } from "@/shared/ui";
 import { useCurrentWorkspace } from "@/features/workspace";
+import useConnectionStore from "@/shared/model/useConnectionStore";
 
 export function Tools() {
   const { setCurrentPage } = usePageStore();
   const createMutation = useCreatePage();
   const { data } = useCurrentWorkspace();
-  const { ydoc } = useYDocStore();
+  const { canvas } = useConnectionStore();
 
   return (
     <Button
       className={`flex w-full flex-row items-center gap-1 rounded-sm px-2 py-1 font-medium hover:bg-neutral-100`}
       onClick={() => {
-        if (!data) return;
+        if (!data || !canvas.provider) return;
 
         createMutation
           .mutateAsync({
@@ -35,7 +36,8 @@ export function Tools() {
             workspaceId: data.workspace.workspaceId,
           })
           .then((res) => {
-            const nodesMap = ydoc.getMap("nodes");
+            if (!canvas.provider) return;
+            const nodesMap = canvas.provider.doc.getMap("nodes");
             nodesMap.set(res.pageId.toString(), {
               id: res.pageId.toString(),
               type: "note",
@@ -54,8 +56,8 @@ export function Tools() {
 
             setCurrentPage(res.pageId);
 
-            const yTitleMap = ydoc.getMap("title");
-            const yEmojiMap = ydoc.getMap("emoji");
+            const yTitleMap = canvas.provider.doc.getMap("title");
+            const yEmojiMap = canvas.provider.doc.getMap("emoji");
 
             initializeYText(yTitleMap, `title_${res.pageId}`, "제목 없음");
             initializeYText(yEmojiMap, `emoji_${res.pageId}`, "");

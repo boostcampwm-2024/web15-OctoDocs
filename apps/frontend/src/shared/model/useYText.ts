@@ -13,14 +13,17 @@ export const useYText = (
 ): ReturnTypes => {
   const yText = ydoc.getMap(key).get(`${key}_${currentPage}`) as Y.Text;
 
-  const [input, setInput] = useState(yText.toString());
+  const initialText = yText !== undefined ? yText.toString() : "";
+  const [input, setInput] = useState(initialText);
 
   const setYText = (textNew: string) => {
+    if (yText === undefined) return;
     const delta = diffToDelta(diff(input, textNew));
     yText.applyDelta(delta);
   };
 
   yText.observe(() => {
+    if (yText === undefined) return;
     setInput(yText.toString());
   });
 

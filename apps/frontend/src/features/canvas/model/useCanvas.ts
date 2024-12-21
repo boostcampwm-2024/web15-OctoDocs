@@ -11,15 +11,15 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { SocketIOProvider } from "y-socket.io";
+import { throttle } from "lodash";
 
 import { calculateBestHandles } from "./calculateHandles";
 import { useCollaborativeCursors } from "./useCollaborativeCursors";
 import { usePageStore } from "@/entities/page";
-import { createSocketIOProvider } from "@/shared/api";
 import { useWorkspace } from "@/shared/lib";
-import { useYDocStore } from "@/shared/model";
 import { useUserStore } from "@/entities/user";
+import { useCanvasConnection } from "./useCanvasConnection";
+import useConnectionStore from "@/shared/model/useConnectionStore";
 
 export interface YNode extends Node {
   isHolding: boolean;
@@ -28,14 +28,16 @@ export interface YNode extends Node {
 export const useCanvas = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const workspace = useWorkspace();
-  const { ydoc } = useYDocStore();
+  const workspaceId = useWorkspace();
+  useCanvasConnection(workspaceId);
+  const { canvas } = useConnectionStore();
+  const provider = canvas.provider;
+
   const { cursors, handleMouseMove, handleNodeDrag, handleMouseLeave } =
     useCollaborativeCursors({
-      ydoc,
+      provider,
     });
 
-  const provider = useRef<SocketIOProvider>();
   const holdingNodeRef = useRef<string | null>(null);
 
   const { currentPage, setCurrentPage } = usePageStore();
@@ -62,9 +64,11 @@ export const useCanvas = () => {
   }, [currentPage, fitView]);
 
   useEffect(() => {
-    const yTitleMap = ydoc.getMap("title");
-    const yEmojiMap = ydoc.getMap("emoji");
-    const nodesMap = ydoc.getMap("nodes");
+    if (!provider) return;
+
+    const yTitleMap = provider.doc.getMap("title");
+    const yEmojiMap = provider.doc.getMap("emoji");
+    const nodesMap = provider.doc.getMap("nodes");
 
     yTitleMap.observeDeep((event) => {
       if (!event[0].path.length) return;
@@ -117,41 +121,52 @@ export const useCanvas = () => {
 
       nodesMap.set(pageId, newNode);
     });
-  }, [ydoc]);
+  }, [provider]);
 
   useEffect(() => {
-    if (!ydoc) return;
+    if (!provider) return;
 
-    const wsProvider = createSocketIOProvider(`flow-room-${workspace}`, ydoc);
-    provider.current = wsProvider;
-
-    wsProvider.on("sync", (isSynced: boolean) => {
+    provider.on("sync", (isSynced: boolean) => {
       if (isSynced) {
-        const nodesMap = ydoc.getMap("nodes");
+        const nodesMap = provider.doc.getMap("nodes");
         const yNodes = Array.from(nodesMap.values()) as YNode[];
         setNodes(yNodes);
       }
     });
 
-    const nodesMap = ydoc.getMap("nodes");
-    const edgesMap = ydoc.getMap("edges");
+    const nodesMap = provider.doc.getMap("nodes");
+    const edgesMap = provider.doc.getMap("edges");
     const yEdges = Array.from(edgesMap.values()) as Edge[];
     setEdges(yEdges);
+
+    let rafId: number | null = null;
+    const pendingUpdates = new Map<string, YNode>();
+
+    const applyUpdates = () => {
+      setNodes((nds) => {
+        return nds.map((node) => {
+          return pendingUpdates.get(node.id) ?? node;
+        });
+      });
+      rafId = null;
+    };
 
     nodesMap.observe((event) => {
       event.changes.keys.forEach((change, key) => {
         const nodeId = key;
-        if (change.action === "add" || change.action === "update") {
-          const updatedNode = nodesMap.get(nodeId) as YNode;
+
+        if (change.action === "add") {
+          const addedNode = nodesMap.get(nodeId) as YNode;
           setNodes((nds) => {
-            const index = nds.findIndex((n) => n.id === nodeId);
-            if (index === -1) {
-              return [...nds, updatedNode];
-            }
-            const newNodes = [...nds];
-            newNodes[index] = updatedNode;
-            return newNodes;
+            return [...nds, addedNode];
           });
+        } else if (change.action === "update") {
+          const updatedNode = nodesMap.get(nodeId) as YNode;
+          pendingUpdates.set(nodeId, updatedNode);
+
+          if (!rafId) {
+            rafId = requestAnimationFrame(applyUpdates);
+          }
         } else if (change.action === "delete") {
           // parseInt는 yjs.service.ts에서 타입 변환 로직 참고.
           const deletedNodeId = parseInt(nodeId);
@@ -172,62 +187,67 @@ export const useCanvas = () => {
     });
 
     return () => {
-      wsProvider.destroy();
+      provider.destroy();
+      if (rafId) cancelAnimationFrame(rafId);
     };
-  }, [ydoc, setNodes, setEdges, workspace]);
+  }, [provider, setNodes, setEdges, workspaceId]);
 
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      if (!ydoc) return;
-      const nodesMap = ydoc.getMap("nodes");
-      const edgesMap = ydoc.getMap("edges");
+      if (!provider) return;
+      const nodesMap = provider.doc.getMap("nodes");
+      const edgesMap = provider.doc.getMap("edges");
+
+      const updateNodePosition = throttle(
+        (node: Node, position: YNode["position"]) => {
+          const updatedYNode: YNode = {
+            ...node,
+            position: position,
+            selected: false,
+            isHolding: holdingNodeRef.current === node.id,
+          };
+          nodesMap.set(node.id, updatedYNode);
+
+          const affectedEdges = edges.filter(
+            (edge) => edge.source === node.id || edge.target === node.id,
+          );
+
+          affectedEdges.forEach((edge) => {
+            const sourceNode = nodes.find((n) => n.id === edge.source);
+            const targetNode = nodes.find((n) => n.id === edge.target);
+
+            if (sourceNode && targetNode) {
+              const bestHandles = calculateBestHandles(sourceNode, targetNode);
+              const updatedEdge = {
+                ...edge,
+                sourceHandle: bestHandles.source,
+                targetHandle: bestHandles.target,
+              };
+              edgesMap.set(edge.id, updatedEdge);
+            }
+          });
+        },
+        16,
+      );
 
       changes.forEach((change) => {
         if (change.type === "position" && change.position) {
           const node = nodes.find((n) => n.id === change.id);
           if (node) {
-            const updatedYNode: YNode = {
-              ...node,
-              position: change.position,
-              selected: false,
-              isHolding: holdingNodeRef.current === change.id,
-            };
-            nodesMap.set(change.id, updatedYNode);
-
-            const affectedEdges = edges.filter(
-              (edge) => edge.source === change.id || edge.target === change.id,
-            );
-
-            affectedEdges.forEach((edge) => {
-              const sourceNode = nodes.find((n) => n.id === edge.source);
-              const targetNode = nodes.find((n) => n.id === edge.target);
-
-              if (sourceNode && targetNode) {
-                const bestHandles = calculateBestHandles(
-                  sourceNode,
-                  targetNode,
-                );
-                const updatedEdge = {
-                  ...edge,
-                  sourceHandle: bestHandles.source,
-                  targetHandle: bestHandles.target,
-                };
-                edgesMap.set(edge.id, updatedEdge);
-              }
-            });
+            updateNodePosition(node, change.position);
           }
         }
       });
 
       onNodesChange(changes);
     },
-    [nodes, edges, onNodesChange, ydoc],
+    [nodes, edges, onNodesChange, provider],
   );
 
   const handleEdgesChange = useCallback(
     (changes: EdgeChange[]) => {
-      if (!ydoc) return;
-      const edgesMap = ydoc.getMap("edges");
+      if (!provider) return;
+      const edgesMap = provider.doc.getMap("edges");
 
       changes.forEach((change) => {
         if (change.type === "remove") {
@@ -237,12 +257,12 @@ export const useCanvas = () => {
 
       onEdgesChange(changes);
     },
-    [onEdgesChange, ydoc],
+    [onEdgesChange, provider],
   );
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      if (!connection.source || !connection.target || !ydoc) return;
+      if (!connection.source || !connection.target || !provider) return;
 
       const isConnected = edges.some(
         (edge) =>
@@ -268,11 +288,11 @@ export const useCanvas = () => {
           targetHandle: bestHandles.target,
         };
 
-        ydoc.getMap("edges").set(newEdge.id, newEdge);
+        provider.doc.getMap("edges").set(newEdge.id, newEdge);
         setEdges((eds) => addEdge(newEdge, eds));
       }
     },
-    [setEdges, edges, nodes, ydoc],
+    [setEdges, edges, nodes, provider],
   );
 
   const onNodeDragStart = useCallback(
@@ -284,15 +304,17 @@ export const useCanvas = () => {
 
   const onNodeDragStop = useCallback(
     (_event: React.MouseEvent, node: Node) => {
-      if (ydoc) {
-        const nodesMap = ydoc.getMap("nodes");
+      if (!provider) return;
+
+      if (provider.doc) {
+        const nodesMap = provider.doc.getMap("nodes");
         const yNode = nodesMap.get(node.id) as YNode | undefined;
         if (yNode) {
           nodesMap.set(node.id, { ...yNode, isHolding: false });
         }
       }
     },
-    [ydoc],
+    [provider],
   );
 
   const handleNodeClick = useCallback((id: number) => {
