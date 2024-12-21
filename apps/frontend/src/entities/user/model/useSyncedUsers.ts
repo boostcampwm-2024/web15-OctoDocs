@@ -17,6 +17,7 @@ export const useSyncedUsers = () => {
     const values = Array.from(
       user.provider.awareness.getStates().values(),
     ) as User[];
+
     setUsers(values);
   };
 
@@ -36,7 +37,7 @@ export const useSyncedUsers = () => {
 
     setCurrentUser(updatedUser);
     user.provider.awareness.setLocalState(updatedUser);
-  }, [currentPage]);
+  }, [currentPage, user.provider]);
 
   useEffect(() => {
     if (!user.provider) return;
@@ -58,5 +59,5 @@ export const useSyncedUsers = () => {
       if (!user.provider) return;
       user.provider.awareness.off("change", updateUsersFromAwareness);
     };
-  }, []);
+  }, [user.provider]);
 };
