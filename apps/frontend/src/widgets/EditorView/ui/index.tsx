@@ -8,7 +8,6 @@ export function EditorView() {
     currentPage,
     isPanelOpen,
     isMaximized,
-    ydoc,
     provider,
     saveStatus,
     handleEditorUpdate,
@@ -19,7 +18,7 @@ export function EditorView() {
     return null;
   }
 
-  if (!ydoc || !provider) return null;
+  if (!provider || !provider.doc) return null;
 
   return (
     <div
@@ -43,9 +42,9 @@ export function EditorView() {
           )}
         />
         <Editor
-          key={ydoc.guid}
+          key={provider.doc.guid}
           pageId={currentPage}
-          ydoc={ydoc}
+          ydoc={provider.doc}
           provider={provider}
           onEditorUpdate={handleEditorUpdate}
         />
