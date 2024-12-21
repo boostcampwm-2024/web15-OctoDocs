@@ -11,6 +11,8 @@ export const useEdtorConnection = (currentPage: number | null) => {
       editor.provider.destroy();
     }
 
+    if (currentPage === null) return;
+
     setConnectionStatus("editor", "connecting");
 
     const provider = createSocketIOProvider(
