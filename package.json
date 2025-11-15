@@ -17,7 +17,13 @@
         "docker:dev:down": "docker compose -f compose.local.yml down",
         "docker:dev:clean": "docker compose -v -f compose.local.yml down",
         "docker:dev:fclean": "docker compose -v -f compose.local.yml down --rmi all",
-        "ssl:generate": "cd services/nginx/ssl && bash ./generate-cert.sh"
+        "ssl:generate": "cd services/nginx/ssl && bash ./generate-cert.sh",
+        "deploy:init": "bash scripts/deploy-init.sh",
+        "deploy": "docker compose -f compose.deploy.yml up -d --build",
+        "deploy:down": "docker compose -f compose.deploy.yml down",
+        "deploy:logs": "docker compose -f compose.deploy.yml logs -f",
+        "deploy:restart": "docker compose -f compose.deploy.yml restart",
+        "deploy:clean": "docker compose -v -f compose.deploy.yml down"
     },
     "dependencies": {
         "turbo": "^2.3.0"
