@@ -15,5 +15,6 @@ RUN yarn install
 
 EXPOSE 3000
 
-# 개발 모드로 실행
+# Backend만 개발 모드로 실행
+WORKDIR /app/apps/backend
 CMD ["yarn", "dev"]

@@ -2,18 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dependencies
+# 개발 의존성 설치를 위한 파일들
 COPY package.json yarn.lock ./
+COPY turbo.json ./
+COPY apps/websocket/package.json ./apps/websocket/
+
+# 개발 의존성 설치 (프로덕션 플래그 제거)
 RUN yarn install
 
-# Copy source
-COPY . .
-
-# Install app dependencies
-WORKDIR /app/apps/websocket
-RUN yarn install
+# 소스 코드는 볼륨으로 마운트할 예정이므로 COPY 불필요
 
 EXPOSE 4242
 
-# Start the application
+# WebSocket만 개발 모드로 실행
+WORKDIR /app/apps/websocket
 CMD ["yarn", "dev"] 
